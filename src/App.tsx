@@ -15,7 +15,7 @@ import { DigitalDiplomacy } from './features/diplomacy/DigitalDiplomacy'
 import { SafeBridgeIndex } from './features/index/SafeBridgeIndex'
 import { WorldRightsMap } from './features/rights/WorldRightsMap'
 import { SecretAdmin } from './features/secret-admin/SecretAdmin'
-import { getHomeCards, subscribeHomeCards, type HomeCard } from './lib/contentStore'
+import { getHomeCards, subscribeHomeCards, type HomeCard, getHomeTexts, subscribeContent } from './lib/contentStore'
 
 function Header() {
   const { t, i18n } = useTranslation()
@@ -61,18 +61,23 @@ function Header() {
 function Home() {
   const { t } = useTranslation()
   const [customCards, setCustomCards] = useState<HomeCard[]>(() => getHomeCards())
+  const [texts, setTexts] = useState(() => getHomeTexts())
 
   useEffect(() => subscribeHomeCards(() => setCustomCards(getHomeCards())), [])
+  useEffect(() => subscribeContent(() => setTexts(getHomeTexts())), [])
 
   return (
     <main className="max-w-4xl mx-auto px-5 py-16">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-semibold text-safe-800 tracking-tight mb-4">
-          {t('home.title')}
+          {texts.title || t('home.title')}
         </h1>
         <p className="text-lg text-slate-600 max-w-xl mx-auto">
-          {t('home.intro')}
+          {texts.intro || t('home.intro')}
         </p>
+        {texts.contact && (
+          <p className="text-sm text-safe-800 mt-3 font-medium">{texts.contact}</p>
+        )}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
