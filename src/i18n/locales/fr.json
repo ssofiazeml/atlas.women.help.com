@@ -1,0 +1,168 @@
+{
+  "app_name": "Atlas",
+  "tagline": "Répertoire mondial de ressources",
+  "nav": {
+    "map": "Carte",
+    "chat": "Orientation",
+    "checklists": "Listes",
+    "stories": "Témoignages",
+    "suggest": "Proposer un centre / Partager une histoire",
+    "admin": "Admin",
+    "research": "Bibliothèque de recherches",
+    "diplomacy": "Diplomatie numérique",
+    "index": "Indice SafeBridge",
+    "rightsmap": "Carte mondiale des droits"
+  },
+  "quick_exit": "Quitter rapidement ce site",
+  "home": {
+    "title": "Un répertoire calme de ressources de soutien",
+    "intro": "Accédez à des informations, orientations et témoignages sans vous identifier. Votre activité ne laisse quasiment aucune trace.",
+    "map": "Carte interactive d’aide",
+    "map_desc": "Trouvez des hébergements, aide juridique, centres de crise partout dans le monde. Filtrez par type de besoin.",
+    "chat": "Orientation anonyme",
+    "chat_desc": "Conseils et démarches par étapes dans plusieurs langues. Aucune inscription. Tout demeure privé.",
+    "checklists": "Listes de contrôle",
+    "checklists_desc": "Guides concrets pour celles et ceux qui cherchent de l’aide ou soutiennent un proche. Sauvegarde locale.",
+    "stories": "Histoires",
+    "stories_desc": "Témoignages réels de personnes ayant cherché du soutien. Modérés avant publication."
+  },
+  "footer": "Quittez le site rapidement à tout moment. Cela n’efface pas les traces de votre opérateur ou appareil.",
+  "chat": {
+    "welcome": "Bonjour. Je peux vous aider à réfléchir aux prochaines étapes en toute sécurité et en privé. Rien n’est conservé ni transmis.",
+    "option_immediate": "Je suis en danger immédiat",
+    "option_safety_planning": "J’ai besoin de conseils pour planifier ma sécurité / mes documents",
+    "option_legal": "Je souhaite une information ou aide juridique",
+    "option_find_shelter": "Je cherche un refuge ou un hébergement sûr",
+    "immediate": "Quittez dès que vous pouvez sans risque. Cliquez sur le bouton de sortie rapide. Composez les urgences si vous le pouvez.",
+    "planning": "Un plan de sécurité peut aider à organiser documents et stratégies avant une crise.",
+    "option_yes_documents": "J’ai accès à mes documents",
+    "option_no_documents": "On me refuse mes documents / passeport",
+    "docs": "Faites-en des photos et stockez-les de manière sûre sur un cloud ou un compte d’une personne de confiance. Changez vos mots de passe seulement sur un appareil sécurisé.",
+    "nodocs": "De nombreux refuges peuvent aider à obtenir de nouveaux papiers à long terme.",
+    "legal": "Des services juridiques accompagnent les femmes (ordonnances de protection, droit de garde, logement, immigration).",
+    "shelter": "Utilisez les filtres sur la carte pour trouver des refuges adaptés à votre langue. Planifiez avec précaution.",
+    "hotline1": "Ligne nationale 24/7 d’ aide aux femmes victimes",
+    "hotline2": "Numéro d’urgence du pays où vous vous trouvez",
+    "option_i_need_shelter": "Afficher la carte d’aide",
+    "sugg_map": "Consultez la carte pour le refuge ou le service le plus proche.",
+    "legal_resource": "Aide juridique et immigration : voir centres locaux de défense des femmes.",
+    "shelter_tip": "Privilégiez les structures entraînées à l’accueil des femmes immigrées et réfugiées.",
+    "next_resource": "Notez sur papier 2-3 contacts sûrs de la carte."
+  },
+  "checklists": {
+    "main_title": "Listes",
+    "intro": "Guides pratiques et traduits pour les femmes migrantes et leurs soutiens, incluant avec enfants.",
+    "for_friends": "Pour amis / famille : Comment aider en toute sécurité",
+    "for_you": "Si vous êtes en crise maintenant : Plan pas à pas",
+    "for_mothers": "Guide pour mères voyageant ou fuyant avec enfants",
+    "for_friends_items": [
+      "Écoutez sans jugement. Rassurez : la culpabilité n'est jamais de leur côté.",
+      "Ne forcez jamais le rythme d'une décision. Laissez décider.",
+      "Élaboration d'un plan de sécurité: sorties, contacts, documents importants.",
+      "Proposez de détenir des copies sécurisées des papiers.",
+      "Accompagnez en rendez-vous uniquement si 100% sûr.",
+      "Ne partagez aucune information sans consentement clair.",
+      "Cherchez discrètement les refuges et services dans des appareils sûrs.",
+      "Aidez l'accès aux droits & soutiens financiers dans leur langue."
+    ],
+    "for_you_items": [
+      "Préparez en cachette: copie papiers + argent + médicaments.",
+      "Mémorisez numéros prioritaires (urgences, refuges, alliés).",
+      "Trouvez deux sorties sûres + lieu de rencontre secondaire.",
+      "Choisissez une personne fiable pour contacts réguliers masqués.",
+      "Désactivez la géolocalisation ; cherchez les applications suspectes.",
+      "À l'évasion, éteignez les appareils, supprimez l'historique.",
+      "Trouvez un avocat ou juriste tôt : gardes, titres, logements.",
+      "Changez les mots de passe uniquement sur appareil fiable.",
+      "Code secret déclencheur de secours avec une amie de confiance."
+    ],
+    "for_mothers_items": [
+      "Ajouter : couches, biberons, médicaments bébé + jouets légers.",
+      "Copie certificat naissance, vaccins, actes garde.",
+      "Porte-bébé ou écharpe : liberté des mains.",
+      "Chercher établissements avec crèche / pédiatrie pour femmes seules.",
+      "Vérifier lait / nourritures d'urgence dans le voisinage.",
+      "Enregistrer les enfants dès l'arrivée pour l'école et les statuts.",
+      "Apaiser les enfants par habitudes. Certains centres ont psycho enfants.",
+      "Memoriser dates et numéros des enfants.",
+      "Ne confier details aux personnes indispensables (santé ou protection)."
+    ]
+  },
+  "suggest": {
+    "title": "Proposer un centre d'aide ou partager une histoire",
+    "desc": "Vos soumissions sont anonymes et modérées avant publication. Elles aident d'autres femmes migrantes et réfugiées.",
+    "tab_center": "Nouveau centre d'aide",
+    "tab_story": "Mon expérience",
+    "thank_center": "Merci — la suggestion a été envoyée pour modération. Elle peut apparaître sur la carte prochainement.",
+    "thank_story": "Merci. Votre histoire anonyme a été envoyée pour revue. Elle pourra être publiée.",
+    "submit_center": "Envoyer pour modération",
+    "submit_story": "Envoyer l'histoire",
+    "name": "Nom",
+    "city": "Ville",
+    "country": "Pays"
+  },
+  "research": {
+    "title": "Bibliothèque de recherches",
+    "intro": "Ressources et études vérifiées sur la sécurité, la prévention des violences, les droits des migrant·e·s. Ajoutées uniquement via modération.",
+    "empty": "Section en cours de développement. Aucun contenu généré automatiquement.",
+    "card": {
+      "title_label": "Titre",
+      "author_label": "Auteur",
+      "date_label": "Date",
+      "category_label": "Catégorie",
+      "abstract_label": "Résumé",
+      "open": "Ouvrir",
+      "pdf": "Télécharger le PDF (espace réservé)"
+    },
+    "placeholders": [
+      {"title": "[Titre à compléter]", "author": "[Auteur]", "date": "[AAAA]", "cat": "général", "abstract": "Le résumé sera ajouté ici."},
+      {"title": "[Titre à compléter]", "author": "[Auteur]", "date": "[AAAA]", "cat": "juridique", "abstract": "Le résumé sera ajouté ici."}
+    ]
+  },
+  "diplomacy": {
+    "title": "Diplomatie numérique",
+    "intro": "Notes pédagogiques sur les technologies et coopérations pour protéger les personnes en migration.",
+    "empty_note": "Structure prête ; contenus publiés progressivement ensuite.",
+    "item1_title": "Comment la technologie protège les droits humains",
+    "item1_desc": "Outils numériques pour documenter les violences en sécurité, relier aux services et fonder des recours.",
+    "item2_title": "Plateformes internationales d'appui aux migrant·es",
+    "item2_desc": "Exemples de réseaux numériques transfrontaliers, applications et cartes pour joindre les femmes en déplacement.",
+    "item3_title": "Cartes, applications et coordination humanitaire",
+    "item3_desc": "Comment les systèmes d'information géographique et signalements communautaires améliorent l'accès aux refuges.",
+    "item4_title": "Coopération numérique internationale",
+    "item4_desc": "Cadres d'échange et de réponse conjointe entre États, ONG et acteurs techniques."
+  },
+  "safebridge": {
+    "title": "Indice SafeBridge",
+    "intro": "Tableau de démonstration avec scores illustratifs par pays pour les capacités de protection et de soutien. Valeurs fictives pour mise en page.",
+    "note": "La méthodologie précise et la publication réelle seront introduites séparément.",
+    "col": {
+      "country": "Pays",
+      "overall": "Global",
+      "safety": "Sécurité",
+      "legal": "Aide juridique",
+      "children": "Soutien enfants",
+      "psych": "Soutien psychologique",
+      "digital": "Sécurité numérique"
+    },
+    "demo": [
+      {"country": "Pays exemple A", "overall": 68, "safety": 72, "legal": 65, "children": 70, "psych": 60, "digital": 71},
+      {"country": "Pays exemple B", "overall": 54, "safety": 58, "legal": 50, "children": 55, "psych": 48, "digital": 60},
+      {"country": "Pays exemple C", "overall": 41, "safety": 40, "legal": 45, "children": 38, "psych": 35, "digital": 48}
+    ]
+  },
+  "rightsmap": {
+    "title": "Carte mondiale des droits",
+    "intro": "Cliquez sur un pays dans la liste ou sur la carte pour voir la structure modèle. Le contenu détaillé est ajouté manuellement.",
+    "select": "Choisissez un pays",
+    "tpl": {
+      "general": "Informations générales",
+      "system": "Système de soutien",
+      "legal": "Aide juridique",
+      "child": "Protection de l'enfance",
+      "resources": "Autres ressources"
+    },
+    "placeholder": "Contenu détaillé à venir manuellement pour ce pays.",
+    "countries_demo": ["France", "Allemagne", "Espagne", "États-Unis", "Canada", "Maroc", "Liban", "Turquie", "Kenya", "Brésil"]
+  }
+}

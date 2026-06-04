@@ -1,0 +1,68 @@
+/* Leaflet CSS must be imported for Vite bundling + map to render (must be before other statements) */
+@import "leaflet/dist/leaflet.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Safety & calm base styles */
+:root {
+  --safe-bg: #f8fafc;
+  --safe-text: #1e293b;
+  --safe-accent: #0f766e;
+  --safe-teal: #14b8a6;
+}
+
+body {
+  font-family: system-ui, -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto, sans-serif;
+  background-color: var(--safe-bg);
+  color: var(--safe-text);
+  line-height: 1.5;
+}
+
+a {
+  color: var(--safe-accent);
+}
+
+.quick-exit {
+  background-color: #334155;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.quick-exit:hover {
+  background-color: #1e293b;
+}
+
+.language-switch select {
+  background: white;
+  border: 1px solid #cbd5e1;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+/* Calm cards used everywhere */
+.safe-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 1.25rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+/* Leaflet overrides for clean look */
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.1);
+}
+
+.leaflet-control-container .leaflet-control-attribution {
+  display: none; /* Keep map anonymized */
+}
