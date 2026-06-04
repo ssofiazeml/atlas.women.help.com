@@ -1,26 +1,26 @@
-# Logs
-logs
-*.log
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/dist
+/build
+
+# misc
+.DS_Store
+*.local
+
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-.output
-.vinxi
-.tanstack/**
-.nitro
-*.local
-
-# Wrangler / Cloudflare
-.wrangler/
-.dev.vars
-
-# Editor directories and files
+# editor
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -30,3 +30,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# env
+# .env # Removed by Orchids to allow .env files
+# .env.local # Removed by Orchids to allow .env files
+# .env.*.local # Removed by Orchids to allow .env files
+
+# Supabase local (if applicable later)
+# supabase/.env* # Removed by Orchids to allow .env files
+
+# No service creds for anonymity
+# Note: add supabase keys only via Vercel env dashboard / safe CI
