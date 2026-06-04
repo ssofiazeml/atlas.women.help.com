@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getStories, subscribeContent, type AdminStory } from '../../lib/contentStore'
 
 interface Story {
   id: number
@@ -105,6 +106,9 @@ export function StoriesView() {
   const { t, i18n } = useTranslation()
   const [showForm, setShowForm] = useState(false)
   const [selectedStory, setSelectedStory] = useState<Story | null>(null)
+  const [adminStories, setAdminStories] = useState<AdminStory[]>(() => getStories())
+  const [selectedAdmin, setSelectedAdmin] = useState<AdminStory | null>(null)
+  useEffect(() => subscribeContent(() => setAdminStories(getStories())), [])
 
   const getText = (rec: Record<string, string>) => {
     const lang = i18n.language as string
@@ -129,6 +133,22 @@ export function StoriesView() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-5">
+        {adminStories.map((s) => (
+          <div
+            key={s.id}
+            className="safe-card cursor-pointer hover:border-teal-700 transition"
+            onClick={() => setSelectedAdmin(s)}
+          >
+            {s.photo && (
+              <img src={s.photo} alt="" className="h-32 w-full object-cover rounded mb-3" />
+            )}
+            <div className="font-semibold text-lg mb-1">{s.title || 'История'}</div>
+            <div className="text-xs text-slate-500 mb-1">{s.name}</div>
+            <div className="text-sm text-slate-600 line-clamp-3">{s.text}</div>
+            <div className="text-[10px] mt-3 text-teal-700">Читать полностью →</div>
+          </div>
+        ))}
+
         {publishedStories.map(story => (
           <div
             key={story.id}
@@ -144,6 +164,22 @@ export function StoriesView() {
           </div>
         ))}
       </div>
+
+      {selectedAdmin && (
+        <div className="fixed inset-0 z-[200] bg-black/60 flex items-center justify-center p-4" onClick={() => setSelectedAdmin(null)}>
+          <div className="bg-white max-w-2xl w-full rounded-xl p-6" onClick={(e) => e.stopPropagation()}>
+            {selectedAdmin.photo && (
+              <img src={selectedAdmin.photo} alt="" className="h-40 w-full object-cover rounded mb-4" />
+            )}
+            <h2 className="text-2xl font-semibold mb-1">{selectedAdmin.title || 'История'}</h2>
+            <div className="text-sm text-slate-500 mb-4">{selectedAdmin.name}</div>
+            <p className="whitespace-pre-wrap text-[15px]">{selectedAdmin.text}</p>
+            <div className="mt-6 text-right">
+              <button onClick={() => setSelectedAdmin(null)} className="px-5 py-1 text-sm rounded bg-slate-900 text-white">Закрыть</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Story detail modal */}
       {selectedStory && (

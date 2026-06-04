@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getChecklists, subscribeContent, type AdminChecklist } from '../../lib/contentStore'
 
 interface ChecklistItem { id: string; text: string }
 
@@ -109,11 +110,17 @@ export function Checklists() {
   const mothersItems = toItems( t('checklists.for_mothers_items', { returnObjects: true }) as string[] )
 
   const [expanded, setExpanded] = useState(false)
+  const [admin, setAdmin] = useState<AdminChecklist[]>(() => getChecklists())
+  useEffect(() => subscribeContent(() => setAdmin(getChecklists())), [])
 
   return (
     <div className="max-w-3xl mx-auto px-5 py-12">
       <h1 className="text-3xl font-semibold mb-1">{t('checklists.main_title')}</h1>
       <p className="text-slate-600 mb-6 text-sm">{t('checklists.intro') || 'Practical, private, translated action checklists. Choose one and save/print. Useful for friends/family and women on the move.'}</p>
+
+      {admin.map((c) => (
+        <Checklist key={c.id} title={c.title} items={c.items.map((i) => ({ id: i.id, text: i.text }))} />
+      ))}
 
       <Checklist title={t('checklists.for_friends')} items={helpersItems} />
       <Checklist title={t('checklists.for_you')} items={selfItems} />
