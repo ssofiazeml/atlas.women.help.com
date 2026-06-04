@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { Search, Filter } from 'lucide-react'
 import { MapLocation, getMapLocations } from '../../lib/demoData'
+import { getCenters, subscribeContent, type AdminCenter } from '../../lib/contentStore'
 
 // Fix default marker icons
 // @ts-ignore
@@ -51,12 +52,40 @@ function useLocationFilter(locations: MapLocation[], search: string, catFilters:
   })
 }
 
+function centerToLocation(c: AdminCenter, idx: number): MapLocation {
+  return {
+    id: 1_000_000 + idx,
+    lat: typeof c.lat === 'number' ? c.lat : 0,
+    lng: typeof c.lng === 'number' ? c.lng : 0,
+    category: [c.category || 'shelter'],
+    name: { en: c.name },
+    description: { en: c.description || '' },
+    city: c.city,
+    country: c.country,
+    contact_phone: c.contact,
+    contact_web: c.website,
+  }
+}
+
 export function MapView() {
-  const [locations] = useState<MapLocation[]>(() => getCurrentLocations())
+  const [locations, setLocations] = useState<MapLocation[]>(() => getCurrentLocations())
+  const [admin, setAdmin] = useState<AdminCenter[]>(() => getCenters())
+  useEffect(
+    () =>
+      subscribeContent(() => {
+        setAdmin(getCenters())
+        setLocations(getCurrentLocations())
+      }),
+    []
+  )
+  const allLocations = [
+    ...admin.map((c, i) => centerToLocation(c, i)),
+    ...locations,
+  ]
   const [search, setSearch] = useState('')
   const [activeCats, setActiveCats] = useState<string[]>([])
 
-  const filtered = useLocationFilter(locations, search, activeCats)
+  const filtered = useLocationFilter(allLocations, search, activeCats)
 
   const toggleCat = (cat: string) => {
     setActiveCats(prev => prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat])
@@ -91,7 +120,7 @@ export function MapView() {
           </button>
         </div>
 
-        <div className="mt-4 text-[10px] text-slate-500">Showing {filtered.length} of {locations.length}. Data is public + anonymous.</div>
+        <div className="mt-4 text-[10px] text-slate-500">Showing {filtered.length} of {allLocations.length}. Data is public + anonymous.</div>
 
         <div className="mt-6 space-y-2 text-sm overflow-y-auto max-h-[55vh]">
           {filtered.length === 0 && <p className="text-slate-400">No results. Try clearing filters.</p>}
@@ -123,7 +152,7 @@ export function MapView() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {filtered.map(loc => (
+          {filtered.map(loc => (loc.lat || loc.lng) && (
             <Marker key={loc.id} position={[loc.lat, loc.lng]}>
               <Popup>
                 <div>
