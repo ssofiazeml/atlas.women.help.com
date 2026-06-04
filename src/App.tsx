@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { QuickExitButton } from './components/QuickExitButton'
@@ -14,6 +14,8 @@ import { ResearchLibrary } from './features/research/ResearchLibrary'
 import { DigitalDiplomacy } from './features/diplomacy/DigitalDiplomacy'
 import { SafeBridgeIndex } from './features/index/SafeBridgeIndex'
 import { WorldRightsMap } from './features/rights/WorldRightsMap'
+import { SecretAdmin } from './features/secret-admin/SecretAdmin'
+import { getHomeCards, subscribeHomeCards, type HomeCard } from './lib/contentStore'
 
 function Header() {
   const { t, i18n } = useTranslation()
@@ -58,6 +60,9 @@ function Header() {
 
 function Home() {
   const { t } = useTranslation()
+  const [customCards, setCustomCards] = useState<HomeCard[]>(() => getHomeCards())
+
+  useEffect(() => subscribeHomeCards(() => setCustomCards(getHomeCards())), [])
 
   return (
     <main className="max-w-4xl mx-auto px-5 py-16">
@@ -112,6 +117,58 @@ function Home() {
         </Link>
       </div>
 
+      {customCards.length > 0 && (
+        <div className="mt-12 grid md:grid-cols-2 gap-6">
+          {customCards.map((c) => {
+            const inner = (
+              <>
+                {c.image && (
+                  <img
+                    src={c.image}
+                    alt=""
+                    className="h-40 w-full object-cover rounded mb-3"
+                  />
+                )}
+                <h3 className="font-semibold text-lg mb-1">{c.title}</h3>
+                {c.description && (
+                  <p className="text-slate-600 text-sm">{c.description}</p>
+                )}
+              </>
+            )
+            if (c.link) {
+              const isExternal = /^https?:\/\//i.test(c.link)
+              if (isExternal) {
+                return (
+                  <a
+                    key={c.id}
+                    href={c.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="safe-card hover:border-safe-teal hover:shadow transition-all"
+                  >
+                    {inner}
+                  </a>
+                )
+              }
+              return (
+                <Link
+                  key={c.id}
+                  to={c.link}
+                  className="safe-card hover:border-safe-teal hover:shadow transition-all"
+                >
+                  {inner}
+                </Link>
+              )
+            }
+            return (
+              <div key={c.id} className="safe-card">
+                {inner}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
       <div className="mt-16 pt-8 border-t text-center text-xs text-slate-500">
         This platform is designed with safety first. We collect no personal data.
       </div>
@@ -138,6 +195,7 @@ function App() {
           <Route path="/index" element={<SafeBridgeIndex />} />
           <Route path="/rightsmap" element={<WorldRightsMap />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/secret-admin" element={<SecretAdmin />} />
           <Route path="*" element={<div className="p-14 text-center">Not found. <Link to="/" className="underline">Return home</Link></div>} />
         </Routes>
       </div>
