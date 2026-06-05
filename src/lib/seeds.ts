@@ -3,8 +3,8 @@
 // cards) with stable string ids so the admin can edit / hide / restore them.
 
 import i18n from '../i18n/config'
-import { SEED_LOCATIONS_EXPORT } from './demoData'
-import { PUBLISHED_STORIES_EXPORT } from '../features/stories/storiesSeed'
+import { SEED_LOCATIONS, type MapLocation } from './demoData'
+import { PUBLISHED_STORIES, type SeedStoryRaw } from '../features/stories/storiesSeed'
 
 // ---------- centers ---------------------------------------------------------
 export type SeedCenter = {
@@ -27,7 +27,7 @@ function pickLang(rec: Record<string, string> | undefined, lang: string): string
 
 export function getSeedCenters(): SeedCenter[] {
   const lang = i18n.language || 'en'
-  return SEED_LOCATIONS_EXPORT.map((l) => ({
+  return SEED_LOCATIONS.map((l: MapLocation) => ({
     id: `seed-center-${l.id}`,
     name: pickLang(l.name as any, lang),
     city: l.city,
@@ -127,7 +127,7 @@ export type SeedStory = {
 
 export function getSeedStories(): SeedStory[] {
   const lang = i18n.language || 'en'
-  return PUBLISHED_STORIES_EXPORT.map((s) => ({
+  return PUBLISHED_STORIES.map((s: SeedStoryRaw) => ({
     id: `seed-story-${s.id}`,
     title: pickLang(s.title, lang),
     situation: pickLang(s.situation, lang),
