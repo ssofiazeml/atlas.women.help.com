@@ -41,12 +41,6 @@ function getCurrentLocations(): MapLocation[] {
   })
 }
 
-// Re-evaluate seed transforms whenever the admin changes overrides.
-function useReactiveSeedLocations() {
-  const [locs, setLocs] = useState<MapLocation[]>(() => getCurrentLocations())
-  useEffect(() => subscribeContent(() => setLocs(getCurrentLocations())), [])
-  return locs
-}
 
 function LocationFilters({ active, onToggle }: { active: string[]; onToggle: (cat: string) => void }) {
   return (
