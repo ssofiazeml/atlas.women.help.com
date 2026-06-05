@@ -15,7 +15,14 @@ import { DigitalDiplomacy } from './features/diplomacy/DigitalDiplomacy'
 import { SafeBridgeIndex } from './features/index/SafeBridgeIndex'
 import { WorldRightsMap } from './features/rights/WorldRightsMap'
 import { SecretAdmin } from './features/secret-admin/SecretAdmin'
-import { getHomeCards, subscribeHomeCards, type HomeCard, getHomeTexts, subscribeContent } from './lib/contentStore'
+import {
+  getHomeCards,
+  subscribeHomeCards,
+  type HomeCard,
+  getHomeTexts,
+  subscribeContent,
+  applySeedTransforms,
+} from './lib/contentStore'
 
 function Header() {
   const { t, i18n } = useTranslation()
@@ -62,9 +69,34 @@ function Home() {
   const { t } = useTranslation()
   const [customCards, setCustomCards] = useState<HomeCard[]>(() => getHomeCards())
   const [texts, setTexts] = useState(() => getHomeTexts())
+  const [, setTick] = useState(0)
 
   useEffect(() => subscribeHomeCards(() => setCustomCards(getHomeCards())), [])
-  useEffect(() => subscribeContent(() => setTexts(getHomeTexts())), [])
+  useEffect(
+    () =>
+      subscribeContent(() => {
+        setTexts(getHomeTexts())
+        setTick((x) => x + 1)
+      }),
+    []
+  )
+
+  // Built-in navigation cards with stable ids — admin can override or hide.
+  const seedNavCards = applySeedTransforms<{
+    id: string
+    title: string
+    description: string
+    link: string
+  }>('home-cards', [
+    { id: 'seed-card-map', title: t('home.map'), description: t('home.map_desc'), link: '/map' },
+    { id: 'seed-card-chat', title: t('home.chat'), description: t('home.chat_desc'), link: '/chat' },
+    { id: 'seed-card-checklists', title: t('home.checklists'), description: t('home.checklists_desc'), link: '/checklists' },
+    { id: 'seed-card-stories', title: t('home.stories'), description: t('home.stories_desc'), link: '/stories' },
+    { id: 'seed-card-research', title: t('nav.research'), description: t('research.intro'), link: '/research' },
+    { id: 'seed-card-diplomacy', title: t('nav.diplomacy'), description: t('diplomacy.intro'), link: '/diplomacy' },
+    { id: 'seed-card-index', title: t('nav.index'), description: t('safebridge.intro'), link: '/index' },
+    { id: 'seed-card-rightsmap', title: t('nav.rightsmap'), description: t('rightsmap.intro'), link: '/rightsmap' },
+  ])
 
   return (
     <main className="max-w-4xl mx-auto px-5 py-16">
@@ -81,45 +113,12 @@ function Home() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <Link to="/map" className="safe-card hover:border-safe-teal hover:shadow transition-all">
-          <h3 className="font-semibold text-lg mb-1">{t('home.map')}</h3>
-          <p className="text-slate-600 text-sm">{t('home.map_desc')}</p>
-        </Link>
-
-        <Link to="/chat" className="safe-card hover:border-safe-teal hover:shadow transition-all">
-          <h3 className="font-semibold text-lg mb-1">{t('home.chat')}</h3>
-          <p className="text-slate-600 text-sm">{t('home.chat_desc')}</p>
-        </Link>
-
-        <Link to="/checklists" className="safe-card hover:border-safe-teal hover:shadow transition-all">
-          <h3 className="font-semibold text-lg mb-1">{t('home.checklists')}</h3>
-          <p className="text-slate-600 text-sm">{t('home.checklists_desc')}</p>
-        </Link>
-
-        <Link to="/stories" className="safe-card hover:border-safe-teal hover:shadow transition-all">
-          <h3 className="font-semibold text-lg mb-1">{t('home.stories')}</h3>
-          <p className="text-slate-600 text-sm">{t('home.stories_desc')}</p>
-        </Link>
-
-        <Link to="/research" className="safe-card hover:border-safe-teal hover:shadow transition-all">
-          <h3 className="font-semibold text-lg mb-1">{t('nav.research')}</h3>
-          <p className="text-slate-600 text-sm">{t('research.intro')}</p>
-        </Link>
-
-        <Link to="/diplomacy" className="safe-card hover:border-safe-teal hover:shadow transition-all">
-          <h3 className="font-semibold text-lg mb-1">{t('nav.diplomacy')}</h3>
-          <p className="text-slate-600 text-sm">{t('diplomacy.intro')}</p>
-        </Link>
-
-        <Link to="/index" className="safe-card hover:border-safe-teal hover:shadow transition-all">
-          <h3 className="font-semibold text-lg mb-1">{t('nav.index')}</h3>
-          <p className="text-slate-600 text-sm">{t('safebridge.intro')}</p>
-        </Link>
-
-        <Link to="/rightsmap" className="safe-card hover:border-safe-teal hover:shadow transition-all">
-          <h3 className="font-semibold text-lg mb-1">{t('nav.rightsmap')}</h3>
-          <p className="text-slate-600 text-sm">{t('rightsmap.intro')}</p>
-        </Link>
+        {seedNavCards.map((c) => (
+          <Link key={c.id} to={c.link} className="safe-card hover:border-safe-teal hover:shadow transition-all">
+            <h3 className="font-semibold text-lg mb-1">{c.title}</h3>
+            <p className="text-slate-600 text-sm">{c.description}</p>
+          </Link>
+        ))}
       </div>
 
       {customCards.length > 0 && (
