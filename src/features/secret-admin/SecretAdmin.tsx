@@ -50,6 +50,30 @@ import {
   saveHomeTexts,
   type HomeTexts,
 } from '../../lib/contentStore'
+import {
+  setSeedOverride,
+  clearSeedOverride,
+  getSeedOverride,
+  hideSeed,
+  unhideSeed,
+  getHidden,
+  isSeedHidden,
+  applySeedTransforms,
+} from '../../lib/contentStore'
+import {
+  getSeedCenters,
+  getSeedRatings,
+  getSeedChecklists,
+  getSeedLibrary,
+  getSeedStories,
+  getSeedHomeCards,
+  type SeedCenter,
+  type SeedRating,
+  type SeedChecklist,
+  type SeedLibrary,
+  type SeedStory,
+  type SeedHomeCard,
+} from '../../lib/seeds'
 
 const ADMIN_PASSWORD = 'Admin2026!'
 const SESSION_KEY = 'atlas:secret-admin:authed'
