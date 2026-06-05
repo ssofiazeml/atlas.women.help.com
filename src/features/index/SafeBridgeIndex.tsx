@@ -4,6 +4,7 @@ import {
   getRatings,
   getCountryIndex,
   subscribeContent,
+  applySeedTransforms,
   type CountryRating,
   type CountryIndexEntry,
 } from '../../lib/contentStore'
@@ -13,6 +14,11 @@ export function SafeBridgeIndex() {
 
   const cols = t('safebridge.col', { returnObjects: true }) as any
   const rows = t('safebridge.demo', { returnObjects: true }) as any[]
+  const seedRows = (Array.isArray(rows) ? rows : []).map((r, i) => ({
+    ...r,
+    id: `seed-rating-${i}`,
+  }))
+  const visibleSeedRows = applySeedTransforms<any>('ratings', seedRows)
 
   const [ratings, setRatings] = useState<CountryRating[]>(() => getRatings())
   const [index, setIndex] = useState<CountryIndexEntry[]>(() => getCountryIndex())
@@ -25,7 +31,7 @@ export function SafeBridgeIndex() {
     []
   )
 
-  const allRows = [...ratings, ...(Array.isArray(rows) ? rows : [])]
+  const allRows = [...ratings, ...visibleSeedRows]
 
   return (
     <div className="max-w-5xl mx-auto px-5 py-10">
