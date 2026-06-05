@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { getChecklists, subscribeContent, type AdminChecklist } from '../../lib/contentStore'
+import {
+  getChecklists,
+  subscribeContent,
+  applySeedTransforms,
+  type AdminChecklist,
+} from '../../lib/contentStore'
 
 interface ChecklistItem { id: string; text: string }
 
@@ -109,6 +114,20 @@ export function Checklists() {
   const selfItems = toItems( t('checklists.for_you_items', { returnObjects: true }) as string[] )
   const mothersItems = toItems( t('checklists.for_mothers_items', { returnObjects: true }) as string[] )
 
+  // Build seed checklists with stable ids, then apply admin overrides + hides.
+  const seedLists = applySeedTransforms<{
+    id: string
+    title: string
+    items: ChecklistItem[]
+  }>('checklists', [
+    { id: 'seed-list-friends', title: t('checklists.for_friends'), items: helpersItems },
+    { id: 'seed-list-you', title: t('checklists.for_you'), items: selfItems },
+    { id: 'seed-list-mothers', title: t('checklists.for_mothers'), items: mothersItems },
+  ])
+  const seedFriends = seedLists.find((l) => l.id === 'seed-list-friends')
+  const seedYou = seedLists.find((l) => l.id === 'seed-list-you')
+  const seedMothers = seedLists.find((l) => l.id === 'seed-list-mothers')
+
   const [expanded, setExpanded] = useState(false)
   const [admin, setAdmin] = useState<AdminChecklist[]>(() => getChecklists())
   useEffect(() => subscribeContent(() => setAdmin(getChecklists())), [])
@@ -122,12 +141,12 @@ export function Checklists() {
         <Checklist key={c.id} title={c.title} items={c.items.map((i) => ({ id: i.id, text: i.text }))} />
       ))}
 
-      <Checklist title={t('checklists.for_friends')} items={helpersItems} />
-      <Checklist title={t('checklists.for_you')} items={selfItems} />
+      {seedFriends && <Checklist title={seedFriends.title} items={seedFriends.items} />}
+      {seedYou && <Checklist title={seedYou.title} items={seedYou.items} />}
 
       <div className="mt-2">
         <button className="text-xs mb-2 underline" onClick={() => setExpanded(v => !v)}>{expanded ? 'Hide' : 'Show'} mothers-with-children checklist</button>
-        {expanded && <Checklist title={t('checklists.for_mothers')} items={mothersItems} />}
+        {expanded && seedMothers && <Checklist title={seedMothers.title} items={seedMothers.items} />}
       </div>
 
       <div className="text-xs text-slate-500 mt-4">
