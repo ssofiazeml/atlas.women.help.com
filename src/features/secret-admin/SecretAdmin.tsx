@@ -587,6 +587,27 @@ function CentersSection() {
       title="Карта центров помощи"
       intro="Добавьте центры — они появятся в списке и на карте /map. Координаты не обязательны: без них центр будет в списке, но не на карте."
     >
+      <SeedItemsBlock<SeedCenter>
+        sectionKey="centers"
+        title="Встроенные центры (из шаблона Orchids)"
+        getSeeds={getSeedCenters}
+        fields={[
+          { key: 'name', label: 'Название центра' },
+          { key: 'city', label: 'Город' },
+          { key: 'country', label: 'Страна' },
+          { key: 'description', label: 'Описание', type: 'textarea' },
+          { key: 'contact_phone', label: 'Телефон' },
+          { key: 'contact_web', label: 'Сайт' },
+        ]}
+        summary={(c) => (
+          <div>
+            <div className="font-semibold text-slate-800">{c.name}</div>
+            <div className="text-xs text-slate-500">{c.city}{c.country ? `, ${c.country}` : ''}</div>
+            {c.description && <div className="text-xs text-slate-600 mt-1 line-clamp-2">{c.description}</div>}
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid md:grid-cols-2 gap-4 mb-8">
         <Field label="Название центра">
           <input required value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className={inputCls} />
