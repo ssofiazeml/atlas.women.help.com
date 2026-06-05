@@ -730,6 +730,28 @@ function RatingsSection() {
       title="Рейтинг безопасности стран"
       intro="Записи отображаются в разделе «Индекс SafeBridge» (/index) и на карте прав (/rightsmap). Поле «Цвет» используется для маркера страны на карте."
     >
+      <SeedItemsBlock<SeedRating>
+        sectionKey="ratings"
+        title="Встроенные строки рейтинга"
+        getSeeds={getSeedRatings}
+        fields={[
+          { key: 'country', label: 'Страна' },
+          { key: 'overall', label: 'Общий' },
+          { key: 'safety', label: 'Безопасность' },
+          { key: 'legal', label: 'Юр. помощь' },
+          { key: 'children', label: 'Поддержка детей' },
+          { key: 'psych', label: 'Психол. помощь' },
+          { key: 'digital', label: 'Цифр. безопасность' },
+          { key: 'color', label: 'Цвет на карте', type: 'color' },
+        ]}
+        summary={(r) => (
+          <div>
+            <span className="font-semibold">{r.country}</span>
+            <span className="text-xs text-slate-500 ml-2">общий: {r.overall} · безоп.: {r.safety} · юр.: {r.legal}</span>
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid md:grid-cols-2 gap-4 mb-8">
         <Field label="Страна">
           <input required value={draft.country} onChange={(e) => setDraft({ ...draft, country: e.target.value })} className={inputCls} />
