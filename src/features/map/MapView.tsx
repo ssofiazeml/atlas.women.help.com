@@ -29,7 +29,23 @@ function getCurrentLocations(): MapLocation[] {
   const seeds = getMapLocations()
   const tagged = seeds.map((l) => ({ ...l, id: `seed-center-${l.id}` as any }))
   const transformed = applySeedTransforms('centers', tagged as any[]) as any[]
-  return transformed.map((l) => ({ ...l, id: typeof l.id === 'string' ? parseInt(String(l.id).replace('seed-center-', ''), 10) || 0 : l.id }))
+  return transformed.map((l) => {
+    const numericId = typeof l.id === 'string'
+      ? parseInt(String(l.id).replace('seed-center-', ''), 10) || 0
+      : l.id
+    // Admin overrides store plain strings for name/description; normalise
+    // them back into the multilang shape this component expects.
+    const name = typeof l.name === 'string' ? { en: l.name } : l.name
+    const description = typeof l.description === 'string' ? { en: l.description } : l.description
+    return { ...l, id: numericId, name, description }
+  })
+}
+
+// Re-evaluate seed transforms whenever the admin changes overrides.
+function useReactiveSeedLocations() {
+  const [locs, setLocs] = useState<MapLocation[]>(() => getCurrentLocations())
+  useEffect(() => subscribeContent(() => setLocs(getCurrentLocations())), [])
+  return locs
 }
 
 function LocationFilters({ active, onToggle }: { active: string[]; onToggle: (cat: string) => void }) {
