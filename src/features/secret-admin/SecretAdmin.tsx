@@ -874,6 +874,19 @@ function ChecklistsSection() {
       title="Чек-листы"
       intro="Создавайте чек-листы для переезда и других ситуаций. Они появятся в разделе /checklists и пользователи смогут отмечать пункты."
     >
+      <SeedItemsBlock<SeedChecklist>
+        sectionKey="checklists"
+        title="Встроенные чек-листы"
+        getSeeds={getSeedChecklists}
+        fields={[{ key: 'title', label: 'Название чек-листа' }]}
+        summary={(c) => (
+          <div>
+            <div className="font-semibold">{c.title}</div>
+            <div className="text-xs text-slate-500">{c.items.length} пунктов</div>
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid gap-4 mb-8">
         <Field label="Название чек-листа">
           <input required value={title} onChange={(e) => setTitle(e.target.value)} className={inputCls} />
@@ -1069,6 +1082,26 @@ function LibrarySection() {
       title="Библиотека"
       intro="Статьи, гайды и документы — появятся на странице /research."
     >
+      <SeedItemsBlock<SeedLibrary>
+        sectionKey="library"
+        title="Встроенные карточки библиотеки"
+        getSeeds={getSeedLibrary}
+        fields={[
+          { key: 'title', label: 'Название' },
+          { key: 'author', label: 'Автор' },
+          { key: 'date', label: 'Дата' },
+          { key: 'category', label: 'Категория' },
+          { key: 'abstract', label: 'Краткое содержание', type: 'textarea' },
+        ]}
+        summary={(a) => (
+          <div>
+            <div className="font-semibold">{a.title}</div>
+            <div className="text-xs text-slate-500">{a.author} · {a.date} · {a.category}</div>
+            {a.abstract && <div className="text-xs text-slate-600 mt-1 line-clamp-2">{a.abstract}</div>}
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid gap-4 mb-8">
         <Field label="Название статьи">
           <input required value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className={inputCls} />
@@ -1155,6 +1188,24 @@ function StoriesSection() {
       title="Истории девушек"
       intro="Истории появятся в разделе /stories вместе с уже опубликованными."
     >
+      <SeedItemsBlock<SeedStory>
+        sectionKey="stories"
+        title="Встроенные истории"
+        getSeeds={getSeedStories}
+        fields={[
+          { key: 'title', label: 'Заголовок' },
+          { key: 'situation', label: 'Ситуация', type: 'textarea' },
+          { key: 'actions', label: 'Действия', type: 'textarea' },
+          { key: 'outcome', label: 'Результат', type: 'textarea' },
+        ]}
+        summary={(s) => (
+          <div>
+            <div className="font-semibold">{s.title}</div>
+            <div className="text-xs text-slate-600 mt-1 line-clamp-2">{s.situation}</div>
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid gap-4 mb-8">
         <Field label="Имя или псевдоним">
           <input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className={inputCls} placeholder="Анна / Аноним" />
@@ -1241,6 +1292,24 @@ function HomeCardsSection() {
       title="Карточки на главной"
       intro="Дополнительные карточки на главной странице сайта (рядом со стандартными разделами)."
     >
+      <SeedItemsBlock<SeedHomeCard>
+        sectionKey="home-cards"
+        title="Встроенные карточки на главной"
+        getSeeds={getSeedHomeCards}
+        fields={[
+          { key: 'title', label: 'Заголовок' },
+          { key: 'description', label: 'Описание', type: 'textarea' },
+          { key: 'link', label: 'Ссылка' },
+        ]}
+        summary={(c) => (
+          <div>
+            <div className="font-semibold">{c.title}</div>
+            <div className="text-xs text-slate-500 line-clamp-1">{c.description}</div>
+            <div className="text-[10px] text-slate-400 mt-1">→ {c.link}</div>
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid gap-4 mb-8">
         <Field label="Заголовок"><input required value={title} onChange={(e) => setTitle(e.target.value)} className={inputCls} /></Field>
         <Field label="Описание"><textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className={inputCls} /></Field>
