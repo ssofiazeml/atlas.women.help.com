@@ -50,6 +50,30 @@ import {
   saveHomeTexts,
   type HomeTexts,
 } from '../../lib/contentStore'
+import {
+  setSeedOverride,
+  clearSeedOverride,
+  getSeedOverride,
+  hideSeed,
+  unhideSeed,
+  getHidden,
+  isSeedHidden,
+  applySeedTransforms,
+} from '../../lib/contentStore'
+import {
+  getSeedCenters,
+  getSeedRatings,
+  getSeedChecklists,
+  getSeedLibrary,
+  getSeedStories,
+  getSeedHomeCards,
+  type SeedCenter,
+  type SeedRating,
+  type SeedChecklist,
+  type SeedLibrary,
+  type SeedStory,
+  type SeedHomeCard,
+} from '../../lib/seeds'
 
 const ADMIN_PASSWORD = 'Admin2026!'
 const SESSION_KEY = 'atlas:secret-admin:authed'
@@ -265,6 +289,194 @@ function DeleteBtn({ onClick }: { onClick: () => void }) {
   )
 }
 
+// === Generic seed-items block ==============================================
+// Renders the built-in (hardcoded) items for a section with inline
+// edit/delete controls. Edits store an override patch; deletes hide the
+// item. A "restore hidden" panel lets the user bring back deleted items.
+
+type SeedFieldType = 'text' | 'textarea' | 'color'
+type SeedFieldDef = { key: string; label: string; type?: SeedFieldType }
+
+function SeedItemsBlock<T extends { id: string }>({
+  sectionKey,
+  title,
+  getSeeds,
+  fields,
+  summary,
+}: {
+  sectionKey: string
+  title: string
+  getSeeds: () => T[]
+  fields: SeedFieldDef[]
+  summary: (item: T) => React.ReactNode
+}) {
+  const [tick, setTick] = useState(0)
+  useEffect(() => subscribeContent(() => setTick((x) => x + 1)), [])
+  void tick
+
+  const rawSeeds = getSeeds()
+  const visible = applySeedTransforms(sectionKey, rawSeeds)
+  const hiddenIds = getHidden(sectionKey)
+  const hiddenItems = rawSeeds.filter((s) => hiddenIds.includes(s.id))
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [draft, setDraft] = useState<Record<string, any>>({})
+
+  const startEdit = (item: T) => {
+    setEditingId(item.id)
+    const next: Record<string, any> = {}
+    for (const f of fields) next[f.key] = (item as any)[f.key] ?? ''
+    setDraft(next)
+  }
+  const cancelEdit = () => {
+    setEditingId(null)
+    setDraft({})
+  }
+  const saveEdit = (id: string) => {
+    setSeedOverride(sectionKey, id, draft)
+    cancelEdit()
+  }
+  const resetItem = (id: string) => {
+    if (confirm('Вернуть оригинальное содержимое (отменить все правки)?')) {
+      clearSeedOverride(sectionKey, id)
+      cancelEdit()
+    }
+  }
+
+  return (
+    <div className="mb-10">
+      <div className="flex items-baseline justify-between mb-3">
+        <h3 className="font-semibold text-safe-800">
+          {title} <span className="text-xs text-slate-500 font-normal">({visible.length} видимых из {rawSeeds.length})</span>
+        </h3>
+      </div>
+
+      {rawSeeds.length === 0 && (
+        <p className="text-sm text-slate-500 mb-3">Встроенных элементов нет.</p>
+      )}
+
+      <div className="space-y-3">
+        {rawSeeds.map((seed) => {
+          if (hiddenIds.includes(seed.id)) return null
+          const merged = (visible.find((v) => (v as any).id === seed.id) || seed) as T
+          const hasOverride = !!getSeedOverride(sectionKey, seed.id)
+          const isEditing = editingId === seed.id
+          return (
+            <div key={seed.id} className="safe-card bg-white">
+              {isEditing ? (
+                <div className="grid gap-3">
+                  {fields.map((f) => (
+                    <Field key={f.key} label={f.label}>
+                      {f.type === 'textarea' ? (
+                        <textarea
+                          rows={3}
+                          value={draft[f.key] ?? ''}
+                          onChange={(e) => setDraft({ ...draft, [f.key]: e.target.value })}
+                          className={inputCls}
+                        />
+                      ) : f.type === 'color' ? (
+                        <input
+                          type="color"
+                          value={draft[f.key] ?? '#16a34a'}
+                          onChange={(e) => setDraft({ ...draft, [f.key]: e.target.value })}
+                          className="h-10 w-20 border border-slate-300 rounded-md"
+                        />
+                      ) : (
+                        <input
+                          value={draft[f.key] ?? ''}
+                          onChange={(e) => setDraft({ ...draft, [f.key]: e.target.value })}
+                          className={inputCls}
+                        />
+                      )}
+                    </Field>
+                  ))}
+                  <div className="flex gap-3 items-center">
+                    <button
+                      type="button"
+                      onClick={() => saveEdit(seed.id)}
+                      className="bg-safe-800 text-white rounded-md px-3 py-1.5 text-sm font-medium hover:opacity-90"
+                    >
+                      Сохранить
+                    </button>
+                    <button type="button" onClick={cancelEdit} className="text-sm text-slate-600 underline">
+                      Отмена
+                    </button>
+                    {hasOverride && (
+                      <button
+                        type="button"
+                        onClick={() => resetItem(seed.id)}
+                        className="text-xs text-amber-700 underline ml-auto"
+                      >
+                        Вернуть оригинал
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="text-sm text-slate-700 min-w-0 flex-1">{summary(merged)}</div>
+                    {hasOverride && (
+                      <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded shrink-0">
+                        изменено
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-3 mt-3">
+                    <button
+                      type="button"
+                      onClick={() => startEdit(merged)}
+                      className="text-xs text-safe-800 underline"
+                    >
+                      Редактировать
+                    </button>
+                    <DeleteBtn
+                      onClick={() => confirm('Скрыть эту заготовку со страницы сайта?') && hideSeed(sectionKey, seed.id)}
+                    />
+                    {hasOverride && (
+                      <button
+                        type="button"
+                        onClick={() => resetItem(seed.id)}
+                        className="text-xs text-amber-700 underline"
+                      >
+                        Вернуть оригинал
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {hiddenItems.length > 0 && (
+        <details className="mt-4 text-sm">
+          <summary className="cursor-pointer text-slate-600">
+            Скрытые элементы ({hiddenItems.length}) — можно восстановить
+          </summary>
+          <div className="mt-2 space-y-2">
+            {hiddenItems.map((h) => (
+              <div key={h.id} className="flex items-center justify-between border rounded px-3 py-2 bg-slate-50">
+                <div className="text-sm text-slate-700 truncate">{summary(h)}</div>
+                <button
+                  type="button"
+                  onClick={() => unhideSeed(sectionKey, h.id)}
+                  className="text-xs text-safe-800 underline ml-3 shrink-0"
+                >
+                  Восстановить
+                </button>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+    </div>
+  )
+}
+
+// Silence unused-import linter for helpers consumed inside SeedItemsBlock.
+void isSeedHidden
+
 // === 1. HOME TEXTS =========================================================
 function HomeTextsSection() {
   const [texts, setTexts] = useState<HomeTexts>(() => getHomeTexts())
@@ -375,6 +587,27 @@ function CentersSection() {
       title="Карта центров помощи"
       intro="Добавьте центры — они появятся в списке и на карте /map. Координаты не обязательны: без них центр будет в списке, но не на карте."
     >
+      <SeedItemsBlock<SeedCenter>
+        sectionKey="centers"
+        title="Встроенные центры (из шаблона Orchids)"
+        getSeeds={getSeedCenters}
+        fields={[
+          { key: 'name', label: 'Название центра' },
+          { key: 'city', label: 'Город' },
+          { key: 'country', label: 'Страна' },
+          { key: 'description', label: 'Описание', type: 'textarea' },
+          { key: 'contact_phone', label: 'Телефон' },
+          { key: 'contact_web', label: 'Сайт' },
+        ]}
+        summary={(c) => (
+          <div>
+            <div className="font-semibold text-slate-800">{c.name}</div>
+            <div className="text-xs text-slate-500">{c.city}{c.country ? `, ${c.country}` : ''}</div>
+            {c.description && <div className="text-xs text-slate-600 mt-1 line-clamp-2">{c.description}</div>}
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid md:grid-cols-2 gap-4 mb-8">
         <Field label="Название центра">
           <input required value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className={inputCls} />
@@ -497,6 +730,28 @@ function RatingsSection() {
       title="Рейтинг безопасности стран"
       intro="Записи отображаются в разделе «Индекс SafeBridge» (/index) и на карте прав (/rightsmap). Поле «Цвет» используется для маркера страны на карте."
     >
+      <SeedItemsBlock<SeedRating>
+        sectionKey="ratings"
+        title="Встроенные строки рейтинга"
+        getSeeds={getSeedRatings}
+        fields={[
+          { key: 'country', label: 'Страна' },
+          { key: 'overall', label: 'Общий' },
+          { key: 'safety', label: 'Безопасность' },
+          { key: 'legal', label: 'Юр. помощь' },
+          { key: 'children', label: 'Поддержка детей' },
+          { key: 'psych', label: 'Психол. помощь' },
+          { key: 'digital', label: 'Цифр. безопасность' },
+          { key: 'color', label: 'Цвет на карте', type: 'color' },
+        ]}
+        summary={(r) => (
+          <div>
+            <span className="font-semibold">{r.country}</span>
+            <span className="text-xs text-slate-500 ml-2">общий: {r.overall} · безоп.: {r.safety} · юр.: {r.legal}</span>
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid md:grid-cols-2 gap-4 mb-8">
         <Field label="Страна">
           <input required value={draft.country} onChange={(e) => setDraft({ ...draft, country: e.target.value })} className={inputCls} />
@@ -619,6 +874,19 @@ function ChecklistsSection() {
       title="Чек-листы"
       intro="Создавайте чек-листы для переезда и других ситуаций. Они появятся в разделе /checklists и пользователи смогут отмечать пункты."
     >
+      <SeedItemsBlock<SeedChecklist>
+        sectionKey="checklists"
+        title="Встроенные чек-листы"
+        getSeeds={getSeedChecklists}
+        fields={[{ key: 'title', label: 'Название чек-листа' }]}
+        summary={(c) => (
+          <div>
+            <div className="font-semibold">{c.title}</div>
+            <div className="text-xs text-slate-500">{c.items.length} пунктов</div>
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid gap-4 mb-8">
         <Field label="Название чек-листа">
           <input required value={title} onChange={(e) => setTitle(e.target.value)} className={inputCls} />
@@ -814,6 +1082,26 @@ function LibrarySection() {
       title="Библиотека"
       intro="Статьи, гайды и документы — появятся на странице /research."
     >
+      <SeedItemsBlock<SeedLibrary>
+        sectionKey="library"
+        title="Встроенные карточки библиотеки"
+        getSeeds={getSeedLibrary}
+        fields={[
+          { key: 'title', label: 'Название' },
+          { key: 'author', label: 'Автор' },
+          { key: 'date', label: 'Дата' },
+          { key: 'category', label: 'Категория' },
+          { key: 'abstract', label: 'Краткое содержание', type: 'textarea' },
+        ]}
+        summary={(a) => (
+          <div>
+            <div className="font-semibold">{a.title}</div>
+            <div className="text-xs text-slate-500">{a.author} · {a.date} · {a.category}</div>
+            {a.abstract && <div className="text-xs text-slate-600 mt-1 line-clamp-2">{a.abstract}</div>}
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid gap-4 mb-8">
         <Field label="Название статьи">
           <input required value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className={inputCls} />
@@ -900,6 +1188,24 @@ function StoriesSection() {
       title="Истории девушек"
       intro="Истории появятся в разделе /stories вместе с уже опубликованными."
     >
+      <SeedItemsBlock<SeedStory>
+        sectionKey="stories"
+        title="Встроенные истории"
+        getSeeds={getSeedStories}
+        fields={[
+          { key: 'title', label: 'Заголовок' },
+          { key: 'situation', label: 'Ситуация', type: 'textarea' },
+          { key: 'actions', label: 'Действия', type: 'textarea' },
+          { key: 'outcome', label: 'Результат', type: 'textarea' },
+        ]}
+        summary={(s) => (
+          <div>
+            <div className="font-semibold">{s.title}</div>
+            <div className="text-xs text-slate-600 mt-1 line-clamp-2">{s.situation}</div>
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid gap-4 mb-8">
         <Field label="Имя или псевдоним">
           <input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className={inputCls} placeholder="Анна / Аноним" />
@@ -986,6 +1292,24 @@ function HomeCardsSection() {
       title="Карточки на главной"
       intro="Дополнительные карточки на главной странице сайта (рядом со стандартными разделами)."
     >
+      <SeedItemsBlock<SeedHomeCard>
+        sectionKey="home-cards"
+        title="Встроенные карточки на главной"
+        getSeeds={getSeedHomeCards}
+        fields={[
+          { key: 'title', label: 'Заголовок' },
+          { key: 'description', label: 'Описание', type: 'textarea' },
+          { key: 'link', label: 'Ссылка' },
+        ]}
+        summary={(c) => (
+          <div>
+            <div className="font-semibold">{c.title}</div>
+            <div className="text-xs text-slate-500 line-clamp-1">{c.description}</div>
+            <div className="text-[10px] text-slate-400 mt-1">→ {c.link}</div>
+          </div>
+        )}
+      />
+
       <form onSubmit={submit} className="safe-card bg-white grid gap-4 mb-8">
         <Field label="Заголовок"><input required value={title} onChange={(e) => setTitle(e.target.value)} className={inputCls} /></Field>
         <Field label="Описание"><textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className={inputCls} /></Field>

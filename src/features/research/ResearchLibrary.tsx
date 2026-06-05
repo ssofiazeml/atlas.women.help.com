@@ -1,11 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BookOpen, Download, ExternalLink } from 'lucide-react'
-import { getLibrary, subscribeContent, type LibraryArticle } from '../../lib/contentStore'
+import {
+  getLibrary,
+  subscribeContent,
+  applySeedTransforms,
+  type LibraryArticle,
+} from '../../lib/contentStore'
 
 export function ResearchLibrary() {
   const { t } = useTranslation()
   const placeholders = (t('research.placeholders', { returnObjects: true }) || []) as any[]
+  const visiblePlaceholders = applySeedTransforms<any>(
+    'library',
+    (Array.isArray(placeholders) ? placeholders : []).map((p, i) => ({ ...p, id: `seed-library-${i}` }))
+  )
   const [admin, setAdmin] = useState<LibraryArticle[]>(() => getLibrary())
   useEffect(() => subscribeContent(() => setAdmin(getLibrary())), [])
 
@@ -17,7 +26,7 @@ export function ResearchLibrary() {
         <p className="max-w-3xl text-slate-600">{t('research.intro')}</p>
       </div>
 
-      {admin.length === 0 && placeholders.length === 0 && (
+      {admin.length === 0 && visiblePlaceholders.length === 0 && (
         <div className="mb-6 text-xs text-slate-500 border-l-2 border-slate-200 pl-3">{t('research.empty')}</div>
       )}
 
@@ -48,9 +57,9 @@ export function ResearchLibrary() {
           </div>
         ))}
 
-        {placeholders.length > 0 ? (
-          placeholders.map((p: any, idx: number) => (
-            <div key={idx} className="safe-card p-5">
+        {visiblePlaceholders.length > 0 ? (
+          visiblePlaceholders.map((p: any, idx: number) => (
+            <div key={p.id || idx} className="safe-card p-5">
               <div className="flex gap-3 items-start">
                 <div className="mt-1 text-teal-700"><BookOpen size={18} /></div>
                 <div className="flex-1">

@@ -3,7 +3,12 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaf
 import L from 'leaflet'
 import { Search, Filter } from 'lucide-react'
 import { MapLocation, getMapLocations } from '../../lib/demoData'
-import { getCenters, subscribeContent, type AdminCenter } from '../../lib/contentStore'
+import {
+  getCenters,
+  subscribeContent,
+  applySeedTransforms,
+  type AdminCenter,
+} from '../../lib/contentStore'
 
 // Fix default marker icons
 // @ts-ignore
@@ -16,10 +21,26 @@ L.Icon.Default.mergeOptions({
 
 const categoriesList = ['shelter', 'legal', 'psychological', 'crisis', 'medical'] as const
 
-// Live locations load now using shared demo store
+// Live locations load now using shared demo store.
+// Seed locations are passed through the admin's hide/override filter so that
+// editing or hiding a center in /secret-admin is reflected here without
+// changing the original design or data file.
 function getCurrentLocations(): MapLocation[] {
-  return getMapLocations()
+  const seeds = getMapLocations()
+  const tagged = seeds.map((l) => ({ ...l, id: `seed-center-${l.id}` as any }))
+  const transformed = applySeedTransforms('centers', tagged as any[]) as any[]
+  return transformed.map((l) => {
+    const numericId = typeof l.id === 'string'
+      ? parseInt(String(l.id).replace('seed-center-', ''), 10) || 0
+      : l.id
+    // Admin overrides store plain strings for name/description; normalise
+    // them back into the multilang shape this component expects.
+    const name = typeof l.name === 'string' ? { en: l.name } : l.name
+    const description = typeof l.description === 'string' ? { en: l.description } : l.description
+    return { ...l, id: numericId, name, description }
+  })
 }
+
 
 function LocationFilters({ active, onToggle }: { active: string[]; onToggle: (cat: string) => void }) {
   return (

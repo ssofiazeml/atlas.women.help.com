@@ -267,3 +267,91 @@ export type HomeTexts = {
 const K_HOME = 'atlas:admin:home-texts:v1'
 export const getHomeTexts = (): HomeTexts => readObject<HomeTexts>(K_HOME) || {}
 export const saveHomeTexts = (t: HomeTexts) => writeObject(K_HOME, t)
+
+// ---------------------------------------------------------------------------
+// 8. Seed-item overrides + hidden list
+// The site ships with hardcoded "seed" items (centers from demoData,
+// translations placeholders, etc.). The admin must be able to edit or hide
+// them WITHOUT removing them from the source code. We store:
+//   - overrides[section][seedId] = partial patch merged on top of the seed
+//   - hidden[section] = string[] of seed ids that should not render
+// ---------------------------------------------------------------------------
+
+const K_OVERRIDES = 'atlas:admin:overrides:v1'
+const K_HIDDEN = 'atlas:admin:hidden:v1'
+
+type OverrideMap = Record<string, Record<string, any>>
+type HiddenMap = Record<string, string[]>
+
+export function getSectionOverrides(section: string): Record<string, any> {
+  const all = readObject<OverrideMap>(K_OVERRIDES) || {}
+  return all[section] || {}
+}
+export function getSeedOverride<T = any>(section: string, id: string): Partial<T> | null {
+  return (getSectionOverrides(section)[id] as Partial<T>) || null
+}
+export function setSeedOverride(section: string, id: string, patch: Record<string, any>) {
+  const all = readObject<OverrideMap>(K_OVERRIDES) || {}
+  all[section] = { ...(all[section] || {}), [id]: patch }
+  writeObject(K_OVERRIDES, all)
+}
+export function clearSeedOverride(section: string, id: string) {
+  const all = readObject<OverrideMap>(K_OVERRIDES) || {}
+  if (all[section] && all[section][id]) {
+    delete all[section][id]
+    writeObject(K_OVERRIDES, all)
+  }
+}
+export function getHidden(section: string): string[] {
+  const all = readObject<HiddenMap>(K_HIDDEN) || {}
+  return all[section] || []
+}
+export function isSeedHidden(section: string, id: string): boolean {
+  return getHidden(section).includes(id)
+}
+export function hideSeed(section: string, id: string) {
+  const all = readObject<HiddenMap>(K_HIDDEN) || {}
+  const cur = new Set(all[section] || [])
+  cur.add(id)
+  all[section] = Array.from(cur)
+  writeObject(K_HIDDEN, all)
+}
+export function unhideSeed(section: string, id: string) {
+  const all = readObject<HiddenMap>(K_HIDDEN) || {}
+  all[section] = (all[section] || []).filter((x) => x !== id)
+  writeObject(K_HIDDEN, all)
+}
+
+/**
+ * Apply hidden filter + overrides to a list of seed items.
+ * Each seed must have a stable `id` (string).
+ */
+export function applySeedTransforms<T extends { id: string }>(
+  section: string,
+  seeds: T[]
+): T[] {
+  const hidden = new Set(getHidden(section))
+  const overrides = getSectionOverrides(section)
+  const out: T[] = []
+  for (const s of seeds) {
+    if (hidden.has(s.id)) continue
+    const patch = overrides[s.id]
+    out.push(patch ? deepMerge(s, patch) : s)
+  }
+  return out
+}
+
+function deepMerge<T>(base: T, patch: any): T {
+  if (patch === null || typeof patch !== 'object' || Array.isArray(patch)) return patch as T
+  const result: any = Array.isArray(base) ? [...(base as any)] : { ...(base as any) }
+  for (const k of Object.keys(patch)) {
+    const bv = (base as any)?.[k]
+    const pv = patch[k]
+    if (pv && typeof pv === 'object' && !Array.isArray(pv) && bv && typeof bv === 'object') {
+      result[k] = deepMerge(bv, pv)
+    } else {
+      result[k] = pv
+    }
+  }
+  return result
+}
