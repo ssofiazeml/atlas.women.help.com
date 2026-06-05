@@ -3,7 +3,12 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaf
 import L from 'leaflet'
 import { Search, Filter } from 'lucide-react'
 import { MapLocation, getMapLocations } from '../../lib/demoData'
-import { getCenters, subscribeContent, type AdminCenter } from '../../lib/contentStore'
+import {
+  getCenters,
+  subscribeContent,
+  applySeedTransforms,
+  type AdminCenter,
+} from '../../lib/contentStore'
 
 // Fix default marker icons
 // @ts-ignore
@@ -16,9 +21,15 @@ L.Icon.Default.mergeOptions({
 
 const categoriesList = ['shelter', 'legal', 'psychological', 'crisis', 'medical'] as const
 
-// Live locations load now using shared demo store
+// Live locations load now using shared demo store.
+// Seed locations are passed through the admin's hide/override filter so that
+// editing or hiding a center in /secret-admin is reflected here without
+// changing the original design or data file.
 function getCurrentLocations(): MapLocation[] {
-  return getMapLocations()
+  const seeds = getMapLocations()
+  const tagged = seeds.map((l) => ({ ...l, id: `seed-center-${l.id}` as any }))
+  const transformed = applySeedTransforms('centers', tagged as any[]) as any[]
+  return transformed.map((l) => ({ ...l, id: typeof l.id === 'string' ? parseInt(String(l.id).replace('seed-center-', ''), 10) || 0 : l.id }))
 }
 
 function LocationFilters({ active, onToggle }: { active: string[]; onToggle: (cat: string) => void }) {
