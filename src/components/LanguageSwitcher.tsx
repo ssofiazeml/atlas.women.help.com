@@ -6,6 +6,7 @@ const LANGUAGES = [
   { code: 'fr', label: 'Français' },
   { code: 'ar', label: 'العربية' },
   { code: 'es', label: 'Español' },
+  { code: 'zh', label: '中文' },
 ]
 
 export function LanguageSwitcher() {
