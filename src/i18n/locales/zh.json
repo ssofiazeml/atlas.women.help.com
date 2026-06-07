@@ -1,0 +1,74 @@
+{
+  "app_name": "Atlas",
+  "tagline": "全球资源目录",
+  "nav": {
+    "map": "地图",
+    "chat": "指导",
+    "checklists": "清单",
+    "stories": "故事",
+    "suggest": "推荐中心 / 分享故事",
+    "admin": "管理",
+    "research": "研究图书馆",
+    "diplomacy": "数字外交",
+    "index": "SafeBridge 指数",
+    "rightsmap": "世界权利地图"
+  },
+  "quick_exit": "快速离开本网站",
+  "home": {
+    "title": "一个安静的援助资源目录",
+    "intro": "在无需暴露身份的情况下获取帮助信息、指导和故事。您在此处的活动留痕最少。",
+    "map": "互动援助地图",
+    "map_desc": "查找全球的庇护所、法律援助、危机中心和支持服务。按类型和需求筛选。",
+    "chat": "匿名指导",
+    "chat_desc": "多语言逐步支持。无需注册。完全私密。",
+    "checklists": "清单",
+    "checklists_desc": "为求助者及支持者提供可操作的指南。可私密保存到本地设备。",
+    "stories": "案例故事",
+    "stories_desc": "求助者的真实经历。经审核后匿名发布。"
+  },
+  "footer": "随时使用「离开」按钮安全退出本网站。这不会清除网络提供商或设备上的记录。",
+  "checklists": {
+    "main_title": "清单",
+    "intro": "为移民妇女及其支持者提供更详尽实用的多语言指南。",
+    "for_friends": "致朋友/家人:如何安全地提供帮助",
+    "for_you": "如果您正处于危机中:逐步指南",
+    "for_mothers": "携子女出行或逃离的母亲清单"
+  },
+  "suggest": {
+    "title": "推荐援助中心或分享故事",
+    "desc": "您提交的所有内容均为匿名,并在公开前经过审核。",
+    "tab_center": "新援助中心",
+    "tab_story": "我的经历",
+    "submit_center": "提交审核",
+    "submit_story": "匿名提交故事",
+    "name": "姓名",
+    "city": "城市",
+    "country": "国家"
+  },
+  "research": {
+    "title": "研究图书馆",
+    "intro": "关于安全、暴力预防、移民权利和支持服务的精选研究和实用资源。",
+    "empty": "建设中。",
+    "card": {
+      "open": "打开",
+      "pdf": "下载 PDF",
+      "author_label": "作者",
+      "date_label": "日期",
+      "category_label": "类别",
+      "abstract_label": "摘要"
+    }
+  },
+  "diplomacy": {
+    "title": "数字外交",
+    "intro": "关于在移民和危机中保护人们的技术与国际合作的简短教育材料。"
+  },
+  "safebridge": {
+    "title": "SafeBridge 指数",
+    "intro": "按国家显示支持和保护能力示例评分的演示表。"
+  },
+  "rightsmap": {
+    "title": "世界权利地图",
+    "intro": "从列表或地图中选择一个国家以显示结构化信息模板。",
+    "select": "选择一个国家"
+  }
+}
