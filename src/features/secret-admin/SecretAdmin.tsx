@@ -1202,11 +1202,19 @@ function LibrarySection() {
     setDraft({ ...draft, image: await readFileAsDataUrl(file) })
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!draft.title.trim()) return
-    if (editing) updateLibrary(editing.id, draft)
-    else addLibrary(draft)
+    setBusy(true)
+    const translations = await translateFields(
+      { title: draft.title, category: draft.category, text: draft.text },
+      ['title', 'category', 'text']
+    )
+    const payload = { ...draft, translations }
+    if (editing) updateLibrary(editing.id, payload)
+    else addLibrary(payload)
+    setBusy(false)
     reset()
   }
 
@@ -1253,7 +1261,7 @@ function LibrarySection() {
           {draft.image && <img src={draft.image} alt="" className="mt-2 h-24 rounded border" />}
         </Field>
         <div className="flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить' : 'Опубликовать статью'}</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : editing ? 'Сохранить' : 'Опубликовать статью'}</SaveBtn>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
