@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { geocodeAddress, translateFields } from '../../lib/translate'
 import {
   // home cards (already shipped)
   addHomeCard,
@@ -331,8 +332,20 @@ function SeedItemsBlock<T extends { id: string }>({
     setEditingId(null)
     setDraft({})
   }
-  const saveEdit = (id: string) => {
-    setSeedOverride(sectionKey, id, draft)
+  const [translatingId, setTranslatingId] = useState<string | null>(null)
+  const saveEdit = async (id: string) => {
+    // Translate the free-text fields the admin just edited so the
+    // override reads correctly in every UI language.
+    const textualKeys = fields
+      .filter((f) => f.type !== 'color')
+      .map((f) => f.key)
+    setTranslatingId(id)
+    try {
+      const translations = await translateFields(draft, textualKeys)
+      setSeedOverride(sectionKey, id, { ...draft, translations })
+    } finally {
+      setTranslatingId(null)
+    }
     cancelEdit()
   }
   const resetItem = (id: string) => {
@@ -395,7 +408,7 @@ function SeedItemsBlock<T extends { id: string }>({
                       onClick={() => saveEdit(seed.id)}
                       className="bg-safe-800 text-white rounded-md px-3 py-1.5 text-sm font-medium hover:opacity-90"
                     >
-                      Сохранить
+                      {translatingId === seed.id ? 'Перевожу…' : 'Сохранить'}
                     </button>
                     <button type="button" onClick={cancelEdit} className="text-sm text-slate-600 underline">
                       Отмена
@@ -482,9 +495,16 @@ function HomeTextsSection() {
   const [texts, setTexts] = useState<HomeTexts>(() => getHomeTexts())
   const [saved, setSaved] = useState(false)
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    saveHomeTexts(texts)
+    setBusy(true)
+    const translations = await translateFields(
+      { title: texts.title, intro: texts.intro, contact: texts.contact },
+      ['title', 'intro', 'contact']
+    )
+    saveHomeTexts({ ...texts, translations })
+    setBusy(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 1500)
   }
@@ -520,7 +540,7 @@ function HomeTextsSection() {
           />
         </Field>
         <div className="flex items-center gap-3">
-          <SaveBtn />
+          <SaveBtn>{busy ? 'Перевожу и сохраняю…' : 'Сохранить'}</SaveBtn>
           {saved && <span className="text-sm text-green-700">Сохранено ✓</span>}
         </div>
       </form>
@@ -532,6 +552,8 @@ function HomeTextsSection() {
 function CentersSection() {
   const [list] = useLive(getCenters)
   const [editing, setEditing] = useState<AdminCenter | null>(null)
+  const [busy, setBusy] = useState<null | 'geocoding' | 'translating' | 'saving'>(null)
+  const [geoNote, setGeoNote] = useState<string>('')
   const [draft, setDraft] = useState<Omit<AdminCenter, 'id' | 'createdAt'>>({
     name: '',
     city: '',
@@ -545,6 +567,7 @@ function CentersSection() {
 
   const reset = () => {
     setEditing(null)
+    setGeoNote('')
     setDraft({
       name: '',
       city: '',
@@ -557,14 +580,72 @@ function CentersSection() {
     })
   }
 
-  const submit = (e: React.FormEvent) => {
+  const buildAddressQuery = (d: typeof draft) =>
+    [d.address, d.city, d.country].filter(Boolean).join(', ')
+
+  const findCoords = async () => {
+    const q = buildAddressQuery(draft)
+    if (!q.trim()) {
+      setGeoNote('Введите адрес, город или страну, чтобы найти координаты.')
+      return
+    }
+    setBusy('geocoding')
+    setGeoNote('Ищу точные координаты…')
+    const res = await geocodeAddress(q)
+    setBusy(null)
+    if (res) {
+      setDraft((d) => ({ ...d, lat: res.lat, lng: res.lng }))
+      setGeoNote(`Найдено: ${res.displayName}`)
+    } else {
+      setGeoNote('Не удалось найти координаты. Уточните адрес или введите широту/долготу вручную.')
+    }
+  }
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!draft.name.trim()) return
-    if (editing) {
-      updateCenter(editing.id, draft)
-    } else {
-      addCenter(draft)
+
+    let finalDraft: typeof draft = { ...draft }
+
+    // 1) Auto-geocode if the admin has not entered coordinates and
+    //    an address is available.
+    const hasCoords = typeof finalDraft.lat === 'number' && typeof finalDraft.lng === 'number'
+    const addressQuery = buildAddressQuery(finalDraft)
+    if (!hasCoords && addressQuery.trim()) {
+      setBusy('geocoding')
+      setGeoNote('Определяю координаты по адресу…')
+      const res = await geocodeAddress(addressQuery)
+      if (res) {
+        finalDraft.lat = res.lat
+        finalDraft.lng = res.lng
+        setGeoNote(`Найдено: ${res.displayName}`)
+      } else {
+        setGeoNote('Координаты не найдены — центр будет в списке, но не на карте.')
+      }
     }
+
+    // 2) Translate the description (and city/country/address labels) to
+    //    every supported language. The centre name is intentionally kept
+    //    as the admin typed it.
+    setBusy('translating')
+    const translations = await translateFields(
+      {
+        description: finalDraft.description || '',
+        city: finalDraft.city || '',
+        country: finalDraft.country || '',
+        address: finalDraft.address || '',
+      },
+      ['description', 'city', 'country', 'address']
+    )
+    finalDraft = { ...finalDraft, translations }
+
+    setBusy('saving')
+    if (editing) {
+      updateCenter(editing.id, finalDraft)
+    } else {
+      addCenter(finalDraft)
+    }
+    setBusy(null)
     reset()
   }
 
@@ -651,13 +732,36 @@ function CentersSection() {
           </Field>
         </div>
         <div className="md:col-span-2 flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить изменения' : 'Добавить центр'}</SaveBtn>
+          <SaveBtn>
+            {busy === 'geocoding'
+              ? 'Ищу координаты…'
+              : busy === 'translating'
+                ? 'Перевожу на все языки…'
+                : busy === 'saving'
+                  ? 'Сохраняю…'
+                  : editing
+                    ? 'Сохранить изменения'
+                    : 'Добавить центр'}
+          </SaveBtn>
+          <button
+            type="button"
+            onClick={findCoords}
+            className="text-sm px-3 py-1.5 border border-slate-300 rounded-md hover:bg-slate-50"
+            disabled={busy !== null}
+          >
+            📍 Найти координаты по адресу
+          </button>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
             </button>
           )}
         </div>
+        {geoNote && (
+          <div className="md:col-span-2 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded px-3 py-2">
+            {geoNote}
+          </div>
+        )}
       </form>
 
       <h3 className="font-semibold mb-3">Добавленные центры ({list.length})</h3>
@@ -717,11 +821,27 @@ function RatingsSection() {
     setDraft(empty)
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!draft.country.trim()) return
-    if (editing) updateRating(editing.id, draft)
-    else addRating(draft)
+    setBusy(true)
+    const translations = await translateFields(
+      {
+        overall: draft.overall,
+        safety: draft.safety,
+        legal: draft.legal,
+        children: draft.children,
+        psych: draft.psych,
+        digital: draft.digital,
+        risks: draft.risks,
+      },
+      ['overall', 'safety', 'legal', 'children', 'psych', 'digital', 'risks']
+    )
+    const withTx = { ...draft, translations }
+    if (editing) updateRating(editing.id, withTx)
+    else addRating(withTx)
+    setBusy(false)
     reset()
   }
 
@@ -783,7 +903,7 @@ function RatingsSection() {
           </Field>
         </div>
         <div className="md:col-span-2 flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить изменения' : 'Добавить страну'}</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : editing ? 'Сохранить изменения' : 'Добавить страну'}</SaveBtn>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
@@ -854,18 +974,23 @@ function ChecklistsSection() {
     setItems(c.items.map((i) => i.text))
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
     const cleanItems = items
       .map((t) => t.trim())
       .filter(Boolean)
       .map((text, i) => ({ id: `${i}-${Math.random().toString(36).slice(2, 7)}`, text }))
-    if (editing) {
-      updateChecklist(editing.id, { title, description, items: cleanItems })
-    } else {
-      addChecklist({ title, description, items: cleanItems })
-    }
+    setBusy(true)
+    // Translate title / description / every item text separately.
+    const fieldMap: Record<string, string> = { title, description }
+    for (const it of cleanItems) fieldMap[`item_${it.id}`] = it.text
+    const translations = await translateFields(fieldMap, Object.keys(fieldMap))
+    const payload = { title, description, items: cleanItems, translations }
+    if (editing) updateChecklist(editing.id, payload)
+    else addChecklist(payload)
+    setBusy(false)
     reset()
   }
 
@@ -924,7 +1049,7 @@ function ChecklistsSection() {
           </button>
         </div>
         <div className="flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить чек-лист' : 'Создать чек-лист'}</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : editing ? 'Сохранить чек-лист' : 'Создать чек-лист'}</SaveBtn>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
@@ -979,11 +1104,19 @@ function CountryIndexSection() {
     setDraft(empty)
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!draft.country.trim()) return
-    if (editing) updateCountryIndex(editing.id, draft)
-    else addCountryIndex(draft)
+    setBusy(true)
+    const translations = await translateFields(
+      { laws: draft.laws, documents: draft.documents, phones: draft.phones, notes: draft.notes },
+      ['laws', 'documents', 'phones', 'notes']
+    )
+    const payload = { ...draft, translations }
+    if (editing) updateCountryIndex(editing.id, payload)
+    else addCountryIndex(payload)
+    setBusy(false)
     reset()
   }
 
@@ -1009,7 +1142,7 @@ function CountryIndexSection() {
           <textarea rows={2} value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} className={inputCls} />
         </Field>
         <div className="flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить' : 'Добавить страну'}</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : editing ? 'Сохранить' : 'Добавить страну'}</SaveBtn>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
@@ -1069,11 +1202,19 @@ function LibrarySection() {
     setDraft({ ...draft, image: await readFileAsDataUrl(file) })
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!draft.title.trim()) return
-    if (editing) updateLibrary(editing.id, draft)
-    else addLibrary(draft)
+    setBusy(true)
+    const translations = await translateFields(
+      { title: draft.title, category: draft.category, text: draft.text },
+      ['title', 'category', 'text']
+    )
+    const payload = { ...draft, translations }
+    if (editing) updateLibrary(editing.id, payload)
+    else addLibrary(payload)
+    setBusy(false)
     reset()
   }
 
@@ -1120,7 +1261,7 @@ function LibrarySection() {
           {draft.image && <img src={draft.image} alt="" className="mt-2 h-24 rounded border" />}
         </Field>
         <div className="flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить' : 'Опубликовать статью'}</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : editing ? 'Сохранить' : 'Опубликовать статью'}</SaveBtn>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
@@ -1175,11 +1316,21 @@ function StoriesSection() {
     setDraft({ ...draft, photo: await readFileAsDataUrl(file) })
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!draft.text.trim()) return
-    if (editing) updateStory(editing.id, draft)
-    else addStory(draft)
+    setBusy(true)
+    // Name stays as typed (proper noun / pseudonym). Title + text get
+    // translated so admin cards read naturally in every UI language.
+    const translations = await translateFields(
+      { title: draft.title || '', text: draft.text },
+      ['title', 'text']
+    )
+    const payload = { ...draft, translations }
+    if (editing) updateStory(editing.id, payload)
+    else addStory(payload)
+    setBusy(false)
     reset()
   }
 
@@ -1221,7 +1372,7 @@ function StoriesSection() {
           <textarea required rows={6} value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} className={inputCls} />
         </Field>
         <div className="flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить' : 'Опубликовать историю'}</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : editing ? 'Сохранить' : 'Опубликовать историю'}</SaveBtn>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
@@ -1278,10 +1429,17 @@ function HomeCardsSection() {
     setImage(await readFileAsDataUrl(file))
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
-    addHomeCard({ title, description, link: link || undefined, image })
+    setBusy(true)
+    const translations = await translateFields(
+      { title, description },
+      ['title', 'description']
+    )
+    addHomeCard({ title, description, link: link || undefined, image, translations })
+    setBusy(false)
     setTitle(''); setDescription(''); setLink(''); setImage(undefined)
     setSaved(true)
     setTimeout(() => setSaved(false), 1500)
@@ -1319,7 +1477,7 @@ function HomeCardsSection() {
           {image && <img src={image} alt="" className="mt-2 h-24 rounded border" />}
         </Field>
         <div className="flex items-center gap-3">
-          <SaveBtn>Добавить карточку</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : 'Добавить карточку'}</SaveBtn>
           {saved && <span className="text-sm text-green-700">Сохранено ✓</span>}
         </div>
       </form>

@@ -9,6 +9,7 @@ export type HomeCard = {
   image?: string // data URL (base64) so it persists in localStorage
   link?: string
   createdAt: number
+  translations?: Record<string, Record<string, string>>
 }
 
 const STORAGE_KEY = 'atlas:home-cards:v1'
@@ -122,6 +123,11 @@ export function subscribeContent(cb: () => void): () => void {
 
 // ---- 1. Map centers --------------------------------------------------------
 // Stored as plain objects. They are merged with the seed map data in MapView.
+// A translations map is `{ fieldName: { lang: text } }`. It is populated
+// automatically by the admin form when the user saves a center so that
+// the description shows up in every UI language.
+export type Translations = Record<string, Record<string, string>>
+
 export type AdminCenter = {
   id: string
   name: string
@@ -135,6 +141,7 @@ export type AdminCenter = {
   lng?: number
   category?: string
   createdAt: number
+  translations?: Translations
 }
 const K_CENTERS = 'atlas:admin:centers:v1'
 export const getCenters = () => readList<AdminCenter>(K_CENTERS)
@@ -160,6 +167,7 @@ export type CountryRating = {
   digital: string
   color?: string // hex, used on the rights map
   risks?: string
+  translations?: Translations
 }
 const K_RATINGS = 'atlas:admin:ratings:v1'
 export const getRatings = () => readList<CountryRating>(K_RATINGS)
@@ -181,6 +189,7 @@ export type AdminChecklist = {
   description?: string
   items: ChecklistTask[]
   createdAt: number
+  translations?: Translations // fields: title, description, item_<id>
 }
 const K_LISTS = 'atlas:admin:checklists:v1'
 export const getChecklists = () => readList<AdminChecklist>(K_LISTS)
@@ -202,6 +211,7 @@ export type CountryIndexEntry = {
   documents: string
   phones: string
   notes?: string
+  translations?: Translations
 }
 const K_INDEX = 'atlas:admin:country-index:v1'
 export const getCountryIndex = () => readList<CountryIndexEntry>(K_INDEX)
@@ -224,6 +234,7 @@ export type LibraryArticle = {
   downloadUrl?: string
   image?: string
   createdAt: number
+  translations?: Translations
 }
 const K_LIBRARY = 'atlas:admin:library:v1'
 export const getLibrary = () => readList<LibraryArticle>(K_LIBRARY)
@@ -245,6 +256,7 @@ export type AdminStory = {
   title?: string
   text: string
   createdAt: number
+  translations?: Translations
 }
 const K_STORIES = 'atlas:admin:stories:v1'
 export const getStories = () => readList<AdminStory>(K_STORIES)
@@ -263,6 +275,7 @@ export type HomeTexts = {
   title?: string
   intro?: string
   contact?: string
+  translations?: Translations
 }
 const K_HOME = 'atlas:admin:home-texts:v1'
 export const getHomeTexts = (): HomeTexts => readObject<HomeTexts>(K_HOME) || {}

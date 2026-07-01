@@ -6,6 +6,7 @@ import {
   applySeedTransforms,
   type AdminChecklist,
 } from '../../lib/contentStore'
+import { pickLocalized } from '../../lib/translate'
 
 interface ChecklistItem { id: string; text: string }
 
@@ -107,7 +108,8 @@ function Checklist({ title, items }: { title: string; items: ChecklistItem[] }) 
 }
 
 export function Checklists() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = i18n.language
 
   // Localized full item lists (deep researched guides for migrant women safety + timing appropriate)
   const helpersItems = toItems( t('checklists.for_friends_items', { returnObjects: true }) as string[] )
@@ -138,7 +140,14 @@ export function Checklists() {
       <p className="text-slate-600 mb-6 text-sm">{t('checklists.intro') || 'Practical, private, translated action checklists. Choose one and save/print. Useful for friends/family and women on the move.'}</p>
 
       {admin.map((c) => (
-        <Checklist key={c.id} title={c.title} items={c.items.map((i) => ({ id: i.id, text: i.text }))} />
+        <Checklist
+          key={c.id}
+          title={pickLocalized(c, 'title', lang) || c.title}
+          items={c.items.map((i) => ({
+            id: i.id,
+            text: pickLocalized(c, `item_${i.id}`, lang) || i.text,
+          }))}
+        />
       ))}
 
       {seedFriends && <Checklist title={seedFriends.title} items={seedFriends.items} />}

@@ -8,9 +8,12 @@ import {
   type CountryRating,
   type CountryIndexEntry,
 } from '../../lib/contentStore'
+import { pickLocalized } from '../../lib/translate'
 
 export function SafeBridgeIndex() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = i18n.language
+  const L = (item: any, field: string) => pickLocalized(item, field, lang) || item?.[field] || ''
 
   const cols = t('safebridge.col', { returnObjects: true }) as any
   const rows = t('safebridge.demo', { returnObjects: true }) as any[]
@@ -67,12 +70,12 @@ export function SafeBridgeIndex() {
                   )}
                   {r.country}
                 </td>
-                <td className="px-4 py-3">{r.overall}</td>
-                <td className="px-4 py-3">{r.safety}</td>
-                <td className="px-4 py-3">{r.legal}</td>
-                <td className="px-4 py-3">{r.children}</td>
-                <td className="px-4 py-3">{r.psych}</td>
-                <td className="px-4 py-3">{r.digital}</td>
+                <td className="px-4 py-3">{L(r, 'overall')}</td>
+                <td className="px-4 py-3">{L(r, 'safety')}</td>
+                <td className="px-4 py-3">{L(r, 'legal')}</td>
+                <td className="px-4 py-3">{L(r, 'children')}</td>
+                <td className="px-4 py-3">{L(r, 'psych')}</td>
+                <td className="px-4 py-3">{L(r, 'digital')}</td>
               </tr>
             ))}
           </tbody>
@@ -86,22 +89,22 @@ export function SafeBridgeIndex() {
             {index.map((e) => (
               <div key={e.id} className="safe-card">
                 <div className="font-semibold text-lg mb-1">{e.country}</div>
-                {e.laws && (
+                {L(e, 'laws') && (
                   <p className="text-sm text-slate-700 mb-1">
-                    <span className="text-xs uppercase tracking-widest text-teal-700">Законы:</span> {e.laws}
+                    <span className="text-xs uppercase tracking-widest text-teal-700">Законы:</span> {L(e, 'laws')}
                   </p>
                 )}
-                {e.documents && (
+                {L(e, 'documents') && (
                   <p className="text-sm text-slate-700 mb-1">
-                    <span className="text-xs uppercase tracking-widest text-teal-700">Документы:</span> {e.documents}
+                    <span className="text-xs uppercase tracking-widest text-teal-700">Документы:</span> {L(e, 'documents')}
                   </p>
                 )}
-                {e.phones && (
+                {L(e, 'phones') && (
                   <p className="text-sm text-slate-700 mb-1">
-                    <span className="text-xs uppercase tracking-widest text-teal-700">Телефоны:</span> {e.phones}
+                    <span className="text-xs uppercase tracking-widest text-teal-700">Телефоны:</span> {L(e, 'phones')}
                   </p>
                 )}
-                {e.notes && <p className="text-xs text-slate-500 italic mt-2">{e.notes}</p>}
+                {L(e, 'notes') && <p className="text-xs text-slate-500 italic mt-2">{L(e, 'notes')}</p>}
               </div>
             ))}
           </div>

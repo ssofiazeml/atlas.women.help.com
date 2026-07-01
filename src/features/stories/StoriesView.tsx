@@ -7,6 +7,7 @@ import {
   type AdminStory,
 } from '../../lib/contentStore'
 import { PUBLISHED_STORIES } from './storiesSeed'
+import { pickLocalized } from '../../lib/translate'
 
 type Story = (typeof PUBLISHED_STORIES)[number]
 
@@ -66,9 +67,9 @@ export function StoriesView() {
             {s.photo && (
               <img src={s.photo} alt="" className="h-32 w-full object-cover rounded mb-3" />
             )}
-            <div className="font-semibold text-lg mb-1">{s.title || 'История'}</div>
+            <div className="font-semibold text-lg mb-1">{pickLocalized(s, 'title', i18n.language) || s.title || 'История'}</div>
             <div className="text-xs text-slate-500 mb-1">{s.name}</div>
-            <div className="text-sm text-slate-600 line-clamp-3">{s.text}</div>
+            <div className="text-sm text-slate-600 line-clamp-3">{pickLocalized(s, 'text', i18n.language) || s.text}</div>
             <div className="text-[10px] mt-3 text-teal-700">Читать полностью →</div>
           </div>
         ))}
@@ -95,9 +96,9 @@ export function StoriesView() {
             {selectedAdmin.photo && (
               <img src={selectedAdmin.photo} alt="" className="h-40 w-full object-cover rounded mb-4" />
             )}
-            <h2 className="text-2xl font-semibold mb-1">{selectedAdmin.title || 'История'}</h2>
+            <h2 className="text-2xl font-semibold mb-1">{pickLocalized(selectedAdmin, 'title', i18n.language) || selectedAdmin.title || 'История'}</h2>
             <div className="text-sm text-slate-500 mb-4">{selectedAdmin.name}</div>
-            <p className="whitespace-pre-wrap text-[15px]">{selectedAdmin.text}</p>
+            <p className="whitespace-pre-wrap text-[15px]">{pickLocalized(selectedAdmin, 'text', i18n.language) || selectedAdmin.text}</p>
             <div className="mt-6 text-right">
               <button onClick={() => setSelectedAdmin(null)} className="px-5 py-1 text-sm rounded bg-slate-900 text-white">Закрыть</button>
             </div>
