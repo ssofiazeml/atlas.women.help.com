@@ -23,6 +23,7 @@ import {
   subscribeContent,
   applySeedTransforms,
 } from './lib/contentStore'
+import { pickLocalized } from './lib/translate'
 
 function Header() {
   const { t, i18n } = useTranslation()
@@ -66,7 +67,8 @@ function Header() {
 }
 
 function Home() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = i18n.language
   const [customCards, setCustomCards] = useState<HomeCard[]>(() => getHomeCards())
   const [texts, setTexts] = useState(() => getHomeTexts())
   const [, setTick] = useState(0)
@@ -102,13 +104,13 @@ function Home() {
     <main className="max-w-4xl mx-auto px-5 py-16">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-semibold text-safe-800 tracking-tight mb-4">
-          {texts.title || t('home.title')}
+          {pickLocalized(texts, 'title', lang) || texts.title || t('home.title')}
         </h1>
         <p className="text-lg text-slate-600 max-w-xl mx-auto">
-          {texts.intro || t('home.intro')}
+          {pickLocalized(texts, 'intro', lang) || texts.intro || t('home.intro')}
         </p>
-        {texts.contact && (
-          <p className="text-sm text-safe-800 mt-3 font-medium">{texts.contact}</p>
+        {(pickLocalized(texts, 'contact', lang) || texts.contact) && (
+          <p className="text-sm text-safe-800 mt-3 font-medium">{pickLocalized(texts, 'contact', lang) || texts.contact}</p>
         )}
       </div>
 
@@ -133,9 +135,9 @@ function Home() {
                     className="h-40 w-full object-cover rounded mb-3"
                   />
                 )}
-                <h3 className="font-semibold text-lg mb-1">{c.title}</h3>
-                {c.description && (
-                  <p className="text-slate-600 text-sm">{c.description}</p>
+                <h3 className="font-semibold text-lg mb-1">{pickLocalized(c, 'title', lang) || c.title}</h3>
+                {(pickLocalized(c, 'description', lang) || c.description) && (
+                  <p className="text-slate-600 text-sm">{pickLocalized(c, 'description', lang) || c.description}</p>
                 )}
               </>
             )
