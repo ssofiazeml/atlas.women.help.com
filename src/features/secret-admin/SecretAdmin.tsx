@@ -533,6 +533,8 @@ function HomeTextsSection() {
 function CentersSection() {
   const [list] = useLive(getCenters)
   const [editing, setEditing] = useState<AdminCenter | null>(null)
+  const [busy, setBusy] = useState<null | 'geocoding' | 'translating' | 'saving'>(null)
+  const [geoNote, setGeoNote] = useState<string>('')
   const [draft, setDraft] = useState<Omit<AdminCenter, 'id' | 'createdAt'>>({
     name: '',
     city: '',
@@ -546,6 +548,7 @@ function CentersSection() {
 
   const reset = () => {
     setEditing(null)
+    setGeoNote('')
     setDraft({
       name: '',
       city: '',
@@ -558,14 +561,72 @@ function CentersSection() {
     })
   }
 
-  const submit = (e: React.FormEvent) => {
+  const buildAddressQuery = (d: typeof draft) =>
+    [d.address, d.city, d.country].filter(Boolean).join(', ')
+
+  const findCoords = async () => {
+    const q = buildAddressQuery(draft)
+    if (!q.trim()) {
+      setGeoNote('Введите адрес, город или страну, чтобы найти координаты.')
+      return
+    }
+    setBusy('geocoding')
+    setGeoNote('Ищу точные координаты…')
+    const res = await geocodeAddress(q)
+    setBusy(null)
+    if (res) {
+      setDraft((d) => ({ ...d, lat: res.lat, lng: res.lng }))
+      setGeoNote(`Найдено: ${res.displayName}`)
+    } else {
+      setGeoNote('Не удалось найти координаты. Уточните адрес или введите широту/долготу вручную.')
+    }
+  }
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!draft.name.trim()) return
-    if (editing) {
-      updateCenter(editing.id, draft)
-    } else {
-      addCenter(draft)
+
+    let finalDraft: typeof draft = { ...draft }
+
+    // 1) Auto-geocode if the admin has not entered coordinates and
+    //    an address is available.
+    const hasCoords = typeof finalDraft.lat === 'number' && typeof finalDraft.lng === 'number'
+    const addressQuery = buildAddressQuery(finalDraft)
+    if (!hasCoords && addressQuery.trim()) {
+      setBusy('geocoding')
+      setGeoNote('Определяю координаты по адресу…')
+      const res = await geocodeAddress(addressQuery)
+      if (res) {
+        finalDraft.lat = res.lat
+        finalDraft.lng = res.lng
+        setGeoNote(`Найдено: ${res.displayName}`)
+      } else {
+        setGeoNote('Координаты не найдены — центр будет в списке, но не на карте.')
+      }
     }
+
+    // 2) Translate the description (and city/country/address labels) to
+    //    every supported language. The centre name is intentionally kept
+    //    as the admin typed it.
+    setBusy('translating')
+    const translations = await translateFields(
+      {
+        description: finalDraft.description || '',
+        city: finalDraft.city || '',
+        country: finalDraft.country || '',
+        address: finalDraft.address || '',
+      },
+      ['description', 'city', 'country', 'address']
+    )
+    finalDraft = { ...finalDraft, translations }
+
+    setBusy('saving')
+    if (editing) {
+      updateCenter(editing.id, finalDraft)
+    } else {
+      addCenter(finalDraft)
+    }
+    setBusy(null)
     reset()
   }
 
@@ -652,13 +713,36 @@ function CentersSection() {
           </Field>
         </div>
         <div className="md:col-span-2 flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить изменения' : 'Добавить центр'}</SaveBtn>
+          <SaveBtn>
+            {busy === 'geocoding'
+              ? 'Ищу координаты…'
+              : busy === 'translating'
+                ? 'Перевожу на все языки…'
+                : busy === 'saving'
+                  ? 'Сохраняю…'
+                  : editing
+                    ? 'Сохранить изменения'
+                    : 'Добавить центр'}
+          </SaveBtn>
+          <button
+            type="button"
+            onClick={findCoords}
+            className="text-sm px-3 py-1.5 border border-slate-300 rounded-md hover:bg-slate-50"
+            disabled={busy !== null}
+          >
+            📍 Найти координаты по адресу
+          </button>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
             </button>
           )}
         </div>
+        {geoNote && (
+          <div className="md:col-span-2 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded px-3 py-2">
+            {geoNote}
+          </div>
+        )}
       </form>
 
       <h3 className="font-semibold mb-3">Добавленные центры ({list.length})</h3>
