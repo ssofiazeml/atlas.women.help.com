@@ -7,9 +7,11 @@ import {
   applySeedTransforms,
   type LibraryArticle,
 } from '../../lib/contentStore'
+import { pickLocalized } from '../../lib/translate'
 
 export function ResearchLibrary() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = i18n.language
   const placeholders = (t('research.placeholders', { returnObjects: true }) || []) as any[]
   const visiblePlaceholders = applySeedTransforms<any>(
     'library',
@@ -36,12 +38,12 @@ export function ResearchLibrary() {
             <div className="flex gap-3 items-start">
               <div className="mt-1 text-teal-700"><BookOpen size={18} /></div>
               <div className="flex-1">
-                <div className="font-semibold mb-1">{a.title}</div>
-                {a.category && (
-                  <div className="text-xs text-slate-500 mb-2">{a.category}</div>
+                <div className="font-semibold mb-1">{pickLocalized(a, 'title', lang) || a.title}</div>
+                {(pickLocalized(a, 'category', lang) || a.category) && (
+                  <div className="text-xs text-slate-500 mb-2">{pickLocalized(a, 'category', lang) || a.category}</div>
                 )}
                 {a.image && <img src={a.image} alt="" className="rounded mb-3 h-28 w-full object-cover" />}
-                <div className="text-sm leading-relaxed mb-4 text-slate-700 whitespace-pre-wrap">{a.text}</div>
+                <div className="text-sm leading-relaxed mb-4 text-slate-700 whitespace-pre-wrap">{pickLocalized(a, 'text', lang) || a.text}</div>
                 {a.downloadUrl && (
                   <a
                     href={a.downloadUrl}
