@@ -821,11 +821,27 @@ function RatingsSection() {
     setDraft(empty)
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!draft.country.trim()) return
-    if (editing) updateRating(editing.id, draft)
-    else addRating(draft)
+    setBusy(true)
+    const translations = await translateFields(
+      {
+        overall: draft.overall,
+        safety: draft.safety,
+        legal: draft.legal,
+        children: draft.children,
+        psych: draft.psych,
+        digital: draft.digital,
+        risks: draft.risks,
+      },
+      ['overall', 'safety', 'legal', 'children', 'psych', 'digital', 'risks']
+    )
+    const withTx = { ...draft, translations }
+    if (editing) updateRating(editing.id, withTx)
+    else addRating(withTx)
+    setBusy(false)
     reset()
   }
 
@@ -887,7 +903,7 @@ function RatingsSection() {
           </Field>
         </div>
         <div className="md:col-span-2 flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить изменения' : 'Добавить страну'}</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : editing ? 'Сохранить изменения' : 'Добавить страну'}</SaveBtn>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
