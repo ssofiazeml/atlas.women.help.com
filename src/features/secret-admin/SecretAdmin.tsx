@@ -74,7 +74,6 @@ import {
   type SeedStory,
   type SeedHomeCard,
 } from '../../lib/seeds'
-import { geocodeAddress, translateFields } from '../../lib/translate'
 
 const ADMIN_PASSWORD = 'Admin2026!'
 const SESSION_KEY = 'atlas:secret-admin:authed'
