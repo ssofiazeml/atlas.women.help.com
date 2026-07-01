@@ -332,8 +332,20 @@ function SeedItemsBlock<T extends { id: string }>({
     setEditingId(null)
     setDraft({})
   }
-  const saveEdit = (id: string) => {
-    setSeedOverride(sectionKey, id, draft)
+  const [translatingId, setTranslatingId] = useState<string | null>(null)
+  const saveEdit = async (id: string) => {
+    // Translate the free-text fields the admin just edited so the
+    // override reads correctly in every UI language.
+    const textualKeys = fields
+      .filter((f) => f.type !== 'color')
+      .map((f) => f.key)
+    setTranslatingId(id)
+    try {
+      const translations = await translateFields(draft, textualKeys)
+      setSeedOverride(sectionKey, id, { ...draft, translations })
+    } finally {
+      setTranslatingId(null)
+    }
     cancelEdit()
   }
   const resetItem = (id: string) => {
@@ -396,7 +408,7 @@ function SeedItemsBlock<T extends { id: string }>({
                       onClick={() => saveEdit(seed.id)}
                       className="bg-safe-800 text-white rounded-md px-3 py-1.5 text-sm font-medium hover:opacity-90"
                     >
-                      Сохранить
+                      {translatingId === seed.id ? 'Перевожу…' : 'Сохранить'}
                     </button>
                     <button type="button" onClick={cancelEdit} className="text-sm text-slate-600 underline">
                       Отмена
