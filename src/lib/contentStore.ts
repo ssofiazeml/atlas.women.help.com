@@ -9,6 +9,7 @@ export type HomeCard = {
   image?: string // data URL (base64) so it persists in localStorage
   link?: string
   createdAt: number
+  translations?: Record<string, Record<string, string>>
 }
 
 const STORAGE_KEY = 'atlas:home-cards:v1'
