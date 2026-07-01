@@ -1429,10 +1429,17 @@ function HomeCardsSection() {
     setImage(await readFileAsDataUrl(file))
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
-    addHomeCard({ title, description, link: link || undefined, image })
+    setBusy(true)
+    const translations = await translateFields(
+      { title, description },
+      ['title', 'description']
+    )
+    addHomeCard({ title, description, link: link || undefined, image, translations })
+    setBusy(false)
     setTitle(''); setDescription(''); setLink(''); setImage(undefined)
     setSaved(true)
     setTimeout(() => setSaved(false), 1500)
@@ -1470,7 +1477,7 @@ function HomeCardsSection() {
           {image && <img src={image} alt="" className="mt-2 h-24 rounded border" />}
         </Field>
         <div className="flex items-center gap-3">
-          <SaveBtn>Добавить карточку</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : 'Добавить карточку'}</SaveBtn>
           {saved && <span className="text-sm text-green-700">Сохранено ✓</span>}
         </div>
       </form>
