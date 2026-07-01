@@ -974,18 +974,23 @@ function ChecklistsSection() {
     setItems(c.items.map((i) => i.text))
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim()) return
     const cleanItems = items
       .map((t) => t.trim())
       .filter(Boolean)
       .map((text, i) => ({ id: `${i}-${Math.random().toString(36).slice(2, 7)}`, text }))
-    if (editing) {
-      updateChecklist(editing.id, { title, description, items: cleanItems })
-    } else {
-      addChecklist({ title, description, items: cleanItems })
-    }
+    setBusy(true)
+    // Translate title / description / every item text separately.
+    const fieldMap: Record<string, string> = { title, description }
+    for (const it of cleanItems) fieldMap[`item_${it.id}`] = it.text
+    const translations = await translateFields(fieldMap, Object.keys(fieldMap))
+    const payload = { title, description, items: cleanItems, translations }
+    if (editing) updateChecklist(editing.id, payload)
+    else addChecklist(payload)
+    setBusy(false)
     reset()
   }
 
@@ -1044,7 +1049,7 @@ function ChecklistsSection() {
           </button>
         </div>
         <div className="flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить чек-лист' : 'Создать чек-лист'}</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : editing ? 'Сохранить чек-лист' : 'Создать чек-лист'}</SaveBtn>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
