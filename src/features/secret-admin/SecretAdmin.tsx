@@ -495,9 +495,16 @@ function HomeTextsSection() {
   const [texts, setTexts] = useState<HomeTexts>(() => getHomeTexts())
   const [saved, setSaved] = useState(false)
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    saveHomeTexts(texts)
+    setBusy(true)
+    const translations = await translateFields(
+      { title: texts.title, intro: texts.intro, contact: texts.contact },
+      ['title', 'intro', 'contact']
+    )
+    saveHomeTexts({ ...texts, translations })
+    setBusy(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 1500)
   }
@@ -533,7 +540,7 @@ function HomeTextsSection() {
           />
         </Field>
         <div className="flex items-center gap-3">
-          <SaveBtn />
+          <SaveBtn>{busy ? 'Перевожу и сохраняю…' : 'Сохранить'}</SaveBtn>
           {saved && <span className="text-sm text-green-700">Сохранено ✓</span>}
         </div>
       </form>
