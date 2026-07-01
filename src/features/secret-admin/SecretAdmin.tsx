@@ -1316,11 +1316,21 @@ function StoriesSection() {
     setDraft({ ...draft, photo: await readFileAsDataUrl(file) })
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!draft.text.trim()) return
-    if (editing) updateStory(editing.id, draft)
-    else addStory(draft)
+    setBusy(true)
+    // Name stays as typed (proper noun / pseudonym). Title + text get
+    // translated so admin cards read naturally in every UI language.
+    const translations = await translateFields(
+      { title: draft.title || '', text: draft.text },
+      ['title', 'text']
+    )
+    const payload = { ...draft, translations }
+    if (editing) updateStory(editing.id, payload)
+    else addStory(payload)
+    setBusy(false)
     reset()
   }
 
@@ -1362,7 +1372,7 @@ function StoriesSection() {
           <textarea required rows={6} value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} className={inputCls} />
         </Field>
         <div className="flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить' : 'Опубликовать историю'}</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : editing ? 'Сохранить' : 'Опубликовать историю'}</SaveBtn>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
