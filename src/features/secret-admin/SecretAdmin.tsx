@@ -1104,11 +1104,19 @@ function CountryIndexSection() {
     setDraft(empty)
   }
 
-  const submit = (e: React.FormEvent) => {
+  const [busy, setBusy] = useState(false)
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!draft.country.trim()) return
-    if (editing) updateCountryIndex(editing.id, draft)
-    else addCountryIndex(draft)
+    setBusy(true)
+    const translations = await translateFields(
+      { laws: draft.laws, documents: draft.documents, phones: draft.phones, notes: draft.notes },
+      ['laws', 'documents', 'phones', 'notes']
+    )
+    const payload = { ...draft, translations }
+    if (editing) updateCountryIndex(editing.id, payload)
+    else addCountryIndex(payload)
+    setBusy(false)
     reset()
   }
 
@@ -1134,7 +1142,7 @@ function CountryIndexSection() {
           <textarea rows={2} value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} className={inputCls} />
         </Field>
         <div className="flex gap-3">
-          <SaveBtn>{editing ? 'Сохранить' : 'Добавить страну'}</SaveBtn>
+          <SaveBtn>{busy ? 'Перевожу…' : editing ? 'Сохранить' : 'Добавить страну'}</SaveBtn>
           {editing && (
             <button type="button" onClick={reset} className="text-sm text-slate-600 underline">
               Отмена
