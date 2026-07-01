@@ -10,7 +10,6 @@ import {
   applySeedTransforms,
   type AdminCenter,
 } from '../../lib/contentStore'
-import { pickLocalized } from '../../lib/translate'
 
 // Fix default marker icons
 // @ts-ignore
