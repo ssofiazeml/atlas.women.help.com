@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { Search, Filter } from 'lucide-react'
@@ -9,6 +10,7 @@ import {
   applySeedTransforms,
   type AdminCenter,
 } from '../../lib/contentStore'
+import { pickLocalized } from '../../lib/translate'
 
 // Fix default marker icons
 // @ts-ignore
@@ -74,13 +76,25 @@ function useLocationFilter(locations: MapLocation[], search: string, catFilters:
 }
 
 function centerToLocation(c: AdminCenter, idx: number): MapLocation {
+  // Descriptions were translated to every supported language when the
+  // admin saved the centre. Expose them on the shared MapLocation shape
+  // so the sidebar/popup can pick the current UI language transparently.
+  const descByLang = c.translations?.description || {}
   return {
     id: 1_000_000 + idx,
     lat: typeof c.lat === 'number' ? c.lat : 0,
     lng: typeof c.lng === 'number' ? c.lng : 0,
     category: [c.category || 'shelter'],
-    name: { en: c.name },
-    description: { en: c.description || '' },
+    // Name is intentionally kept as the admin typed it (proper noun).
+    name: { en: c.name, ru: c.name, es: c.name, fr: c.name, ar: c.name, zh: c.name },
+    description: {
+      en: descByLang.en || c.description || '',
+      ru: descByLang.ru || c.description || '',
+      es: descByLang.es || c.description || '',
+      fr: descByLang.fr || c.description || '',
+      ar: descByLang.ar || c.description || '',
+      zh: descByLang.zh || c.description || '',
+    },
     city: c.city,
     country: c.country,
     contact_phone: c.contact,
@@ -89,6 +103,8 @@ function centerToLocation(c: AdminCenter, idx: number): MapLocation {
 }
 
 export function MapView() {
+  const { i18n } = useTranslation()
+  const lang = (i18n.language || 'en').split('-')[0]
   const [locations, setLocations] = useState<MapLocation[]>(() => getCurrentLocations())
   const [admin, setAdmin] = useState<AdminCenter[]>(() => getCenters())
   useEffect(
@@ -147,9 +163,9 @@ export function MapView() {
           {filtered.length === 0 && <p className="text-slate-400">No results. Try clearing filters.</p>}
           {filtered.map(loc => (
             <div key={loc.id} className="border bg-safe-50 p-3 rounded text-sm">
-              <div className="font-semibold">{loc.name.en || loc.name.ru}</div>
+              <div className="font-semibold">{(loc.name as any)[lang] || loc.name.en || loc.name.ru}</div>
               <div className="text-slate-500 text-xs mb-1">{loc.city}, {loc.country}</div>
-              <div className="text-xs mb-1 text-slate-700">{loc.description.en}</div>
+              <div className="text-xs mb-1 text-slate-700">{(loc.description as any)[lang] || loc.description.en}</div>
               <div className="flex flex-wrap gap-1 text-[10px]">
                 {loc.category.map(c => <span key={c} className="px-1 border border-slate-300 rounded">{c}</span>)}
               </div>
@@ -177,8 +193,8 @@ export function MapView() {
             <Marker key={loc.id} position={[loc.lat, loc.lng]}>
               <Popup>
                 <div>
-                  <div className="font-semibold text-base mb-1">{(loc.name as any).en || Object.values(loc.name)[0]}</div>
-                  <p className="text-sm text-slate-600 mb-2">{(loc.description as any).en}</p>
+                  <div className="font-semibold text-base mb-1">{(loc.name as any)[lang] || (loc.name as any).en || Object.values(loc.name)[0]}</div>
+                  <p className="text-sm text-slate-600 mb-2">{(loc.description as any)[lang] || (loc.description as any).en}</p>
                   {loc.contact_phone && <div className="text-xs mb-0.5">📞 {loc.contact_phone}</div>}
                   {loc.contact_web && <a href={loc.contact_web} target="_blank" className="text-xs text-teal-700 underline break-all">🌐 Visit website</a>}
                   <div className="text-[10px] text-slate-400 mt-1">{loc.city}{loc.country ? `, ${loc.country}` : ''}</div>
