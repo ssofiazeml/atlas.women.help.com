@@ -10,10 +10,10 @@
     "admin": "Admin",
     "research": "Bibliothèque de recherches",
     "diplomacy": "Diplomatie numérique",
-    "index": "Indice SafeBridge",
-    "rightsmap": "Carte mondiale des droits"
+    "menu": "Menu",
+    "home": "Accueil"
   },
-  "quick_exit": "Quitter rapidement ce site",
+  "quick_exit": "Sortie rapide",
   "home": {
     "title": "Un répertoire calme de ressources de soutien",
     "intro": "Accédez à des informations, orientations et témoignages sans vous identifier. Votre activité ne laisse quasiment aucune trace.",
@@ -115,8 +115,20 @@
       "pdf": "Télécharger le PDF (espace réservé)"
     },
     "placeholders": [
-      {"title": "[Titre à compléter]", "author": "[Auteur]", "date": "[AAAA]", "cat": "général", "abstract": "Le résumé sera ajouté ici."},
-      {"title": "[Titre à compléter]", "author": "[Auteur]", "date": "[AAAA]", "cat": "juridique", "abstract": "Le résumé sera ajouté ici."}
+      {
+        "title": "[Titre à compléter]",
+        "author": "[Auteur]",
+        "date": "[AAAA]",
+        "cat": "général",
+        "abstract": "Le résumé sera ajouté ici."
+      },
+      {
+        "title": "[Titre à compléter]",
+        "author": "[Auteur]",
+        "date": "[AAAA]",
+        "cat": "juridique",
+        "abstract": "Le résumé sera ajouté ici."
+      }
     ]
   },
   "diplomacy": {
@@ -146,9 +158,33 @@
       "digital": "Sécurité numérique"
     },
     "demo": [
-      {"country": "Pays exemple A", "overall": 68, "safety": 72, "legal": 65, "children": 70, "psych": 60, "digital": 71},
-      {"country": "Pays exemple B", "overall": 54, "safety": 58, "legal": 50, "children": 55, "psych": 48, "digital": 60},
-      {"country": "Pays exemple C", "overall": 41, "safety": 40, "legal": 45, "children": 38, "psych": 35, "digital": 48}
+      {
+        "country": "Pays exemple A",
+        "overall": 68,
+        "safety": 72,
+        "legal": 65,
+        "children": 70,
+        "psych": 60,
+        "digital": 71
+      },
+      {
+        "country": "Pays exemple B",
+        "overall": 54,
+        "safety": 58,
+        "legal": 50,
+        "children": 55,
+        "psych": 48,
+        "digital": 60
+      },
+      {
+        "country": "Pays exemple C",
+        "overall": 41,
+        "safety": 40,
+        "legal": 45,
+        "children": 38,
+        "psych": 35,
+        "digital": 48
+      }
     ]
   },
   "rightsmap": {
@@ -163,6 +199,18 @@
       "resources": "Autres ressources"
     },
     "placeholder": "Contenu détaillé à venir manuellement pour ce pays.",
-    "countries_demo": ["France", "Allemagne", "Espagne", "États-Unis", "Canada", "Maroc", "Liban", "Turquie", "Kenya", "Brésil"]
-  }
+    "countries_demo": [
+      "France",
+      "Allemagne",
+      "Espagne",
+      "États-Unis",
+      "Canada",
+      "Maroc",
+      "Liban",
+      "Turquie",
+      "Kenya",
+      "Brésil"
+    ]
+  },
+  "quick_exit_aria": "Quitter rapidement ce site"
 }
