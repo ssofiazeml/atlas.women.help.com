@@ -142,6 +142,14 @@ export type AdminCenter = {
   category?: string
   createdAt: number
   translations?: Translations
+  // Extended fields for the redesigned map card
+  email?: string
+  hours?: string
+  cost?: 'free' | 'partial' | 'paid' | ''
+  languages?: string
+  categories?: string[]
+  photo?: string // data URL
+  open24?: boolean
 }
 const K_CENTERS = 'atlas:admin:centers:v1'
 export const getCenters = () => readList<AdminCenter>(K_CENTERS)
@@ -280,6 +288,20 @@ export type HomeTexts = {
 const K_HOME = 'atlas:admin:home-texts:v1'
 export const getHomeTexts = (): HomeTexts => readObject<HomeTexts>(K_HOME) || {}
 export const saveHomeTexts = (t: HomeTexts) => writeObject(K_HOME, t)
+
+// ---- 8. About page --------------------------------------------------------
+export type AboutTexts = {
+  title?: string
+  intro?: string
+  mission?: string
+  includes?: string
+  principles?: string
+  photo?: string // data URL, admin-uploaded
+  translations?: Translations
+}
+const K_ABOUT = 'atlas:admin:about:v1'
+export const getAboutTexts = (): AboutTexts => readObject<AboutTexts>(K_ABOUT) || {}
+export const saveAboutTexts = (t: AboutTexts) => writeObject(K_ABOUT, t)
 
 // ---------------------------------------------------------------------------
 // 8. Seed-item overrides + hidden list

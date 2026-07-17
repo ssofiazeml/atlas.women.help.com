@@ -20,6 +20,11 @@ body {
   line-height: 1.5;
 }
 
+html, body { overflow-x: hidden; max-width: 100vw; }
+img, video { max-width: 100%; height: auto; }
+.leaflet-container { width: 100%; }
+.atlas-marker-highlight { filter: hue-rotate(140deg) saturate(1.6); }
+
 a {
   color: var(--safe-accent);
 }

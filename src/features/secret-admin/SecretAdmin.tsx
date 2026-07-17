@@ -50,6 +50,9 @@ import {
   getHomeTexts,
   saveHomeTexts,
   type HomeTexts,
+  getAboutTexts,
+  saveAboutTexts,
+  type AboutTexts,
 } from '../../lib/contentStore'
 import {
   setSeedOverride,
@@ -81,6 +84,7 @@ const SESSION_KEY = 'atlas:secret-admin:authed'
 
 type TabKey =
   | 'home'
+  | 'about'
   | 'centers'
   | 'ratings'
   | 'checklists'
@@ -91,6 +95,7 @@ type TabKey =
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'home', label: 'Главная — общие тексты' },
+  { key: 'about', label: 'О проекте' },
   { key: 'centers', label: 'Карта центров помощи' },
   { key: 'ratings', label: 'Рейтинг безопасности стран' },
   { key: 'checklists', label: 'Чек-листы' },
@@ -210,6 +215,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
 
         <section className="min-w-0">
           {tab === 'home' && <HomeTextsSection />}
+          {tab === 'about' && <AboutSection />}
           {tab === 'centers' && <CentersSection />}
           {tab === 'ratings' && <RatingsSection />}
           {tab === 'checklists' && <ChecklistsSection />}
@@ -538,6 +544,71 @@ function HomeTextsSection() {
             className={inputCls}
             placeholder="например: help@atlas.org"
           />
+        </Field>
+        <div className="flex items-center gap-3">
+          <SaveBtn>{busy ? 'Перевожу и сохраняю…' : 'Сохранить'}</SaveBtn>
+          {saved && <span className="text-sm text-green-700">Сохранено ✓</span>}
+        </div>
+      </form>
+    </SectionShell>
+  )
+}
+
+// === 1b. ABOUT PAGE ========================================================
+function AboutSection() {
+  const [texts, setTexts] = useState<AboutTexts>(() => getAboutTexts())
+  const [busy, setBusy] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  const onPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 3 * 1024 * 1024) { alert('Фото слишком большое (макс. 3 МБ).'); return }
+    setTexts({ ...texts, photo: await readFileAsDataUrl(file) })
+  }
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setBusy(true)
+    const translations = await translateFields(
+      { title: texts.title, intro: texts.intro, mission: texts.mission, includes: texts.includes, principles: texts.principles },
+      ['title', 'intro', 'mission', 'includes', 'principles']
+    )
+    saveAboutTexts({ ...texts, translations })
+    setBusy(false)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1500)
+  }
+
+  return (
+    <SectionShell
+      title="Страница «О проекте»"
+      intro="Здесь можно полностью изменить любой текст на странице /about. Пустые поля вернут стандартный текст."
+    >
+      <form onSubmit={submit} className="safe-card bg-white grid gap-4">
+        <Field label="Заголовок">
+          <input value={texts.title || ''} onChange={(e) => setTexts({ ...texts, title: e.target.value })} className={inputCls} />
+        </Field>
+        <Field label="Вводный текст (абзацы разделяйте пустой строкой)">
+          <textarea rows={8} value={texts.intro || ''} onChange={(e) => setTexts({ ...texts, intro: e.target.value })} className={inputCls} />
+        </Field>
+        <Field label="Миссия">
+          <textarea rows={4} value={texts.mission || ''} onChange={(e) => setTexts({ ...texts, mission: e.target.value })} className={inputCls} />
+        </Field>
+        <Field label="Что включает платформа (по одному пункту на строку)">
+          <textarea rows={6} value={texts.includes || ''} onChange={(e) => setTexts({ ...texts, includes: e.target.value })} className={inputCls} />
+        </Field>
+        <Field label="Принципы проекта (по одному пункту на строку)">
+          <textarea rows={6} value={texts.principles || ''} onChange={(e) => setTexts({ ...texts, principles: e.target.value })} className={inputCls} />
+        </Field>
+        <Field label="Фото для страницы (опционально)">
+          <input type="file" accept="image/*" onChange={onPhoto} className="text-sm" />
+          {texts.photo && (
+            <div className="mt-2 flex items-center gap-3">
+              <img src={texts.photo} alt="" className="h-24 rounded border" />
+              <button type="button" onClick={() => setTexts({ ...texts, photo: undefined })} className="text-xs text-red-600 underline">Удалить фото</button>
+            </div>
+          )}
         </Field>
         <div className="flex items-center gap-3">
           <SaveBtn>{busy ? 'Перевожу и сохраняю…' : 'Сохранить'}</SaveBtn>

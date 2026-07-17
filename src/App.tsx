@@ -13,6 +13,7 @@ import { SuggestPage } from './features/suggest/SuggestPage'
 import { ResearchLibrary } from './features/research/ResearchLibrary'
 import { DigitalDiplomacy } from './features/diplomacy/DigitalDiplomacy'
 import { SecretAdmin } from './features/secret-admin/SecretAdmin'
+import { About } from './features/about/About'
 import {
   getHomeCards,
   subscribeHomeCards,
@@ -46,6 +47,7 @@ function Header() {
     { to: '/suggest', label: t('nav.suggest') || 'Suggest' },
     { to: '/research', label: t('nav.research') },
     { to: '/diplomacy', label: t('nav.diplomacy') },
+    { to: '/about', label: t('nav.about') || 'О проекте' },
   ]
 
   return (
@@ -232,6 +234,7 @@ function App() {
           <Route path="/suggest" element={<SuggestPage />} />
           <Route path="/research" element={<ResearchLibrary />} />
           <Route path="/diplomacy" element={<DigitalDiplomacy />} />
+          <Route path="/about" element={<About />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/secret-admin" element={<SecretAdmin />} />
           <Route path="*" element={<div className="p-14 text-center">Not found. <Link to="/" className="underline">Return home</Link></div>} />
