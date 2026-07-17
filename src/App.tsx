@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { QuickExitButton } from './components/QuickExitButton'
 import { LanguageSwitcher } from './components/LanguageSwitcher'
@@ -12,8 +12,6 @@ import { DisguisedModeToggle } from './components/DisguisedMode'
 import { SuggestPage } from './features/suggest/SuggestPage'
 import { ResearchLibrary } from './features/research/ResearchLibrary'
 import { DigitalDiplomacy } from './features/diplomacy/DigitalDiplomacy'
-import { SafeBridgeIndex } from './features/index/SafeBridgeIndex'
-import { WorldRightsMap } from './features/rights/WorldRightsMap'
 import { SecretAdmin } from './features/secret-admin/SecretAdmin'
 import {
   getHomeCards,
@@ -27,6 +25,8 @@ import { pickLocalized } from './lib/translate'
 
 function Header() {
   const { t, i18n } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const location = useLocation()
 
   // Sync RTL dir on header render / lang change
   React.useEffect(() => {
@@ -34,34 +34,70 @@ function Header() {
     document.documentElement.dir = dir
   }, [i18n.language])
 
+  React.useEffect(() => {
+    setOpen(false)
+  }, [location.pathname])
+
+  const navLinks = [
+    { to: '/map', label: t('nav.map') },
+    { to: '/chat', label: t('nav.chat') },
+    { to: '/checklists', label: t('nav.checklists') },
+    { to: '/stories', label: t('nav.stories') },
+    { to: '/suggest', label: t('nav.suggest') || 'Suggest' },
+    { to: '/research', label: t('nav.research') },
+    { to: '/diplomacy', label: t('nav.diplomacy') },
+  ]
+
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="font-semibold text-xl tracking-tight text-safe-800">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 h-16 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <Link to="/" className="font-semibold text-lg sm:text-xl tracking-tight text-safe-800 truncate">
             {t('app_name')}
           </Link>
-          <span className="text-xs text-safe-700 hidden sm:inline">{t('tagline')}</span>
+          <span className="text-xs text-safe-700 hidden lg:inline">{t('tagline')}</span>
         </div>
 
-        <nav className="flex items-center gap-4 text-sm flex-wrap">
-          <Link to="/map" className="hover:underline">{t('nav.map')}</Link>
-          <Link to="/chat" className="hover:underline">{t('nav.chat')}</Link>
-          <Link to="/checklists" className="hover:underline">{t('nav.checklists')}</Link>
-          <Link to="/stories" className="hover:underline">{t('nav.stories')}</Link>
-          <Link to="/suggest" className="hover:underline">{t('nav.suggest') || 'Suggest'}</Link>
-          <span className="text-slate-300">|</span>
-          <Link to="/research" className="hover:underline">{t('nav.research')}</Link>
-          <Link to="/diplomacy" className="hover:underline">{t('nav.diplomacy')}</Link>
-          <Link to="/index" className="hover:underline">{t('nav.index')}</Link>
-          <Link to="/rightsmap" className="hover:underline">{t('nav.rightsmap')}</Link>
-        </nav>
-
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <LanguageSwitcher />
           <QuickExitButton />
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            aria-label={t('nav.menu') || 'Menu'}
+            className="inline-flex items-center justify-center w-9 h-9 rounded border border-slate-200 bg-white hover:bg-slate-50 text-safe-800"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+          </button>
         </div>
       </div>
+
+      {open && (
+        <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true">
+          <div className="absolute inset-0 bg-slate-900/40" onClick={() => setOpen(false)} />
+          <aside className="absolute top-0 right-0 h-full w-[85%] max-w-xs bg-white shadow-xl flex flex-col animate-in slide-in-from-right">
+            <div className="h-16 px-4 flex items-center justify-between border-b">
+              <span className="font-semibold text-safe-800">{t('app_name')}</span>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Close"
+                className="w-9 h-9 inline-flex items-center justify-center rounded hover:bg-slate-100"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+              </button>
+            </div>
+            <nav className="flex-1 overflow-y-auto p-2">
+              <Link to="/" className="block px-3 py-2.5 rounded hover:bg-slate-50 text-safe-800 font-medium">{t('nav.home') || t('app_name')}</Link>
+              {navLinks.map((l) => (
+                <Link key={l.to} to={l.to} className="block px-3 py-2.5 rounded hover:bg-slate-50 text-slate-700">
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
+          </aside>
+        </div>
+      )}
     </header>
   )
 }
@@ -96,8 +132,6 @@ function Home() {
     { id: 'seed-card-stories', title: t('home.stories'), description: t('home.stories_desc'), link: '/stories' },
     { id: 'seed-card-research', title: t('nav.research'), description: t('research.intro'), link: '/research' },
     { id: 'seed-card-diplomacy', title: t('nav.diplomacy'), description: t('diplomacy.intro'), link: '/diplomacy' },
-    { id: 'seed-card-index', title: t('nav.index'), description: t('safebridge.intro'), link: '/index' },
-    { id: 'seed-card-rightsmap', title: t('nav.rightsmap'), description: t('rightsmap.intro'), link: '/rightsmap' },
   ])
 
   return (
@@ -198,8 +232,6 @@ function App() {
           <Route path="/suggest" element={<SuggestPage />} />
           <Route path="/research" element={<ResearchLibrary />} />
           <Route path="/diplomacy" element={<DigitalDiplomacy />} />
-          <Route path="/index" element={<SafeBridgeIndex />} />
-          <Route path="/rightsmap" element={<WorldRightsMap />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/secret-admin" element={<SecretAdmin />} />
           <Route path="*" element={<div className="p-14 text-center">Not found. <Link to="/" className="underline">Return home</Link></div>} />
