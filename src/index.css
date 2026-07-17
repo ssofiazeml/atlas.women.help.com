@@ -24,20 +24,27 @@ a {
   color: var(--safe-accent);
 }
 
-.quick-exit {
+.quick-exit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   background-color: #334155;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.65rem;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
+  line-height: 1;
   border-radius: 6px;
   cursor: pointer;
+  white-space: nowrap;
   transition: background-color 0.1s ease;
 }
-
-.quick-exit:hover {
-  background-color: #1e293b;
+.quick-exit-btn:hover { background-color: #1e293b; }
+.quick-exit-label { display: inline; }
+@media (max-width: 480px) {
+  .quick-exit-label { display: none; }
+  .quick-exit-btn { padding: 0.4rem 0.5rem; }
 }
 
 .language-switch select {

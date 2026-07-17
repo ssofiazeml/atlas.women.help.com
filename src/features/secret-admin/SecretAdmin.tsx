@@ -848,7 +848,7 @@ function RatingsSection() {
   return (
     <SectionShell
       title="Рейтинг безопасности стран"
-      intro="Записи отображаются в разделе «Индекс SafeBridge» (/index) и на карте прав (/rightsmap). Поле «Цвет» используется для маркера страны на карте."
+      intro="Записи по странам используются для внутреннего справочника. Поле «Цвет» — маркер страны."
     >
       <SeedItemsBlock<SeedRating>
         sectionKey="ratings"

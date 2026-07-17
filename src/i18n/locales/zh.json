@@ -10,10 +10,10 @@
     "admin": "管理",
     "research": "研究图书馆",
     "diplomacy": "数字外交",
-    "index": "SafeBridge 指数",
-    "rightsmap": "世界权利地图"
+    "menu": "菜单",
+    "home": "首页"
   },
-  "quick_exit": "快速离开本网站",
+  "quick_exit": "快速离开",
   "home": {
     "title": "一个安静的援助资源目录",
     "intro": "在无需暴露身份的情况下获取帮助信息、指导和故事。您在此处的活动留痕最少。",
@@ -354,9 +354,33 @@
       "digital": "数字安全"
     },
     "demo": [
-      {"country": "示例国家 A", "overall": 68, "safety": 72, "legal": 65, "children": 70, "psych": 60, "digital": 71},
-      {"country": "示例国家 B", "overall": 54, "safety": 58, "legal": 50, "children": 55, "psych": 48, "digital": 60},
-      {"country": "示例国家 C", "overall": 41, "safety": 40, "legal": 45, "children": 38, "psych": 35, "digital": 48}
+      {
+        "country": "示例国家 A",
+        "overall": 68,
+        "safety": 72,
+        "legal": 65,
+        "children": 70,
+        "psych": 60,
+        "digital": 71
+      },
+      {
+        "country": "示例国家 B",
+        "overall": 54,
+        "safety": 58,
+        "legal": 50,
+        "children": 55,
+        "psych": 48,
+        "digital": 60
+      },
+      {
+        "country": "示例国家 C",
+        "overall": 41,
+        "safety": 40,
+        "legal": 45,
+        "children": 38,
+        "psych": 35,
+        "digital": 48
+      }
     ]
   },
   "rightsmap": {
@@ -371,6 +395,18 @@
       "resources": "更多资源"
     },
     "placeholder": "该国的详细内容将在未来手动提供。",
-    "countries_demo": ["法国", "德国", "西班牙", "美国", "加拿大", "摩洛哥", "黎巴嫩", "土耳其", "肯尼亚", "巴西"]
-  }
+    "countries_demo": [
+      "法国",
+      "德国",
+      "西班牙",
+      "美国",
+      "加拿大",
+      "摩洛哥",
+      "黎巴嫩",
+      "土耳其",
+      "肯尼亚",
+      "巴西"
+    ]
+  },
+  "quick_exit_aria": "快速离开本网站"
 }
