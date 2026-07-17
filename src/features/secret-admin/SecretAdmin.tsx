@@ -50,6 +50,9 @@ import {
   getHomeTexts,
   saveHomeTexts,
   type HomeTexts,
+  getAboutTexts,
+  saveAboutTexts,
+  type AboutTexts,
 } from '../../lib/contentStore'
 import {
   setSeedOverride,
@@ -81,6 +84,7 @@ const SESSION_KEY = 'atlas:secret-admin:authed'
 
 type TabKey =
   | 'home'
+  | 'about'
   | 'centers'
   | 'ratings'
   | 'checklists'
@@ -91,6 +95,7 @@ type TabKey =
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'home', label: 'Главная — общие тексты' },
+  { key: 'about', label: 'О проекте' },
   { key: 'centers', label: 'Карта центров помощи' },
   { key: 'ratings', label: 'Рейтинг безопасности стран' },
   { key: 'checklists', label: 'Чек-листы' },
@@ -210,6 +215,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
 
         <section className="min-w-0">
           {tab === 'home' && <HomeTextsSection />}
+          {tab === 'about' && <AboutSection />}
           {tab === 'centers' && <CentersSection />}
           {tab === 'ratings' && <RatingsSection />}
           {tab === 'checklists' && <ChecklistsSection />}
