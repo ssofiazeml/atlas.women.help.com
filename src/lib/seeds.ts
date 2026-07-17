@@ -154,7 +154,5 @@ export function getSeedHomeCards(): SeedHomeCard[] {
     { id: 'seed-card-stories', title: t('home.stories'), description: t('home.stories_desc'), link: '/stories' },
     { id: 'seed-card-research', title: t('nav.research'), description: t('research.intro'), link: '/research' },
     { id: 'seed-card-diplomacy', title: t('nav.diplomacy'), description: t('diplomacy.intro'), link: '/diplomacy' },
-    { id: 'seed-card-index', title: t('nav.index'), description: t('safebridge.intro'), link: '/index' },
-    { id: 'seed-card-rightsmap', title: t('nav.rightsmap'), description: t('rightsmap.intro'), link: '/rightsmap' },
   ]
 }
