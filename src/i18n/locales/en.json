@@ -409,5 +409,31 @@
       "Brazil"
     ]
   },
-  "quick_exit_aria": "Quickly leave this site"
+  "quick_exit_aria": "Quickly leave this site",
+  "map": {
+    "search_placeholder": "Country, city, address or organisation name…",
+    "search": "Search",
+    "all_countries": "All countries",
+    "all_categories": "All categories",
+    "all_languages": "All languages",
+    "only_24_7": "24/7",
+    "only_free": "Free",
+    "clear_filters": "Clear filters",
+    "empty": "No organisations match these filters.",
+    "found": "Found: {{count}}",
+    "empty_all": "No data yet. Add organisations from the admin panel."
+  },
+  "categories": {
+    "shelter": "Crisis shelter",
+    "domestic": "Domestic violence",
+    "sexual": "Sexual violence",
+    "legal": "Legal aid",
+    "psychological": "Psychological support",
+    "migrant": "Migrant support",
+    "children": "Support for children",
+    "emergency": "Emergency help",
+    "medical": "Medical help",
+    "hotline": "Hotline",
+    "crisis": "Crisis centre"
+  }
 }

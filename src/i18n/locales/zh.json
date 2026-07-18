@@ -409,5 +409,31 @@
       "巴西"
     ]
   },
-  "quick_exit_aria": "快速离开本网站"
+  "quick_exit_aria": "快速离开本网站",
+  "map": {
+    "search_placeholder": "国家、城市、地址或组织名称…",
+    "search": "搜索",
+    "all_countries": "所有国家",
+    "all_categories": "所有类别",
+    "all_languages": "所有语言",
+    "only_24_7": "24小时",
+    "only_free": "免费",
+    "clear_filters": "清除筛选",
+    "empty": "没有符合筛选条件的组织。",
+    "found": "找到：{{count}}",
+    "empty_all": "暂无数据。请在管理面板添加组织。"
+  },
+  "categories": {
+    "shelter": "紧急庇护所",
+    "domestic": "家庭暴力",
+    "sexual": "性暴力",
+    "legal": "法律援助",
+    "psychological": "心理支持",
+    "migrant": "移民援助",
+    "children": "儿童援助",
+    "emergency": "紧急援助",
+    "medical": "医疗援助",
+    "hotline": "热线电话",
+    "crisis": "危机中心"
+  }
 }
