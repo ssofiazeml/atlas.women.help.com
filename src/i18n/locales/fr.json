@@ -213,5 +213,31 @@
       "Brésil"
     ]
   },
-  "quick_exit_aria": "Quitter rapidement ce site"
+  "quick_exit_aria": "Quitter rapidement ce site",
+  "map": {
+    "search_placeholder": "Pays, ville, adresse ou nom de l’organisation…",
+    "search": "Rechercher",
+    "all_countries": "Tous les pays",
+    "all_categories": "Toutes catégories",
+    "all_languages": "Toutes langues",
+    "only_24_7": "24/7",
+    "only_free": "Gratuit",
+    "clear_filters": "Réinitialiser",
+    "empty": "Aucune organisation ne correspond aux filtres.",
+    "found": "Trouvées : {{count}}",
+    "empty_all": "Aucune donnée. Ajoutez des organisations dans l’admin."
+  },
+  "categories": {
+    "shelter": "Hébergement d’urgence",
+    "domestic": "Violence domestique",
+    "sexual": "Violence sexuelle",
+    "legal": "Aide juridique",
+    "psychological": "Soutien psychologique",
+    "migrant": "Aide aux migrantes",
+    "children": "Aide aux enfants",
+    "emergency": "Aide d’urgence",
+    "medical": "Aide médicale",
+    "hotline": "Ligne d’écoute",
+    "crisis": "Centre de crise"
+  }
 }

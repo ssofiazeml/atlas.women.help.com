@@ -213,5 +213,31 @@
       "البرازيل"
     ]
   },
-  "quick_exit_aria": "مغادرة الموقع بسرعة"
+  "quick_exit_aria": "مغادرة الموقع بسرعة",
+  "map": {
+    "search_placeholder": "الدولة، المدينة، العنوان أو اسم المنظمة…",
+    "search": "بحث",
+    "all_countries": "كل الدول",
+    "all_categories": "كل الفئات",
+    "all_languages": "كل اللغات",
+    "only_24_7": "24/7",
+    "only_free": "مجاني",
+    "clear_filters": "مسح المرشحات",
+    "empty": "لا توجد منظمات مطابقة.",
+    "found": "النتائج: {{count}}",
+    "empty_all": "لا توجد بيانات بعد. أضف منظمات من لوحة الإدارة."
+  },
+  "categories": {
+    "shelter": "مأوى للأزمات",
+    "domestic": "العنف المنزلي",
+    "sexual": "العنف الجنسي",
+    "legal": "مساعدة قانونية",
+    "psychological": "دعم نفسي",
+    "migrant": "دعم المهاجرات",
+    "children": "دعم الأطفال",
+    "emergency": "مساعدة طارئة",
+    "medical": "مساعدة طبية",
+    "hotline": "خط ساخن",
+    "crisis": "مركز أزمات"
+  }
 }

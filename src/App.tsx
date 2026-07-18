@@ -51,7 +51,7 @@ function Header() {
   ]
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-[1000]">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 h-16 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <Link to="/" className="font-semibold text-lg sm:text-xl tracking-tight text-safe-800 truncate">
@@ -75,7 +75,7 @@ function Header() {
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-[1010]" role="dialog" aria-modal="true">
           <div className="absolute inset-0 bg-slate-900/40" onClick={() => setOpen(false)} />
           <aside className="absolute top-0 right-0 h-full w-[85%] max-w-xs bg-white shadow-xl flex flex-col animate-in slide-in-from-right">
             <div className="h-16 px-4 flex items-center justify-between border-b">
