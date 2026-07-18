@@ -6,9 +6,11 @@ import { Search, Navigation, ExternalLink, X } from 'lucide-react'
 import {
   getCenters,
   subscribeContent,
+  applySeedTransforms,
   type AdminCenter,
 } from '../../lib/contentStore'
 import { geocodeAddress, pickLocalized } from '../../lib/translate'
+import { getSeedCenters } from '../../lib/seeds'
 
 // Fix default marker icons for Leaflet + Vite
 // @ts-ignore
@@ -19,18 +21,24 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 })
 
-const CATEGORIES: { key: string; label: string }[] = [
-  { key: 'shelter', label: 'Кризисное убежище' },
-  { key: 'domestic', label: 'Домашнее насилие' },
-  { key: 'sexual', label: 'Сексуальное насилие' },
-  { key: 'legal', label: 'Юридическая помощь' },
-  { key: 'psychological', label: 'Психологическая поддержка' },
-  { key: 'migrant', label: 'Помощь мигранткам' },
-  { key: 'children', label: 'Помощь детям' },
-  { key: 'emergency', label: 'Экстренная помощь' },
-  { key: 'medical', label: 'Медицинская помощь' },
-  { key: 'hotline', label: 'Горячая линия' },
+const CATEGORY_KEYS = [
+  'shelter', 'domestic', 'sexual', 'legal', 'psychological',
+  'migrant', 'children', 'emergency', 'medical', 'hotline', 'crisis',
+] as const
+
+// Preferred order for the language filter: most common languages first,
+// remaining ones follow alphabetically.
+const POPULAR_LANGS = [
+  'English', 'Русский', 'Español', 'Français', 'Deutsch',
+  'العربية', 'Arabic', 'Türkçe', 'Turkish', '中文', 'Chinese',
+  'Português', 'Portuguese', 'Italiano', 'Italian', 'Polski', 'Polish',
+  'Українська', 'Ukrainian', 'Farsi', 'Persian', 'فارسی', 'Urdu', 'اردو',
 ]
+function langRank(name: string): number {
+  const n = name.toLowerCase().trim()
+  const idx = POPULAR_LANGS.findIndex((p) => p.toLowerCase() === n)
+  return idx === -1 ? 999 : idx
+}
 
 const highlightIcon = new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -58,11 +66,33 @@ function FlyTo({ target }: { target: { lat: number; lng: number; zoom?: number }
 }
 
 export function MapView() {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const lang = (i18n.language || 'en').split('-')[0]
-  const [centers, setCenters] = useState<AdminCenter[]>(() => getCenters())
 
-  useEffect(() => subscribeContent(() => setCenters(getCenters())), [])
+  // Merge the built-in "seed" organisations (140+ entries from demoData)
+  // with any admin-added centers. Seeds run through applySeedTransforms so
+  // the admin can edit / hide them without touching the source code.
+  const buildAll = (): AdminCenter[] => {
+    const seeds = getSeedCenters().map<AdminCenter>((s) => ({
+      id: s.id,
+      name: s.name,
+      city: s.city || '',
+      country: s.country || '',
+      description: s.description,
+      contact: s.contact_phone,
+      website: s.contact_web,
+      lat: s.lat,
+      lng: s.lng,
+      category: s.category,
+      categories: s.category ? [s.category] : [],
+      createdAt: 0,
+    }))
+    const withOverrides = applySeedTransforms<AdminCenter>('centers', seeds)
+    return [...getCenters(), ...withOverrides]
+  }
+  const [centers, setCenters] = useState<AdminCenter[]>(() => buildAll())
+  useEffect(() => subscribeContent(() => setCenters(buildAll())), [])
+  useEffect(() => setCenters(buildAll()), [i18n.language])
 
   // ---- Search (address / org / city / country) ----
   const [query, setQuery] = useState('')
@@ -82,8 +112,10 @@ export function MapView() {
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   const countries = useMemo(
-    () => Array.from(new Set(centers.map((c) => c.country).filter(Boolean))).sort(),
-    [centers]
+    () =>
+      Array.from(new Set(centers.map((c) => c.country).filter(Boolean)))
+        .sort((a, b) => a.localeCompare(b, lang)),
+    [centers, lang]
   )
 
   const filtered = useMemo(() => {
@@ -113,8 +145,15 @@ export function MapView() {
         .filter(Boolean)
         .forEach((l) => set.add(l))
     }
-    return Array.from(set).sort()
-  }, [centers])
+    return Array.from(set).sort((a, b) => {
+      const ra = langRank(a)
+      const rb = langRank(b)
+      if (ra !== rb) return ra - rb
+      return a.localeCompare(b, lang)
+    })
+  }, [centers, lang])
+
+  const catLabel = (k: string) => t(`categories.${k}`, { defaultValue: k })
 
   const handleSelectCard = (c: AdminCenter) => {
     setSelectedId(c.id)
@@ -176,7 +215,7 @@ export function MapView() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Страна, город, адрес, улица или название организации…"
+            placeholder={t('map.search_placeholder', { defaultValue: 'Country, city, address or organisation name…' })}
             className="flex-1 min-w-0 border border-slate-200 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-safe-teal"
           />
           <button
@@ -184,30 +223,30 @@ export function MapView() {
             disabled={searching}
             className="bg-safe-800 text-white text-sm rounded-md px-3 md:px-4 py-2 hover:opacity-90 disabled:opacity-60 shrink-0"
           >
-            {searching ? '…' : 'Найти'}
+            {searching ? '…' : t('map.search', { defaultValue: 'Search' })}
           </button>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
           <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className="border border-slate-200 rounded-md px-2 py-1.5 bg-white min-w-0">
-            <option value="">Все страны</option>
+            <option value="">{t('map.all_countries', { defaultValue: 'All countries' })}</option>
             {countries.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
           <select value={filterCat} onChange={(e) => setFilterCat(e.target.value)} className="border border-slate-200 rounded-md px-2 py-1.5 bg-white min-w-0">
-            <option value="">Все категории</option>
-            {CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+            <option value="">{t('map.all_categories', { defaultValue: 'All categories' })}</option>
+            {CATEGORY_KEYS.map((k) => <option key={k} value={k}>{catLabel(k)}</option>)}
           </select>
           <select value={filterLang} onChange={(e) => setFilterLang(e.target.value)} className="border border-slate-200 rounded-md px-2 py-1.5 bg-white min-w-0">
-            <option value="">Все языки</option>
+            <option value="">{t('map.all_languages', { defaultValue: 'All languages' })}</option>
             {languages.map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
           <label className="flex items-center gap-2 border border-slate-200 rounded-md px-2 py-1.5 bg-white cursor-pointer">
             <input type="checkbox" checked={only24} onChange={(e) => setOnly24(e.target.checked)} />
-            <span>Круглосуточно</span>
+            <span>{t('map.only_24_7', { defaultValue: '24/7' })}</span>
           </label>
           <label className="flex items-center gap-2 border border-slate-200 rounded-md px-2 py-1.5 bg-white cursor-pointer">
             <input type="checkbox" checked={onlyFree} onChange={(e) => setOnlyFree(e.target.checked)} />
-            <span>Бесплатно</span>
+            <span>{t('map.only_free', { defaultValue: 'Free' })}</span>
           </label>
         </div>
 
@@ -217,7 +256,7 @@ export function MapView() {
             onClick={clearFilters}
             className="self-start text-xs text-safe-800 underline"
           >
-            Сбросить фильтры
+            {t('map.clear_filters', { defaultValue: 'Clear filters' })}
           </button>
         )}
       </form>
@@ -279,8 +318,8 @@ export function MapView() {
         <aside className="flex flex-col gap-3 lg:max-h-[min(70vh,640px)] lg:overflow-y-auto lg:pr-1">
           <div className="text-xs text-slate-500">
             {filtered.length === 0
-              ? 'Данные пока отсутствуют — по этим фильтрам ничего не найдено.'
-              : `Найдено организаций: ${filtered.length}`}
+              ? t('map.empty', { defaultValue: 'No organisations match the current filters.' })
+              : t('map.found', { count: filtered.length, defaultValue: `Found: ${filtered.length}` })}
           </div>
 
           {filtered.map((c) => (
@@ -288,6 +327,7 @@ export function MapView() {
               key={c.id}
               c={c}
               lang={lang}
+              catLabel={catLabel}
               selected={selectedId === c.id}
               onSelect={() => handleSelectCard(c)}
               cardRef={(el) => {
@@ -298,7 +338,7 @@ export function MapView() {
 
           {centers.length === 0 && (
             <div className="safe-card text-sm text-slate-500 bg-white">
-              Данные пока отсутствуют. Добавьте организации в панели администратора.
+              {t('map.empty_all', { defaultValue: 'No data yet. Add organisations from the admin panel.' })}
             </div>
           )}
         </aside>
@@ -310,12 +350,14 @@ export function MapView() {
 function CenterCard({
   c,
   lang,
+  catLabel,
   selected,
   onSelect,
   cardRef,
 }: {
   c: AdminCenter
   lang: string
+  catLabel: (k: string) => string
   selected: boolean
   onSelect: () => void
   cardRef: (el: HTMLDivElement | null) => void
@@ -325,7 +367,6 @@ function CenterCard({
   const city = pickLocalized(c, 'city', lang) || c.city
   const country = pickLocalized(c, 'country', lang) || c.country
   const cats = normalizeCategories(c)
-  const catLabel = (k: string) => CATEGORIES.find((x) => x.key === k)?.label || k
   const costLabel =
     c.cost === 'free' ? 'Бесплатно' : c.cost === 'partial' ? 'Частично бесплатно' : c.cost === 'paid' ? 'Платно' : ''
 
