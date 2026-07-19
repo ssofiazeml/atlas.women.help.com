@@ -421,7 +421,20 @@
     "clear_filters": "清除筛选",
     "empty": "没有符合筛选条件的组织。",
     "found": "找到：{{count}}",
-    "empty_all": "暂无数据。请在管理面板添加组织。"
+    "empty_all": "暂无数据。请在管理面板添加组织。",
+    "only_open_now": "当前开放",
+    "only_no_docs": "无证件也可接待",
+    "filter_lang_label": "服务语言",
+    "route_title": "路线",
+    "route_locate": "使用我的位置",
+    "route_distance": "距离",
+    "route_time_walk": "步行",
+    "route_time_car": "驾车",
+    "route_close": "关闭路线",
+    "route_locating": "正在定位…",
+    "route_denied": "位置访问被拒绝。请在浏览器中允许。",
+    "route_error": "无法构建路线。",
+    "route_no_coords": "该机构暂无坐标。"
   },
   "categories": {
     "shelter": "紧急庇护所",
@@ -435,5 +448,32 @@
     "medical": "医疗援助",
     "hotline": "热线电话",
     "crisis": "危机中心"
+  },
+  "card": {
+    "languages": "语言",
+    "hours": "开放时间",
+    "cost": "费用",
+    "phone": "电话",
+    "email": "邮箱",
+    "website": "网站",
+    "open_24_7": "24/7",
+    "cost_free": "免费",
+    "cost_partial": "部分免费",
+    "cost_paid": "收费",
+    "no_docs_needed": "无证件也可接待",
+    "btn_route": "路线",
+    "btn_call": "拨打",
+    "btn_website": "官方网站"
+  },
+  "about": {
+    "eyebrow": "关于项目",
+    "title": "Atlas Women",
+    "mission_heading": "使命",
+    "includes_heading": "平台包含",
+    "principles_heading": "项目原则",
+    "intro": "Atlas Women 是一个独立的数字平台，旨在让关于女性帮助的信息更清晰、更易获得、更易使用，无论所在国家。\n\n项目关注性别安全、国际迁徙以及数字技术在获取可靠信息中的作用。\n\nAtlas Women 不是危机中心、政府机构或国际组织。项目独立地从公开且可核查的来源收集、整理并发布信息，帮助用户更快找到不同国家已有的支持服务。\n\n除机构地图外，平台还包括研究资料、匿名女性故事以及推荐新机构的功能。",
+    "mission": "让关于帮助的可靠信息尽可能易得，并展示数字技术如何在国际迁徙背景下降低信息门槛、保障女性安全。",
+    "includes": "互动式全球援助机构地图\n危机中心与支持服务目录\n匿名女性故事\n关于迁徙、数字外交和性别安全的研究资料\n推荐新机构\n分享您的故事",
+    "principles": "信息真实\n尊重用户隐私\n开放与可及\n项目独立\n持续更新数据库"
   }
 }
