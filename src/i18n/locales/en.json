@@ -421,7 +421,20 @@
     "clear_filters": "Clear filters",
     "empty": "No organisations match these filters.",
     "found": "Found: {{count}}",
-    "empty_all": "No data yet. Add organisations from the admin panel."
+    "empty_all": "No data yet. Add organisations from the admin panel.",
+    "only_open_now": "Open now",
+    "only_no_docs": "Accepts without documents",
+    "filter_lang_label": "Service language",
+    "route_title": "Route",
+    "route_locate": "Use my location",
+    "route_distance": "Distance",
+    "route_time_walk": "Walking",
+    "route_time_car": "By car",
+    "route_close": "Close route",
+    "route_locating": "Locating you…",
+    "route_denied": "Location access denied. Please allow it in the browser.",
+    "route_error": "Could not build the route.",
+    "route_no_coords": "This organisation has no coordinates yet."
   },
   "categories": {
     "shelter": "Crisis shelter",
@@ -435,5 +448,32 @@
     "medical": "Medical help",
     "hotline": "Hotline",
     "crisis": "Crisis centre"
+  },
+  "card": {
+    "languages": "Languages",
+    "hours": "Hours",
+    "cost": "Cost",
+    "phone": "Phone",
+    "email": "Email",
+    "website": "Website",
+    "open_24_7": "24/7",
+    "cost_free": "Free",
+    "cost_partial": "Partly free",
+    "cost_paid": "Paid",
+    "no_docs_needed": "Accepts without documents",
+    "btn_route": "Get directions",
+    "btn_call": "Call",
+    "btn_website": "Website"
+  },
+  "about": {
+    "eyebrow": "About",
+    "title": "Atlas Women",
+    "mission_heading": "Mission",
+    "includes_heading": "What the platform includes",
+    "principles_heading": "Project principles",
+    "intro": "Atlas Women is an independent digital platform created to make information about available help for women clearer, more accessible and easier to use regardless of the country of residence.\n\nThe project focuses on gender safety, international migration and the role of digital technology in providing access to verified information.\n\nAtlas Women is not a crisis centre, government agency or international organisation. The project independently collects, structures and publishes information from open, verifiable sources, helping users find existing support services in different countries faster.\n\nBeyond the map of organisations, the platform includes research materials, anonymous women's stories and the ability to suggest new organisations for review and inclusion.",
+    "mission": "To make verified information about help as accessible as possible and to show how digital technology can lower information barriers and support women's safety in the context of international migration.",
+    "includes": "an interactive world map of help organisations\na catalogue of crisis centres and support services\nanonymous women's stories\nresearch materials on migration, digital diplomacy and gender safety\nthe ability to suggest a new organisation\nthe ability to share your own story",
+    "principles": "accuracy of published information\nrespect for user privacy\nopenness and accessibility of information\nindependence of the project\ncontinuous development and updating of the database"
   }
 }

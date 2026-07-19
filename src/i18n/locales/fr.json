@@ -225,7 +225,20 @@
     "clear_filters": "Réinitialiser",
     "empty": "Aucune organisation ne correspond aux filtres.",
     "found": "Trouvées : {{count}}",
-    "empty_all": "Aucune donnée. Ajoutez des organisations dans l’admin."
+    "empty_all": "Aucune donnée. Ajoutez des organisations dans l’admin.",
+    "only_open_now": "Ouvert maintenant",
+    "only_no_docs": "Accueille sans papiers",
+    "filter_lang_label": "Langue de service",
+    "route_title": "Itinéraire",
+    "route_locate": "Utiliser ma position",
+    "route_distance": "Distance",
+    "route_time_walk": "À pied",
+    "route_time_car": "En voiture",
+    "route_close": "Fermer l'itinéraire",
+    "route_locating": "Localisation…",
+    "route_denied": "Accès à la localisation refusé. Autorisez-le dans le navigateur.",
+    "route_error": "Impossible de construire l'itinéraire.",
+    "route_no_coords": "Cette organisation n'a pas encore de coordonnées."
   },
   "categories": {
     "shelter": "Hébergement d’urgence",
@@ -239,5 +252,32 @@
     "medical": "Aide médicale",
     "hotline": "Ligne d’écoute",
     "crisis": "Centre de crise"
+  },
+  "card": {
+    "languages": "Langues",
+    "hours": "Horaires",
+    "cost": "Coût",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "website": "Site",
+    "open_24_7": "24h/24 et 7j/7",
+    "cost_free": "Gratuit",
+    "cost_partial": "Partiellement gratuit",
+    "cost_paid": "Payant",
+    "no_docs_needed": "Accueille sans papiers",
+    "btn_route": "Itinéraire",
+    "btn_call": "Appeler",
+    "btn_website": "Site officiel"
+  },
+  "about": {
+    "eyebrow": "À propos",
+    "title": "Atlas Women",
+    "mission_heading": "Mission",
+    "includes_heading": "Ce que propose la plateforme",
+    "principles_heading": "Principes du projet",
+    "intro": "Atlas Women est une plateforme numérique indépendante créée pour rendre l'information sur l'aide aux femmes plus claire, plus accessible et plus facile à utiliser, quel que soit le pays.\n\nLe projet est consacré à la sécurité des femmes, à la migration internationale et au rôle des technologies numériques dans l'accès à une information vérifiée.\n\nAtlas Women n'est ni un centre de crise, ni une agence publique, ni une organisation internationale. Le projet collecte, structure et publie de façon indépendante des informations issues de sources ouvertes et vérifiables pour aider à trouver plus vite les services de soutien existants.\n\nAu-delà de la carte des organisations, la plateforme propose des ressources, des témoignages anonymes et la possibilité de proposer de nouvelles organisations.",
+    "mission": "Rendre l'information vérifiée sur l'aide aussi accessible que possible et montrer comment les technologies numériques peuvent réduire les barrières informationnelles et soutenir la sécurité des femmes dans le contexte migratoire.",
+    "includes": "une carte mondiale interactive des organisations\nun catalogue de centres de crise et de services\ndes témoignages anonymes de femmes\ndes ressources sur la migration, la diplomatie numérique et la sécurité\nla possibilité de proposer une organisation\nla possibilité de partager votre histoire",
+    "principles": "fiabilité des informations publiées\nrespect de la confidentialité\nouverture et accessibilité\nindépendance du projet\nmise à jour continue de la base de données"
   }
 }
