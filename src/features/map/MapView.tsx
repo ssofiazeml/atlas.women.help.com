@@ -169,13 +169,12 @@ function RoutingLayer({
       waypoints: [L.latLng(from.lat, from.lng), L.latLng(to.lat, to.lng)],
       lineOptions: { styles: [{ color: '#0d9488', weight: 5, opacity: 0.85 }], extendToWaypoints: true, missingRouteTolerance: 0 },
       addWaypoints: false,
-      draggableWaypoints: false,
       fitSelectedRoutes: true,
       showAlternatives: false,
       show: false, // hide the built-in text panel; we render our own summary
       routeWhileDragging: false,
       createMarker: () => null, // waypoint markers hidden; our markers already show endpoints
-    }).addTo(map)
+    } as any).addTo(map)
 
     control.on('routesfound', (e: any) => {
       const r = e.routes?.[0]
