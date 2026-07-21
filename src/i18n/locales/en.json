@@ -162,7 +162,10 @@
       "expired_desc": "Your documents/pvisa have expired.",
       "expired_advice": "Different procedures apply per country regarding renewal or regularization. Many NGOs provide free legal help to migrants.",
       "status_desc": "I do not understand my residence status.",
-      "status_advice": "Seek free legal migration advice. Many refugee and migrant support organizations can clarify your rights."
+      "status_advice": "Seek free legal migration advice. Many refugee and migrant support organizations can clarify your rights.",
+      "escape_no_docs": "Escape without documents (aggressor holds them)",
+      "escape_no_docs_desc": "Step-by-step checklist: how to safely leave when your original documents are taken or locked away.",
+      "escape_no_docs_advice": "Detailed step-by-step guide is currently available in Russian. Please switch language to Русский to read the full checklist, or ask a Russian-speaking helper to translate it for you. Summary: your life is the priority — leave first, documents can be restored later; if possible, secretly photograph passport pages and send them to yourself; leave under an everyday pretext; go to a busy public place with security cameras and ask staff to call the police; file a police report and ask for a written receipt (it temporarily replaces your passport); then contact your consulate to obtain a return certificate."
     },
     "housing": {
       "what_happened": "What exactly happened?",
