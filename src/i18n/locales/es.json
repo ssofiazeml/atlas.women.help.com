@@ -160,7 +160,10 @@
       "expired_desc": "Tus documentos o visa han vencido.",
       "expired_advice": "Cada país tiene procedimientos de renovación o regularización. Muchas ONG ofrecen apoyo legal gratuito a mujeres migrantes.",
       "status_desc": "No entiendo mi situación de residencia.",
-      "status_advice": "Busca asesoría legal gratuita especializada en migración. Muchas organizaciones para migrantes pueden aclarar tus derechos."
+      "status_advice": "Busca asesoría legal gratuita especializada en migración. Muchas organizaciones para migrantes pueden aclarar tus derechos.",
+      "escape_no_docs": "Escapar sin documentos (el agresor los retiene)",
+      "escape_no_docs_desc": "Lista paso a paso: cómo salir con seguridad cuando sus documentos originales están confiscados o encerrados.",
+      "escape_no_docs_advice": "La guía detallada está disponible actualmente en ruso. Cambie el idioma a Русский para leer la lista completa, o pida ayuda a una persona rusoparlante. Resumen: su vida es lo primero — salga primero, los documentos se pueden recuperar; si es posible, fotografíe en secreto su pasaporte y envíese las fotos; salga con un pretexto cotidiano; vaya a un lugar público con cámaras y pida al personal que llame a la policía; presente una denuncia y exija un resguardo escrito (sustituye temporalmente su pasaporte); luego contacte con su consulado para obtener un salvoconducto."
     },
     "housing": {
       "what_happened": "¿Qué pasó exactamente?",

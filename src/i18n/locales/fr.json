@@ -279,5 +279,12 @@
     "mission": "Rendre l'information vérifiée sur l'aide aussi accessible que possible et montrer comment les technologies numériques peuvent réduire les barrières informationnelles et soutenir la sécurité des femmes dans le contexte migratoire.",
     "includes": "une carte mondiale interactive des organisations\nun catalogue de centres de crise et de services\ndes témoignages anonymes de femmes\ndes ressources sur la migration, la diplomatie numérique et la sécurité\nla possibilité de proposer une organisation\nla possibilité de partager votre histoire",
     "principles": "fiabilité des informations publiées\nrespect de la confidentialité\nouverture et accessibilité\nindépendance du projet\nmise à jour continue de la base de données"
+  },
+  "chatbot": {
+    "docs": {
+      "escape_no_docs": "Fuir sans documents (l'agresseur les retient)",
+      "escape_no_docs_desc": "Liste étape par étape : comment partir en sécurité lorsque vos documents originaux sont confisqués ou enfermés.",
+      "escape_no_docs_advice": "Le guide détaillé est actuellement disponible en russe. Passez la langue sur Русский pour lire la liste complète, ou demandez de l'aide à un locuteur russe. Résumé : votre vie passe avant tout — partez d'abord, les papiers peuvent être refaits ; si possible, photographiez discrètement votre passeport et envoyez-vous les photos ; sortez sous un prétexte banal ; rendez-vous dans un lieu public avec caméras et demandez au personnel d'appeler la police ; déposez une plainte et exigez un récépissé écrit (il remplace temporairement votre passeport) ; contactez ensuite votre consulat pour un laissez-passer."
+    }
   }
 }
