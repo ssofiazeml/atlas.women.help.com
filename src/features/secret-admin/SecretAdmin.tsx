@@ -79,7 +79,9 @@ import {
   type SeedHomeCard,
 } from '../../lib/seeds'
 
-const ADMIN_PASSWORD = 'Admin2026!'
+// The admin password is never hardcoded in the repository — it comes from the
+// environment (.env, which is git-ignored, or the hosting provider's secrets).
+const ADMIN_PASSWORD = (import.meta.env.VITE_ADMIN_PASSWORD || '') as string
 const SESSION_KEY = 'atlas:secret-admin:authed'
 
 type TabKey =
@@ -138,7 +140,11 @@ function LoginGate({ onSuccess }: { onSuccess: () => void }) {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
+    if (!ADMIN_PASSWORD) {
+      setError('Пароль администратора не настроен. Добавьте VITE_ADMIN_PASSWORD в .env')
+      return
+    }
+    if (password.trim().toLowerCase() === ADMIN_PASSWORD.trim().toLowerCase()) {
       setError('')
       onSuccess()
     } else {
