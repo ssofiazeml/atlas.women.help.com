@@ -87,7 +87,8 @@
       "Calma a los niños con rutinas y lectura. Muchos refugios ofrecen apoyo psicológico para niños.",
       "Memoriza la fecha de nacimiento de los niños, números de pasaporte y el número de emergencia.",
       "Comparte información solo con personal de cuidado infantil o salud. Reduce la exposición a terceros."
-    ]
+    ],
+    "escape_no_docs_title": "Huir sin documentos (el agresor los retiene)"
   },
   "suggest": {
     "title": "Sugerir un centro de ayuda o compartir una historia",
@@ -437,7 +438,8 @@
     "route_locating": "Ubicando…",
     "route_denied": "Acceso a la ubicación denegado. Habilítalo en el navegador.",
     "route_error": "No se pudo construir la ruta.",
-    "route_no_coords": "Esta organización aún no tiene coordenadas."
+    "route_no_coords": "Esta organización aún no tiene coordenadas.",
+    "open_full_card": "Abrir la ficha completa"
   },
   "categories": {
     "shelter": "Refugio de crisis",
@@ -478,5 +480,30 @@
     "mission": "Hacer que la información verificada sobre ayuda sea lo más accesible posible y mostrar cómo las tecnologías digitales pueden reducir las barreras informativas y contribuir a la seguridad de las mujeres migrantes.",
     "includes": "un mapa mundial interactivo de organizaciones\nun catálogo de centros de crisis y servicios\nhistorias anónimas de mujeres\nmateriales de investigación sobre migración, diplomacia digital y seguridad\nla posibilidad de proponer una organización\nla posibilidad de compartir tu historia",
     "principles": "veracidad de la información publicada\nrespeto a la privacidad\napertura y accesibilidad\nindependencia del proyecto\ndesarrollo y actualización continuos"
+  },
+  "stories_page": {
+    "share_btn": "+ Compartir una historia de forma anónima (moderada)",
+    "share_title": "Comparta su experiencia (de forma anónima)",
+    "share_desc": "Todos los relatos se revisan antes de publicarse. No se requieren nombres ni datos identificativos.",
+    "f_title": "Título breve (opcional)",
+    "f_title_ph": "Mi experiencia con la ayuda jurídica",
+    "f_what": "¿Qué estaba ocurriendo?",
+    "f_what_ph": "Breve descripción de la situación...",
+    "f_actions": "¿Qué acciones le ayudaron?",
+    "f_actions_ph": "Describa los pasos que tomó usted u otras personas...",
+    "f_now": "¿Cómo vive ahora?",
+    "f_now_ph": "Su situación actual (opcional)...",
+    "cancel": "Cancelar",
+    "submit": "Enviar de forma anónima para revisión",
+    "submitted": "Gracias. Su historia se ha enviado para moderación. No se guarda nada en su dispositivo.",
+    "confidential": "Esta información se trata de forma confidencial. No hay seguimiento.",
+    "read_full": "Leer la historia completa",
+    "anon_label": "Historia anónima",
+    "situation": "Situación",
+    "actions": "Acciones realizadas",
+    "outcome": "Resultado",
+    "close": "Cerrar",
+    "moderation": "Las historias se publican solo tras una moderación cuidadosa para proteger a todas las personas implicadas.",
+    "default_title": "Historia"
   }
 }

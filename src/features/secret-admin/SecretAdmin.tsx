@@ -79,7 +79,9 @@ import {
   type SeedHomeCard,
 } from '../../lib/seeds'
 
-const ADMIN_PASSWORD = 'Admin2026!'
+// The admin password is never hardcoded in the repository — it comes from the
+// environment (.env, which is git-ignored, or the hosting provider's secrets).
+const ADMIN_PASSWORD = (import.meta.env.VITE_ADMIN_PASSWORD || '') as string
 const SESSION_KEY = 'atlas:secret-admin:authed'
 
 type TabKey =
@@ -138,7 +140,11 @@ function LoginGate({ onSuccess }: { onSuccess: () => void }) {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
+    if (!ADMIN_PASSWORD) {
+      setError('Пароль администратора не настроен. Добавьте VITE_ADMIN_PASSWORD в .env')
+      return
+    }
+    if (password.trim().toLowerCase() === ADMIN_PASSWORD.trim().toLowerCase()) {
       setError('')
       onSuccess()
     } else {
@@ -223,6 +229,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
           {tab === 'library' && <LibrarySection />}
           {tab === 'stories' && <StoriesSection />}
           {tab === 'cards' && <HomeCardsSection />}
+          <SectionDangerZone tab={tab} />
         </section>
       </div>
     </main>
@@ -230,6 +237,73 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
 }
 
 // --- shared helpers --------------------------------------------------------
+
+// Full-power controls: wipe or restore an entire section.
+// "Очистить раздел" deletes every custom item AND hides every built-in
+// (seed) item, so the section disappears from the site. "Восстановить"
+// brings the built-in items back.
+function SectionDangerZone({ tab }: { tab: TabKey }) {
+  const [, force] = useState(0)
+
+  const seedIdsFor = (key: TabKey): string[] => {
+    switch (key) {
+      case 'centers': return getSeedCenters().map((s) => s.id)
+      case 'ratings': return getSeedRatings().map((s) => s.id)
+      case 'checklists':
+        return [
+          ...getSeedChecklists().map((s) => s.id),
+          'seed-list-friends', 'seed-list-you', 'seed-list-mothers', 'seed-list-escape-no-docs',
+        ]
+      case 'library': return getSeedLibrary().map((s) => s.id)
+      case 'stories': return getSeedStories().map((s) => s.id)
+      case 'cards': return getSeedHomeCards().map((s) => s.id)
+      default: return []
+    }
+  }
+
+  const clearAll = () => {
+    if (!window.confirm('Удалить ВЕСЬ раздел (все элементы, включая встроенные)? Это можно отменить кнопкой «Восстановить встроенные».')) return
+    switch (tab) {
+      case 'centers': getCenters().forEach((x) => deleteCenter(x.id)); break
+      case 'ratings': getRatings().forEach((x) => deleteRating(x.id)); break
+      case 'checklists': getChecklists().forEach((x) => deleteChecklist(x.id)); break
+      case 'country-index': getCountryIndex().forEach((x) => deleteCountryIndex(x.id)); break
+      case 'library': getLibrary().forEach((x) => deleteLibrary(x.id)); break
+      case 'stories': getStories().forEach((x) => deleteStory(x.id)); break
+      case 'cards': getHomeCards().forEach((x) => deleteHomeCard(x.id)); break
+      case 'home': saveHomeTexts({}); break
+      case 'about': saveAboutTexts({}); break
+    }
+    seedIdsFor(tab).forEach((id) => hideSeed(tab === 'cards' ? 'cards' : tab, id))
+    force((x) => x + 1)
+  }
+
+  const restoreSeeds = () => {
+    seedIdsFor(tab).forEach((id) => unhideSeed(tab === 'cards' ? 'cards' : tab, id))
+    force((x) => x + 1)
+  }
+
+  return (
+    <div className="mt-10 border-t border-slate-200 pt-4 flex flex-wrap items-center gap-3">
+      <span className="text-xs text-slate-500">Полные права администратора:</span>
+      <button
+        onClick={clearAll}
+        className="text-xs px-3 py-1.5 rounded-md border border-red-300 text-red-700 hover:bg-red-50"
+      >
+        Удалить весь раздел
+      </button>
+      {seedIdsFor(tab).length > 0 && (
+        <button
+          onClick={restoreSeeds}
+          className="text-xs px-3 py-1.5 rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50"
+        >
+          Восстановить встроенные элементы
+        </button>
+      )}
+    </div>
+  )
+}
+
 function useLive<T>(getter: () => T): [T, () => void] {
   const [value, setValue] = useState<T>(() => getter())
   const refresh = () => setValue(getter())

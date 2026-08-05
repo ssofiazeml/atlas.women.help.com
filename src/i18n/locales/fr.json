@@ -87,7 +87,8 @@
       "Apaiser les enfants par habitudes. Certains centres ont psycho enfants.",
       "Memoriser dates et numéros des enfants.",
       "Ne confier details aux personnes indispensables (santé ou protection)."
-    ]
+    ],
+    "escape_no_docs_title": "Fuir sans documents (l’agresseur les retient)"
   },
   "suggest": {
     "title": "Proposer un centre d'aide ou partager une histoire",
@@ -238,7 +239,8 @@
     "route_locating": "Localisation…",
     "route_denied": "Accès à la localisation refusé. Autorisez-le dans le navigateur.",
     "route_error": "Impossible de construire l'itinéraire.",
-    "route_no_coords": "Cette organisation n'a pas encore de coordonnées."
+    "route_no_coords": "Cette organisation n'a pas encore de coordonnées.",
+    "open_full_card": "Ouvrir la fiche complète"
   },
   "categories": {
     "shelter": "Hébergement d’urgence",
@@ -286,5 +288,30 @@
       "escape_no_docs_desc": "Liste étape par étape : comment partir en sécurité lorsque vos documents originaux sont confisqués ou enfermés.",
       "escape_no_docs_advice": "Le guide détaillé est actuellement disponible en russe. Passez la langue sur Русский pour lire la liste complète, ou demandez de l'aide à un locuteur russe. Résumé : votre vie passe avant tout — partez d'abord, les papiers peuvent être refaits ; si possible, photographiez discrètement votre passeport et envoyez-vous les photos ; sortez sous un prétexte banal ; rendez-vous dans un lieu public avec caméras et demandez au personnel d'appeler la police ; déposez une plainte et exigez un récépissé écrit (il remplace temporairement votre passeport) ; contactez ensuite votre consulat pour un laissez-passer."
     }
+  },
+  "stories_page": {
+    "share_btn": "+ Partager une histoire anonymement (modérée)",
+    "share_title": "Partagez votre expérience (anonymement)",
+    "share_desc": "Chaque témoignage est vérifié avant publication. Aucun nom ni détail identifiant n’est requis.",
+    "f_title": "Titre court (facultatif)",
+    "f_title_ph": "Mon expérience avec l’aide juridique",
+    "f_what": "Que s’est-il passé ?",
+    "f_what_ph": "Brève description de la situation...",
+    "f_actions": "Quelles actions vous ont aidée ?",
+    "f_actions_ph": "Décrivez les démarches entreprises...",
+    "f_now": "Comment allez-vous aujourd’hui ?",
+    "f_now_ph": "Votre situation actuelle (facultatif)...",
+    "cancel": "Annuler",
+    "submit": "Envoyer anonymement pour examen",
+    "submitted": "Merci. Votre histoire a été envoyée pour modération. Rien n’est conservé sur votre appareil.",
+    "confidential": "Ces informations sont traitées de façon confidentielle. Aucun suivi n’est effectué.",
+    "read_full": "Lire l’histoire complète",
+    "anon_label": "Histoire anonyme",
+    "situation": "Situation",
+    "actions": "Actions entreprises",
+    "outcome": "Résultat",
+    "close": "Fermer",
+    "moderation": "Les histoires sont publiées uniquement après une modération attentive afin de protéger toutes les personnes concernées.",
+    "default_title": "Histoire"
   }
 }

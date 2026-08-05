@@ -41,3 +41,8 @@ pnpm-debug.log*
 
 # No service creds for anonymity
 # Note: add supabase keys only via Vercel env dashboard / safe CI
+
+# local env (never commit)
+.env
+.env.local
+.env.*.local
