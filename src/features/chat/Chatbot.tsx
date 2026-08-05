@@ -260,7 +260,6 @@ const tree: Step[] = [
       { labelKey: 'chatbot.docs.held', nextId: 'docs_held' },
       { labelKey: 'chatbot.docs.expired', nextId: 'docs_expired' },
       { labelKey: 'chatbot.docs.status', nextId: 'docs_status' },
-      { labelKey: 'chatbot.docs.escape_no_docs', nextId: 'docs_escape_no_docs' },
     ],
   },
   { id: 'docs_lost_passport', questionKey: 'chatbot.docs.lost_passport_desc', adviceKey: 'chatbot.docs.lost_passport_advice', final: true },
@@ -268,7 +267,6 @@ const tree: Step[] = [
   { id: 'docs_held', questionKey: 'chatbot.docs.held_desc', adviceKey: 'chatbot.docs.held_advice', final: true },
   { id: 'docs_expired', questionKey: 'chatbot.docs.expired_desc', adviceKey: 'chatbot.docs.expired_advice', final: true },
   { id: 'docs_status', questionKey: 'chatbot.docs.status_desc', adviceKey: 'chatbot.docs.status_advice', final: true },
-  { id: 'docs_escape_no_docs', questionKey: 'chatbot.docs.escape_no_docs_desc', adviceKey: 'chatbot.docs.escape_no_docs_advice', showMapLink: true, showQuickExit: true, showChecklistsLink: true, final: true },
 
   // 3. HOUSING
   {
