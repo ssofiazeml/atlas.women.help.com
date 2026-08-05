@@ -116,6 +116,13 @@ export function Checklists() {
   const selfItems = toItems( t('checklists.for_you_items', { returnObjects: true }) as string[] )
   const mothersItems = toItems( t('checklists.for_mothers_items', { returnObjects: true }) as string[] )
 
+  // Full "escape without documents" guide — lives here, in the Checklists
+  // section. The text is stored in the shared dictionary (all 6 languages).
+  const escapeText = t('chatbot.docs.escape_no_docs_advice') || ''
+  const escapeItems = toItems(
+    escapeText.split('\n').map((l) => l.trim()).filter(Boolean)
+  )
+
   // Build seed checklists with stable ids, then apply admin overrides + hides.
   const seedLists = applySeedTransforms<{
     id: string
@@ -125,12 +132,13 @@ export function Checklists() {
     { id: 'seed-list-friends', title: t('checklists.for_friends'), items: helpersItems },
     { id: 'seed-list-you', title: t('checklists.for_you'), items: selfItems },
     { id: 'seed-list-mothers', title: t('checklists.for_mothers'), items: mothersItems },
+    { id: 'seed-list-escape-no-docs', title: t('checklists.escape_no_docs_title'), items: escapeItems },
   ])
   const seedFriends = seedLists.find((l) => l.id === 'seed-list-friends')
   const seedYou = seedLists.find((l) => l.id === 'seed-list-you')
   const seedMothers = seedLists.find((l) => l.id === 'seed-list-mothers')
+  const seedEscape = seedLists.find((l) => l.id === 'seed-list-escape-no-docs')
 
-  const [expanded, setExpanded] = useState(false)
   const [admin, setAdmin] = useState<AdminChecklist[]>(() => getChecklists())
   useEffect(() => subscribeContent(() => setAdmin(getChecklists())), [])
 
@@ -152,11 +160,10 @@ export function Checklists() {
 
       {seedFriends && <Checklist title={seedFriends.title} items={seedFriends.items} />}
       {seedYou && <Checklist title={seedYou.title} items={seedYou.items} />}
-
-      <div className="mt-2">
-        <button className="text-xs mb-2 underline" onClick={() => setExpanded(v => !v)}>{expanded ? 'Hide' : 'Show'} mothers-with-children checklist</button>
-        {expanded && seedMothers && <Checklist title={seedMothers.title} items={seedMothers.items} />}
-      </div>
+      {seedMothers && <Checklist title={seedMothers.title} items={seedMothers.items} />}
+      {seedEscape && seedEscape.items.length > 0 && (
+        <Checklist title={seedEscape.title} items={seedEscape.items} />
+      )}
 
       <div className="text-xs text-slate-500 mt-4">
         These guides supplement but do not replace support from local specialists, embassies, hotlines or lawyers.
