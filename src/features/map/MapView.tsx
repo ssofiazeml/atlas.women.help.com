@@ -242,6 +242,7 @@ export function MapView() {
   const [onlyNoDocs, setOnlyNoDocs] = useState(false)
 
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [flashId, setFlashId] = useState<string | null>(null)
   const markerRefs = useRef<Record<string, L.Marker | null>>({})
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
@@ -291,11 +292,22 @@ export function MapView() {
     }
   }
 
+  // Marker click: only select + open the small popup card next to the marker.
+  // The page must NOT jump to the list yet.
   const handleSelectMarker = (c: AdminCenter) => {
     setSelectedId(c.id)
+  }
+
+  // Click on the small popup card: go to the full card in the list below,
+  // scroll smoothly to it and highlight it briefly.
+  const goToFullCard = (c: AdminCenter) => {
+    setSelectedId(c.id)
+    markerRefs.current[c.id]?.closePopup()
     setTimeout(() => {
-      cardRefs.current[c.id]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-    }, 50)
+      cardRefs.current[c.id]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setFlashId(c.id)
+      setTimeout(() => setFlashId((cur) => (cur === c.id ? null : cur)), 1800)
+    }, 60)
   }
 
   const submitSearch = async (e: React.FormEvent) => {
@@ -499,25 +511,17 @@ export function MapView() {
                   }}
                   eventHandlers={{ click: () => handleSelectMarker(c) }}
                 >
-                  <Popup minWidth={240}>
-                    <div className="text-sm">
-                      {c.photo && (
-                        <img src={c.photo} alt="" loading="lazy" className="w-full h-28 object-cover rounded mb-2" />
-                      )}
-                      <div className="font-semibold text-safe-800 mb-1">{c.name}</div>
-                      <div className="text-xs text-slate-500 mb-1">
-                        {c.city}{c.country ? `, ${c.country}` : ''}
-                      </div>
-                      {c.address && (
-                        <div className="text-xs text-slate-600 mb-1">{pickLocalized(c, 'address', lang) || c.address}</div>
-                      )}
-                      {c.contact && <div className="text-xs">📞 {c.contact}</div>}
-                      {c.website && (
-                        <a href={c.website} target="_blank" rel="noreferrer" className="text-xs text-teal-700 underline break-all">
-                          {c.website}
-                        </a>
-                      )}
-                    </div>
+                  <Popup minWidth={250} maxWidth={280} autoPan closeButton>
+                    <CenterCard
+                      c={c}
+                      lang={lang}
+                      catLabel={catLabel}
+                      selected={false}
+                      compact
+                      onSelect={() => goToFullCard(c)}
+                      onRoute={() => buildRouteTo(c)}
+                      cardRef={() => {}}
+                    />
                   </Popup>
                 </Marker>
               ))}
@@ -545,6 +549,7 @@ export function MapView() {
               lang={lang}
               catLabel={catLabel}
               selected={selectedId === c.id}
+              flash={flashId === c.id}
               onSelect={() => handleSelectCard(c)}
               onRoute={() => buildRouteTo(c)}
               cardRef={(el) => {
@@ -569,6 +574,8 @@ function CenterCard({
   lang,
   catLabel,
   selected,
+  flash,
+  compact,
   onSelect,
   onRoute,
   cardRef,
@@ -577,6 +584,8 @@ function CenterCard({
   lang: string
   catLabel: (k: string) => string
   selected: boolean
+  flash?: boolean
+  compact?: boolean
   onSelect: () => void
   onRoute: () => void
   cardRef: (el: HTMLDivElement | null) => void
@@ -605,14 +614,15 @@ function CenterCard({
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect() } }}
       className={`safe-card bg-white cursor-pointer transition ${
         selected ? 'border-safe-teal ring-2 ring-safe-teal/40 shadow' : 'hover:border-safe-teal'
-      }`}
+      } ${flash ? 'atlas-card-flash' : ''} ${compact ? 'atlas-popup-card' : ''}`}
+      aria-label={c.name}
     >
       {c.photo && (
         <img
           src={c.photo}
           alt={c.name}
           loading="lazy"
-          className="w-full h-32 object-cover rounded-lg mb-3"
+          className={`w-full object-cover rounded-lg mb-3 ${compact ? 'h-24' : 'h-32'}`}
         />
       )}
       <h3 className="font-semibold text-safe-800 leading-snug">{c.name}</h3>
@@ -653,7 +663,13 @@ function CenterCard({
       </dl>
 
       {description && (
-        <p className="text-sm text-slate-700 mt-3 leading-relaxed">{description}</p>
+        <p className={`text-sm text-slate-700 mt-3 leading-relaxed ${compact ? 'line-clamp-3' : ''}`}>{description}</p>
+      )}
+
+      {compact && (
+        <div className="mt-3 text-xs text-safe-teal font-medium">
+          {t('map.open_full_card', { defaultValue: 'Open full card' })} →
+        </div>
       )}
 
       <div className="flex flex-wrap gap-2 mt-4">
