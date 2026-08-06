@@ -403,7 +403,7 @@ export function MapView() {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+        <div className="grid grid-cols-2 gap-2 text-sm">
           <select
             value={filterCountry}
             onChange={(e) => setFilterCountry(e.target.value)}
@@ -421,15 +421,6 @@ export function MapView() {
           >
             <option value="">{t('map.all_categories', { defaultValue: 'All categories' })}</option>
             {CATEGORY_KEYS.map((k) => <option key={k} value={k}>{catLabel(k)}</option>)}
-          </select>
-          <select
-            value={filterLang}
-            onChange={(e) => setFilterLang(e.target.value)}
-            aria-label={t('map.filter_lang_label')}
-            className="border border-slate-200 rounded-md px-2 py-1.5 bg-white min-w-0"
-          >
-            <option value="">{t('map.all_languages', { defaultValue: 'All languages' })}</option>
-            {SERVICE_LANGS.map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
         </div>
 

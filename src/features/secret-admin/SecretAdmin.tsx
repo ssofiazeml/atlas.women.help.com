@@ -86,6 +86,7 @@ const SESSION_KEY = 'atlas:secret-admin:authed'
 
 type TabKey =
   | 'home'
+  | 'sections'
   | 'about'
   | 'centers'
   | 'ratings'
@@ -97,6 +98,7 @@ type TabKey =
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'home', label: 'Главная — общие тексты' },
+  { key: 'sections', label: 'Разделы сайта (показать/скрыть)' },
   { key: 'about', label: 'О проекте' },
   { key: 'centers', label: 'Карта центров помощи' },
   { key: 'ratings', label: 'Рейтинг безопасности стран' },
@@ -221,6 +223,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
 
         <section className="min-w-0">
           {tab === 'home' && <HomeTextsSection />}
+          {tab === 'sections' && <SectionsVisibilitySection />}
           {tab === 'about' && <AboutSection />}
           {tab === 'centers' && <CentersSection />}
           {tab === 'ratings' && <RatingsSection />}
@@ -229,10 +232,62 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
           {tab === 'library' && <LibrarySection />}
           {tab === 'stories' && <StoriesSection />}
           {tab === 'cards' && <HomeCardsSection />}
-          <SectionDangerZone tab={tab} />
+          {tab !== 'sections' && <SectionDangerZone tab={tab} />}
         </section>
       </div>
     </main>
+  )
+}
+
+// --- show / hide whole sections of the public site -------------------------
+
+const SITE_SECTIONS: { key: SiteSectionKey; label: string; hint: string }[] = [
+  { key: 'map', label: 'Карта помощи', hint: '/map' },
+  { key: 'chat', label: 'Анонимная помощь и поддержка', hint: '/chat' },
+  { key: 'checklists', label: 'Чек-листы', hint: '/checklists' },
+  { key: 'stories', label: 'Реальные истории', hint: '/stories' },
+  { key: 'suggest', label: 'Предложить центр / поделиться историей', hint: '/suggest' },
+  { key: 'research', label: 'Библиотека исследований', hint: '/research' },
+  { key: 'diplomacy', label: 'Цифровая дипломатия', hint: '/diplomacy' },
+  { key: 'about', label: 'О проекте', hint: '/about' },
+]
+
+function SectionsVisibilitySection() {
+  const [vis, setVis] = useState(() => getSectionVisibility())
+  useEffect(() => subscribeContent(() => setVis(getSectionVisibility())), [])
+
+  return (
+    <div className="safe-card bg-white">
+      <h2 className="text-lg font-semibold text-safe-800 mb-1">Разделы официального сайта</h2>
+      <p className="text-sm text-slate-600 mb-4">
+        Выключенный раздел исчезает из меню, с главной страницы и по прямой ссылке.
+        Вернуть его можно только здесь.
+      </p>
+      <div className="space-y-2">
+        {SITE_SECTIONS.map((s) => {
+          const on = vis[s.key] !== false
+          return (
+            <div
+              key={s.key}
+              className="flex items-center justify-between gap-3 border border-slate-200 rounded-md px-3 py-2"
+            >
+              <div className="min-w-0">
+                <div className="text-sm font-medium text-slate-800 truncate">{s.label}</div>
+                <div className="text-xs text-slate-500">{s.hint}</div>
+              </div>
+              <button
+                onClick={() => setSectionVisible(s.key, !on)}
+                className={`text-xs px-3 py-1.5 rounded-md shrink-0 ${
+                  on ? 'bg-safe-800 text-white' : 'border border-slate-300 text-slate-600'
+                }`}
+              >
+                {on ? 'Показан — скрыть' : 'Скрыт — показать'}
+              </button>
+            </div>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
