@@ -219,7 +219,7 @@ export function MapView() {
       const matchesOpen = !onlyOpen || isOpenNow(c)
       const matchesFree = !onlyFree || c.cost === 'free'
       const matchesNoDocs = !onlyNoDocs || acceptsWithoutDocs(c)
-      return matchesText && matchesCountry && matchesCat && matchesLang &&
+      return matchesText && matchesCountry && matchesCat &&
         matches24 && matchesOpen && matchesFree && matchesNoDocs
     })
   }, [centers, query, filterCountry, filterCat, only24, onlyOpen, onlyFree, onlyNoDocs])
@@ -277,7 +277,6 @@ export function MapView() {
   const clearFilters = () => {
     setFilterCountry('')
     setFilterCat('')
-    setFilterLang('')
     setOnly24(false)
     setOnlyOpen(false)
     setOnlyFree(false)
