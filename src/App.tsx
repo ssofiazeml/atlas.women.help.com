@@ -21,13 +21,24 @@ import {
   getHomeTexts,
   subscribeContent,
   applySeedTransforms,
+  getSectionVisibility,
+  type SiteSectionKey,
 } from './lib/contentStore'
 import { pickLocalized } from './lib/translate'
+
+// Live section visibility (admin controlled) — hidden sections disappear from
+// the navigation, the home page and the router.
+function useSectionVisibility() {
+  const [vis, setVis] = useState(() => getSectionVisibility())
+  useEffect(() => subscribeContent(() => setVis(getSectionVisibility())), [])
+  return vis
+}
 
 function Header() {
   const { t, i18n } = useTranslation()
   const [open, setOpen] = useState(false)
   const location = useLocation()
+  const vis = useSectionVisibility()
 
   // Sync RTL dir on header render / lang change
   React.useEffect(() => {
@@ -39,16 +50,18 @@ function Header() {
     setOpen(false)
   }, [location.pathname])
 
-  const navLinks = [
-    { to: '/map', label: t('nav.map') },
-    { to: '/chat', label: t('nav.chat') },
-    { to: '/checklists', label: t('nav.checklists') },
-    { to: '/stories', label: t('nav.stories') },
-    { to: '/suggest', label: t('nav.suggest') || 'Suggest' },
-    { to: '/research', label: t('nav.research') },
-    { to: '/diplomacy', label: t('nav.diplomacy') },
-    { to: '/about', label: t('nav.about') || 'О проекте' },
-  ]
+  const navLinks = (
+    [
+      { key: 'map', to: '/map', label: t('nav.map') },
+      { key: 'chat', to: '/chat', label: t('nav.chat') },
+      { key: 'checklists', to: '/checklists', label: t('nav.checklists') },
+      { key: 'stories', to: '/stories', label: t('nav.stories') },
+      { key: 'suggest', to: '/suggest', label: t('nav.suggest') || 'Suggest' },
+      { key: 'research', to: '/research', label: t('nav.research') },
+      { key: 'diplomacy', to: '/diplomacy', label: t('nav.diplomacy') },
+      { key: 'about', to: '/about', label: t('nav.about') || 'О проекте' },
+    ] as { key: SiteSectionKey; to: string; label: string }[]
+  ).filter((l) => vis[l.key] !== false)
 
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-[1000]">
