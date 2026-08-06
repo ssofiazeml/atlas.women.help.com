@@ -91,17 +91,33 @@
     "escape_no_docs_title": "Fuir sans documents (l’agresseur les retient)"
   },
   "suggest": {
-    "title": "Proposer un centre d'aide ou partager une histoire",
-    "desc": "Vos soumissions sont anonymes et modérées avant publication. Elles aident d'autres femmes migrantes et réfugiées.",
-    "tab_center": "Nouveau centre d'aide",
-    "tab_story": "Mon expérience",
-    "thank_center": "Merci — la suggestion a été envoyée pour modération. Elle peut apparaître sur la carte prochainement.",
+    "title": "Proposer un centre d'aide ou partager votre histoire",
+    "desc": "Tout est envoyé anonymement et vérifié avant publication.",
+    "tab_center": "Proposer un centre d'aide",
+    "tab_story": "Partager votre histoire",
+    "thank_center": "Merci — votre proposition a été transmise aux modérateurs.",
     "thank_story": "Merci. Votre histoire anonyme a été envoyée pour revue. Elle pourra être publiée.",
-    "submit_center": "Envoyer pour modération",
+    "submit_center": "Envoyer pour vérification",
     "submit_story": "Envoyer l'histoire",
     "name": "Nom",
     "city": "Ville",
-    "country": "Pays"
+    "country": "Pays",
+    "center_intro": "Remplissez les informations de l'organisation comme elles sont ajoutées sur la carte d'aide.",
+    "f_name": "Nom de l'organisation",
+    "f_name_ph": "Par exemple : Centre de crise Espoir",
+    "f_city": "Ville",
+    "f_city_ph": "Ville où l'organisation travaille",
+    "f_country": "Pays",
+    "f_country_ph": "Pays où l'organisation travaille",
+    "f_category": "Catégorie d'aide",
+    "f_category_ph": "Choisissez une catégorie dans la liste",
+    "f_phone": "Téléphone",
+    "f_phone_ph": "Numéro de téléphone (facultatif)",
+    "f_website": "Site web",
+    "f_website_ph": "https:// (facultatif)",
+    "f_desc": "Description",
+    "f_desc_ph": "Services proposés, qui peut contacter, langues",
+    "center_note": "Votre proposition passe en modération. Aucune donnée personnelle n'est conservée."
   },
   "research": {
     "title": "Bibliothèque de recherches",
@@ -313,5 +329,6 @@
     "close": "Fermer",
     "moderation": "Les histoires sont publiées uniquement après une modération attentive afin de protéger toutes les personnes concernées.",
     "default_title": "Histoire"
-  }
+  },
+  "section_hidden": "Cette section est temporairement indisponible."
 }

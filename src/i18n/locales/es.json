@@ -91,17 +91,33 @@
     "escape_no_docs_title": "Huir sin documentos (el agresor los retiene)"
   },
   "suggest": {
-    "title": "Sugerir un centro de ayuda o compartir una historia",
-    "desc": "Todas las contribuciones son anónimas y se revisan antes de usarlas públicamente. Ayudan a otras mujeres migrantes y refugiadas a encontrar seguridad y apoyo.",
-    "tab_center": "Nuevo centro de ayuda",
-    "tab_story": "Mi experiencia",
-    "thank_center": "Gracias — la sugerencia del centro se envió a moderación. Puede aparecer en el mapa pronto.",
+    "title": "Sugerir un centro de ayuda o compartir tu historia",
+    "desc": "Todo se envía de forma anónima y se revisa antes de publicarse.",
+    "tab_center": "Sugerir un centro de ayuda",
+    "tab_story": "Compartir tu historia",
+    "thank_center": "Gracias — tu sugerencia se envió a los moderadores.",
     "thank_story": "Gracias. Tu historia anónima se envió a revisión. Podría publicarse para apoyar a otras.",
     "submit_center": "Enviar para revisión",
     "submit_story": "Enviar historia anónima",
     "name": "Nombre del servicio",
     "city": "Ciudad",
-    "country": "País"
+    "country": "País",
+    "center_intro": "Completa los datos de la organización igual que se añaden al mapa de ayuda.",
+    "f_name": "Nombre de la organización",
+    "f_name_ph": "Por ejemplo: Centro de crisis Esperanza",
+    "f_city": "Ciudad",
+    "f_city_ph": "Ciudad donde trabaja la organización",
+    "f_country": "País",
+    "f_country_ph": "País donde trabaja la organización",
+    "f_category": "Categoría de ayuda",
+    "f_category_ph": "Elige una categoría de la lista",
+    "f_phone": "Teléfono",
+    "f_phone_ph": "Número de teléfono (opcional)",
+    "f_website": "Sitio web",
+    "f_website_ph": "https:// (opcional)",
+    "f_desc": "Descripción",
+    "f_desc_ph": "Qué servicios ofrecen, quién puede contactar, idiomas",
+    "center_note": "La sugerencia pasa a la cola de moderación. No se guardan datos personales."
   },
   "chatbot": {
     "start": {
@@ -505,5 +521,6 @@
     "close": "Cerrar",
     "moderation": "Las historias se publican solo tras una moderación cuidadosa para proteger a todas las personas implicadas.",
     "default_title": "Historia"
-  }
+  },
+  "section_hidden": "Esta sección no está disponible temporalmente."
 }

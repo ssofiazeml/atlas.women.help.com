@@ -91,17 +91,33 @@
     "next_resource": "Consider keeping the map handy for a shortlist of the three nearest services. Write phone numbers in several places."
   },
   "suggest": {
-    "title": "Suggest a help center or share a story",
-    "desc": "Everything you submit is anonymous and moderated before public use. Submissions help other migrant and refugee women find safety and support.",
-    "tab_center": "New help center",
-    "tab_story": "My experience",
-    "thank_center": "Thank you — the center suggestion is with the moderators and may appear on the map soon.",
+    "title": "Suggest a help centre or share your story",
+    "desc": "Everything is submitted anonymously and reviewed before publication.",
+    "tab_center": "Suggest a help centre",
+    "tab_story": "Share your story",
+    "thank_center": "Thank you — your suggestion has been sent to moderators.",
     "thank_story": "Thank you. Your anonymous story is submitted for review. It may be published to support others.",
     "submit_center": "Submit for review",
     "submit_story": "Submit anonymous story",
     "name": "Name",
     "city": "City",
-    "country": "Country"
+    "country": "Country",
+    "center_intro": "Fill in the organisation details the same way they are added to the help map.",
+    "f_name": "Organisation name",
+    "f_name_ph": "For example: Hope Crisis Centre",
+    "f_city": "City",
+    "f_city_ph": "City where the organisation works",
+    "f_country": "Country",
+    "f_country_ph": "Country where the organisation works",
+    "f_category": "Category of help",
+    "f_category_ph": "Choose a category from the list",
+    "f_phone": "Phone",
+    "f_phone_ph": "Phone number (optional)",
+    "f_website": "Website",
+    "f_website_ph": "https:// (optional)",
+    "f_desc": "Description",
+    "f_desc_ph": "What services they provide, who can contact them, languages",
+    "center_note": "Your suggestion goes to the moderation queue. No personal data is stored."
   },
   "chatbot": {
     "start": {
@@ -637,5 +653,6 @@
     "close": "Close",
     "moderation": "Stories are published only after careful moderation to protect everyone involved. You can submit your own experience above.",
     "default_title": "Story"
-  }
+  },
+  "section_hidden": "This section is temporarily unavailable."
 }
