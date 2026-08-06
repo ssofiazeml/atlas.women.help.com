@@ -248,6 +248,15 @@ function Home() {
 
 function App() {
   const { t } = useTranslation()
+  const vis = useSectionVisibility()
+  const hiddenNotice = (
+    <div className="p-14 text-center text-slate-600">
+      {t('section_hidden', { defaultValue: 'This section is temporarily unavailable.' })}{' '}
+      <Link to="/" className="underline">{t('nav.home', { defaultValue: 'Home' })}</Link>
+    </div>
+  )
+  const gate = (key: SiteSectionKey, el: React.ReactNode) =>
+    vis[key] === false ? hiddenNotice : el
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--safe-bg)]">
@@ -255,14 +264,14 @@ function App() {
       <div className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/map" element={<MapView />} />
-          <Route path="/chat" element={<Chatbot />} />
-          <Route path="/checklists" element={<Checklists />} />
-          <Route path="/stories" element={<StoriesView />} />
-          <Route path="/suggest" element={<SuggestPage />} />
-          <Route path="/research" element={<ResearchLibrary />} />
-          <Route path="/diplomacy" element={<DigitalDiplomacy />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/map" element={gate('map', <MapView />)} />
+          <Route path="/chat" element={gate('chat', <Chatbot />)} />
+          <Route path="/checklists" element={gate('checklists', <Checklists />)} />
+          <Route path="/stories" element={gate('stories', <StoriesView />)} />
+          <Route path="/suggest" element={gate('suggest', <SuggestPage />)} />
+          <Route path="/research" element={gate('research', <ResearchLibrary />)} />
+          <Route path="/diplomacy" element={gate('diplomacy', <DigitalDiplomacy />)} />
+          <Route path="/about" element={gate('about', <About />)} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/secret-admin" element={<SecretAdmin />} />
           <Route path="*" element={<div className="p-14 text-center">Not found. <Link to="/" className="underline">Return home</Link></div>} />
