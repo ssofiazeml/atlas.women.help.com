@@ -120,6 +120,7 @@ function Header() {
 function Home() {
   const { t, i18n } = useTranslation()
   const lang = i18n.language
+  const vis = useSectionVisibility()
   const [customCards, setCustomCards] = useState<HomeCard[]>(() => getHomeCards())
   const [texts, setTexts] = useState(() => getHomeTexts())
   const [, setTick] = useState(0)
@@ -135,7 +136,7 @@ function Home() {
   )
 
   // Built-in navigation cards with stable ids — admin can override or hide.
-  const seedNavCards = applySeedTransforms<{
+  const seedNavCardsAll = applySeedTransforms<{
     id: string
     title: string
     description: string
@@ -148,6 +149,20 @@ function Home() {
     { id: 'seed-card-research', title: t('nav.research'), description: t('research.intro'), link: '/research' },
     { id: 'seed-card-diplomacy', title: t('nav.diplomacy'), description: t('diplomacy.intro'), link: '/diplomacy' },
   ])
+
+  // Drop cards whose section is hidden by the admin.
+  const CARD_SECTION: Record<string, SiteSectionKey> = {
+    'seed-card-map': 'map',
+    'seed-card-chat': 'chat',
+    'seed-card-checklists': 'checklists',
+    'seed-card-stories': 'stories',
+    'seed-card-research': 'research',
+    'seed-card-diplomacy': 'diplomacy',
+  }
+  const seedNavCards = seedNavCardsAll.filter((c) => {
+    const key = CARD_SECTION[c.id]
+    return !key || vis[key] !== false
+  })
 
   return (
     <main className="max-w-4xl mx-auto px-5 py-16">
