@@ -30,7 +30,9 @@ const CATEGORY_KEYS = [
 
 // Full static list of service languages (endonyms) — as requested.
 // The order defines the display order in the filter dropdown.
-const SERVICE_LANGS = [
+const SERVICE_LANGS_UNUSED_REMOVED: string[] = []
+void SERVICE_LANGS_UNUSED_REMOVED
+const _SERVICE_LANGS = [
   'Русский',
   'English',
   'Français',

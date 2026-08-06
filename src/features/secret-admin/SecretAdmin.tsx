@@ -53,6 +53,9 @@ import {
   getAboutTexts,
   saveAboutTexts,
   type AboutTexts,
+  getSectionVisibility,
+  setSectionVisible,
+  type SiteSectionKey,
 } from '../../lib/contentStore'
 import {
   setSeedOverride,
