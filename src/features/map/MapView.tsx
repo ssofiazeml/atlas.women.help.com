@@ -28,62 +28,6 @@ const CATEGORY_KEYS = [
   'migrant', 'children', 'emergency', 'medical', 'hotline', 'crisis',
 ] as const
 
-// Full static list of service languages (endonyms) — as requested.
-// The order defines the display order in the filter dropdown.
-const SERVICE_LANGS_UNUSED_REMOVED: string[] = []
-void SERVICE_LANGS_UNUSED_REMOVED
-const _SERVICE_LANGS = [
-  'Русский',
-  'English',
-  'Français',
-  'Español',
-  'العربية',
-  '中文',
-  'Українська',
-  'Deutsch',
-  'Italiano',
-  'Português',
-  'Polski',
-  'Türkçe',
-  'فارسی',
-  'Қазақша',
-  'Кыргызча',
-  "Oʻzbekcha",
-  'Тоҷикӣ',
-  'Հայերեն',
-  'ქართული',
-] as const
-
-// Aliases used to detect matches inside center.languages free-text strings.
-const LANG_ALIASES: Record<string, string[]> = {
-  'Русский': ['русск', 'russian', 'ру'],
-  'English': ['english', 'англ', 'en'],
-  'Français': ['français', 'francais', 'french', 'франц'],
-  'Español': ['español', 'espanol', 'spanish', 'испан'],
-  'العربية': ['العربية', 'arabic', 'араб'],
-  '中文': ['中文', '汉语', '普通话', 'chinese', 'китай', 'mandarin'],
-  'Українська': ['українськ', 'украин', 'ukrainian'],
-  'Deutsch': ['deutsch', 'german', 'немец'],
-  'Italiano': ['italiano', 'italian', 'италь'],
-  'Português': ['português', 'portugues', 'portuguese', 'португ'],
-  'Polski': ['polski', 'polish', 'польск'],
-  'Türkçe': ['türkçe', 'turkce', 'turkish', 'турец'],
-  'فارسی': ['فارسی', 'persian', 'farsi', 'перс'],
-  'Қазақша': ['қазақ', 'kazakh', 'казах'],
-  'Кыргызча': ['кыргыз', 'kyrgyz', 'киргиз'],
-  "Oʻzbekcha": ['oʻzbek', "o'zbek", 'uzbek', 'узбек'],
-  'Тоҷикӣ': ['тоҷик', 'тадж', 'tajik'],
-  'Հայերեն': ['հայեր', 'armenian', 'армян'],
-  'ქართული': ['ქართ', 'georgian', 'грузин'],
-}
-
-function centerMatchesLang(c: AdminCenter, lang: string): boolean {
-  const haystack = (c.languages || '').toLowerCase()
-  if (!haystack) return false
-  const aliases = LANG_ALIASES[lang] || [lang.toLowerCase()]
-  return aliases.some((a) => haystack.includes(a.toLowerCase()))
-}
-
 // Best-effort "open now": true for anything explicitly 24/7, otherwise
 // look for at least one HH:MM-HH:MM range in the hours string and check
 // if the current local time falls within it.
@@ -237,7 +181,6 @@ export function MapView() {
   // ---- Filters ----
   const [filterCountry, setFilterCountry] = useState('')
   const [filterCat, setFilterCat] = useState('')
-  const [filterLang, setFilterLang] = useState('')
   const [only24, setOnly24] = useState(false)
   const [onlyOpen, setOnlyOpen] = useState(false)
   const [onlyFree, setOnlyFree] = useState(false)
@@ -272,7 +215,6 @@ export function MapView() {
           .some((v) => String(v).toLowerCase().includes(q))
       const matchesCountry = !filterCountry || c.country === filterCountry
       const matchesCat = !filterCat || cats.includes(filterCat)
-      const matchesLang = !filterLang || centerMatchesLang(c, filterLang)
       const matches24 = !only24 || c.open24 || /24\/?7|круглосуточно|24 hours/i.test(c.hours || '')
       const matchesOpen = !onlyOpen || isOpenNow(c)
       const matchesFree = !onlyFree || c.cost === 'free'
@@ -280,7 +222,7 @@ export function MapView() {
       return matchesText && matchesCountry && matchesCat && matchesLang &&
         matches24 && matchesOpen && matchesFree && matchesNoDocs
     })
-  }, [centers, query, filterCountry, filterCat, filterLang, only24, onlyOpen, onlyFree, onlyNoDocs])
+  }, [centers, query, filterCountry, filterCat, only24, onlyOpen, onlyFree, onlyNoDocs])
 
   const catLabel = (k: string) => t(`categories.${k}`, { defaultValue: k })
 
@@ -445,7 +387,7 @@ export function MapView() {
           </label>
         </div>
 
-        {(filterCountry || filterCat || filterLang || only24 || onlyOpen || onlyFree || onlyNoDocs || query || searchPin) && (
+        {(filterCountry || filterCat || only24 || onlyOpen || onlyFree || onlyNoDocs || query || searchPin) && (
           <button
             type="button"
             onClick={clearFilters}
