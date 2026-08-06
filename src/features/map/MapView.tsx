@@ -28,60 +28,6 @@ const CATEGORY_KEYS = [
   'migrant', 'children', 'emergency', 'medical', 'hotline', 'crisis',
 ] as const
 
-// Full static list of service languages (endonyms) — as requested.
-// The order defines the display order in the filter dropdown.
-const SERVICE_LANGS = [
-  'Русский',
-  'English',
-  'Français',
-  'Español',
-  'العربية',
-  '中文',
-  'Українська',
-  'Deutsch',
-  'Italiano',
-  'Português',
-  'Polski',
-  'Türkçe',
-  'فارسی',
-  'Қазақша',
-  'Кыргызча',
-  "Oʻzbekcha",
-  'Тоҷикӣ',
-  'Հայերեն',
-  'ქართული',
-] as const
-
-// Aliases used to detect matches inside center.languages free-text strings.
-const LANG_ALIASES: Record<string, string[]> = {
-  'Русский': ['русск', 'russian', 'ру'],
-  'English': ['english', 'англ', 'en'],
-  'Français': ['français', 'francais', 'french', 'франц'],
-  'Español': ['español', 'espanol', 'spanish', 'испан'],
-  'العربية': ['العربية', 'arabic', 'араб'],
-  '中文': ['中文', '汉语', '普通话', 'chinese', 'китай', 'mandarin'],
-  'Українська': ['українськ', 'украин', 'ukrainian'],
-  'Deutsch': ['deutsch', 'german', 'немец'],
-  'Italiano': ['italiano', 'italian', 'италь'],
-  'Português': ['português', 'portugues', 'portuguese', 'португ'],
-  'Polski': ['polski', 'polish', 'польск'],
-  'Türkçe': ['türkçe', 'turkce', 'turkish', 'турец'],
-  'فارسی': ['فارسی', 'persian', 'farsi', 'перс'],
-  'Қазақша': ['қазақ', 'kazakh', 'казах'],
-  'Кыргызча': ['кыргыз', 'kyrgyz', 'киргиз'],
-  "Oʻzbekcha": ['oʻzbek', "o'zbek", 'uzbek', 'узбек'],
-  'Тоҷикӣ': ['тоҷик', 'тадж', 'tajik'],
-  'Հայերեն': ['հայեր', 'armenian', 'армян'],
-  'ქართული': ['ქართ', 'georgian', 'грузин'],
-}
-
-function centerMatchesLang(c: AdminCenter, lang: string): boolean {
-  const haystack = (c.languages || '').toLowerCase()
-  if (!haystack) return false
-  const aliases = LANG_ALIASES[lang] || [lang.toLowerCase()]
-  return aliases.some((a) => haystack.includes(a.toLowerCase()))
-}
-
 // Best-effort "open now": true for anything explicitly 24/7, otherwise
 // look for at least one HH:MM-HH:MM range in the hours string and check
 // if the current local time falls within it.
@@ -235,7 +181,6 @@ export function MapView() {
   // ---- Filters ----
   const [filterCountry, setFilterCountry] = useState('')
   const [filterCat, setFilterCat] = useState('')
-  const [filterLang, setFilterLang] = useState('')
   const [only24, setOnly24] = useState(false)
   const [onlyOpen, setOnlyOpen] = useState(false)
   const [onlyFree, setOnlyFree] = useState(false)
@@ -270,15 +215,14 @@ export function MapView() {
           .some((v) => String(v).toLowerCase().includes(q))
       const matchesCountry = !filterCountry || c.country === filterCountry
       const matchesCat = !filterCat || cats.includes(filterCat)
-      const matchesLang = !filterLang || centerMatchesLang(c, filterLang)
       const matches24 = !only24 || c.open24 || /24\/?7|круглосуточно|24 hours/i.test(c.hours || '')
       const matchesOpen = !onlyOpen || isOpenNow(c)
       const matchesFree = !onlyFree || c.cost === 'free'
       const matchesNoDocs = !onlyNoDocs || acceptsWithoutDocs(c)
-      return matchesText && matchesCountry && matchesCat && matchesLang &&
+      return matchesText && matchesCountry && matchesCat &&
         matches24 && matchesOpen && matchesFree && matchesNoDocs
     })
-  }, [centers, query, filterCountry, filterCat, filterLang, only24, onlyOpen, onlyFree, onlyNoDocs])
+  }, [centers, query, filterCountry, filterCat, only24, onlyOpen, onlyFree, onlyNoDocs])
 
   const catLabel = (k: string) => t(`categories.${k}`, { defaultValue: k })
 
@@ -333,7 +277,6 @@ export function MapView() {
   const clearFilters = () => {
     setFilterCountry('')
     setFilterCat('')
-    setFilterLang('')
     setOnly24(false)
     setOnlyOpen(false)
     setOnlyFree(false)
@@ -403,7 +346,7 @@ export function MapView() {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
+        <div className="grid grid-cols-2 gap-2 text-sm">
           <select
             value={filterCountry}
             onChange={(e) => setFilterCountry(e.target.value)}
@@ -421,15 +364,6 @@ export function MapView() {
           >
             <option value="">{t('map.all_categories', { defaultValue: 'All categories' })}</option>
             {CATEGORY_KEYS.map((k) => <option key={k} value={k}>{catLabel(k)}</option>)}
-          </select>
-          <select
-            value={filterLang}
-            onChange={(e) => setFilterLang(e.target.value)}
-            aria-label={t('map.filter_lang_label')}
-            className="border border-slate-200 rounded-md px-2 py-1.5 bg-white min-w-0"
-          >
-            <option value="">{t('map.all_languages', { defaultValue: 'All languages' })}</option>
-            {SERVICE_LANGS.map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
         </div>
 
@@ -452,7 +386,7 @@ export function MapView() {
           </label>
         </div>
 
-        {(filterCountry || filterCat || filterLang || only24 || onlyOpen || onlyFree || onlyNoDocs || query || searchPin) && (
+        {(filterCountry || filterCat || only24 || onlyOpen || onlyFree || onlyNoDocs || query || searchPin) && (
           <button
             type="button"
             onClick={clearFilters}

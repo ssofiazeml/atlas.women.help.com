@@ -91,17 +91,33 @@
     "next_resource": "建议保留地图以便随时查看附近三家最近的服务点。把电话号码记在多个地方。"
   },
   "suggest": {
-    "title": "推荐援助中心或分享故事",
-    "desc": "您提交的所有内容均为匿名,公开前经过审核。提交内容能帮助其他移民和难民妇女获得安全与支持。",
-    "tab_center": "新援助中心",
-    "tab_story": "我的经历",
-    "thank_center": "谢谢——您推荐的中心已交审核,可能很快出现在地图上。",
+    "title": "推荐帮助中心或分享你的经历",
+    "desc": "所有内容均匿名提交，并在发布前审核。",
+    "tab_center": "推荐帮助中心",
+    "tab_story": "分享你的经历",
+    "thank_center": "谢谢 — 你的建议已发送给审核人员。",
     "thank_story": "谢谢。您匿名提交的故事已进入审核。它可能会被发布以帮助他人。",
     "submit_center": "提交审核",
     "submit_story": "匿名提交故事",
     "name": "姓名",
     "city": "城市",
-    "country": "国家"
+    "country": "国家",
+    "center_intro": "请按照帮助地图上的方式填写机构信息。",
+    "f_name": "机构名称",
+    "f_name_ph": "例如：希望危机中心",
+    "f_city": "城市",
+    "f_city_ph": "机构所在城市",
+    "f_country": "国家",
+    "f_country_ph": "机构所在国家",
+    "f_category": "帮助类别",
+    "f_category_ph": "请从列表中选择类别",
+    "f_phone": "电话",
+    "f_phone_ph": "联系电话（可选）",
+    "f_website": "网站",
+    "f_website_ph": "https://（可选）",
+    "f_desc": "描述",
+    "f_desc_ph": "提供哪些服务、谁可以联系、服务语言",
+    "center_note": "建议将进入审核队列。不会保存任何个人信息。"
   },
   "chatbot": {
     "start": {
@@ -505,5 +521,6 @@
     "close": "关闭",
     "moderation": "故事仅在经过仔细审核后发布，以保护所有相关人员。您可以在上方提交自己的经历。",
     "default_title": "故事"
-  }
+  },
+  "section_hidden": "此栏目暂时不可用。"
 }

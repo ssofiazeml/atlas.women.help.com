@@ -304,7 +304,53 @@ export const getAboutTexts = (): AboutTexts => readObject<AboutTexts>(K_ABOUT) |
 export const saveAboutTexts = (t: AboutTexts) => writeObject(K_ABOUT, t)
 
 // ---------------------------------------------------------------------------
-// 8. Seed-item overrides + hidden list
+// 8. Site section visibility (admin controlled)
+// Each public section of the site can be hidden from visitors and brought
+// back later — only from the admin panel.
+// ---------------------------------------------------------------------------
+
+const K_SECTIONS = 'atlas:admin:sections:v1'
+
+export type SiteSectionKey =
+  | 'map'
+  | 'chat'
+  | 'checklists'
+  | 'stories'
+  | 'suggest'
+  | 'research'
+  | 'diplomacy'
+  | 'about'
+
+// Default visibility. The anonymous help section (chat) is hidden until an
+// admin turns it back on.
+const DEFAULT_SECTION_VISIBILITY: Record<SiteSectionKey, boolean> = {
+  map: true,
+  chat: false,
+  checklists: true,
+  stories: true,
+  suggest: true,
+  research: true,
+  diplomacy: true,
+  about: true,
+}
+
+export function getSectionVisibility(): Record<SiteSectionKey, boolean> {
+  const stored = readObject<Partial<Record<SiteSectionKey, boolean>>>(K_SECTIONS) || {}
+  return { ...DEFAULT_SECTION_VISIBILITY, ...stored }
+}
+
+export function isSectionVisible(key: SiteSectionKey): boolean {
+  return getSectionVisibility()[key] !== false
+}
+
+export function setSectionVisible(key: SiteSectionKey, visible: boolean) {
+  const stored = readObject<Partial<Record<SiteSectionKey, boolean>>>(K_SECTIONS) || {}
+  stored[key] = visible
+  writeObject(K_SECTIONS, stored)
+}
+
+// ---------------------------------------------------------------------------
+// 9. Seed-item overrides + hidden list
 // The site ships with hardcoded "seed" items (centers from demoData,
 // translations placeholders, etc.). The admin must be able to edit or hide
 // them WITHOUT removing them from the source code. We store:

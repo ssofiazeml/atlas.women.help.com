@@ -21,13 +21,24 @@ import {
   getHomeTexts,
   subscribeContent,
   applySeedTransforms,
+  getSectionVisibility,
+  type SiteSectionKey,
 } from './lib/contentStore'
 import { pickLocalized } from './lib/translate'
+
+// Live section visibility (admin controlled) — hidden sections disappear from
+// the navigation, the home page and the router.
+function useSectionVisibility() {
+  const [vis, setVis] = useState(() => getSectionVisibility())
+  useEffect(() => subscribeContent(() => setVis(getSectionVisibility())), [])
+  return vis
+}
 
 function Header() {
   const { t, i18n } = useTranslation()
   const [open, setOpen] = useState(false)
   const location = useLocation()
+  const vis = useSectionVisibility()
 
   // Sync RTL dir on header render / lang change
   React.useEffect(() => {
@@ -39,16 +50,18 @@ function Header() {
     setOpen(false)
   }, [location.pathname])
 
-  const navLinks = [
-    { to: '/map', label: t('nav.map') },
-    { to: '/chat', label: t('nav.chat') },
-    { to: '/checklists', label: t('nav.checklists') },
-    { to: '/stories', label: t('nav.stories') },
-    { to: '/suggest', label: t('nav.suggest') || 'Suggest' },
-    { to: '/research', label: t('nav.research') },
-    { to: '/diplomacy', label: t('nav.diplomacy') },
-    { to: '/about', label: t('nav.about') || 'О проекте' },
-  ]
+  const navLinks = (
+    [
+      { key: 'map', to: '/map', label: t('nav.map') },
+      { key: 'chat', to: '/chat', label: t('nav.chat') },
+      { key: 'checklists', to: '/checklists', label: t('nav.checklists') },
+      { key: 'stories', to: '/stories', label: t('nav.stories') },
+      { key: 'suggest', to: '/suggest', label: t('nav.suggest') || 'Suggest' },
+      { key: 'research', to: '/research', label: t('nav.research') },
+      { key: 'diplomacy', to: '/diplomacy', label: t('nav.diplomacy') },
+      { key: 'about', to: '/about', label: t('nav.about') || 'О проекте' },
+    ] as { key: SiteSectionKey; to: string; label: string }[]
+  ).filter((l) => vis[l.key] !== false)
 
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-[1000]">
@@ -107,6 +120,7 @@ function Header() {
 function Home() {
   const { t, i18n } = useTranslation()
   const lang = i18n.language
+  const vis = useSectionVisibility()
   const [customCards, setCustomCards] = useState<HomeCard[]>(() => getHomeCards())
   const [texts, setTexts] = useState(() => getHomeTexts())
   const [, setTick] = useState(0)
@@ -122,7 +136,7 @@ function Home() {
   )
 
   // Built-in navigation cards with stable ids — admin can override or hide.
-  const seedNavCards = applySeedTransforms<{
+  const seedNavCardsAll = applySeedTransforms<{
     id: string
     title: string
     description: string
@@ -135,6 +149,20 @@ function Home() {
     { id: 'seed-card-research', title: t('nav.research'), description: t('research.intro'), link: '/research' },
     { id: 'seed-card-diplomacy', title: t('nav.diplomacy'), description: t('diplomacy.intro'), link: '/diplomacy' },
   ])
+
+  // Drop cards whose section is hidden by the admin.
+  const CARD_SECTION: Record<string, SiteSectionKey> = {
+    'seed-card-map': 'map',
+    'seed-card-chat': 'chat',
+    'seed-card-checklists': 'checklists',
+    'seed-card-stories': 'stories',
+    'seed-card-research': 'research',
+    'seed-card-diplomacy': 'diplomacy',
+  }
+  const seedNavCards = seedNavCardsAll.filter((c) => {
+    const key = CARD_SECTION[c.id]
+    return !key || vis[key] !== false
+  })
 
   return (
     <main className="max-w-4xl mx-auto px-5 py-16">
@@ -220,6 +248,15 @@ function Home() {
 
 function App() {
   const { t } = useTranslation()
+  const vis = useSectionVisibility()
+  const hiddenNotice = (
+    <div className="p-14 text-center text-slate-600">
+      {t('section_hidden', { defaultValue: 'This section is temporarily unavailable.' })}{' '}
+      <Link to="/" className="underline">{t('nav.home', { defaultValue: 'Home' })}</Link>
+    </div>
+  )
+  const gate = (key: SiteSectionKey, el: React.ReactNode) =>
+    vis[key] === false ? hiddenNotice : el
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--safe-bg)]">
@@ -227,14 +264,14 @@ function App() {
       <div className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/map" element={<MapView />} />
-          <Route path="/chat" element={<Chatbot />} />
-          <Route path="/checklists" element={<Checklists />} />
-          <Route path="/stories" element={<StoriesView />} />
-          <Route path="/suggest" element={<SuggestPage />} />
-          <Route path="/research" element={<ResearchLibrary />} />
-          <Route path="/diplomacy" element={<DigitalDiplomacy />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/map" element={gate('map', <MapView />)} />
+          <Route path="/chat" element={gate('chat', <Chatbot />)} />
+          <Route path="/checklists" element={gate('checklists', <Checklists />)} />
+          <Route path="/stories" element={gate('stories', <StoriesView />)} />
+          <Route path="/suggest" element={gate('suggest', <SuggestPage />)} />
+          <Route path="/research" element={gate('research', <ResearchLibrary />)} />
+          <Route path="/diplomacy" element={gate('diplomacy', <DigitalDiplomacy />)} />
+          <Route path="/about" element={gate('about', <About />)} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/secret-admin" element={<SecretAdmin />} />
           <Route path="*" element={<div className="p-14 text-center">Not found. <Link to="/" className="underline">Return home</Link></div>} />
