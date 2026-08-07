@@ -150,6 +150,11 @@ function save(key: string, value: any) {
   try { localStorage.setItem(key, JSON.stringify(value)) } catch {}
 }
 
+// Notify an open admin panel that the moderation inbox changed.
+function notifyInbox() {
+  try { window.dispatchEvent(new CustomEvent('atlas:inbox:changed')) } catch {}
+}
+
 // Live locations for map + admin
 let cachedLocations: MapLocation[] | null = null
 
@@ -180,12 +185,14 @@ export function addPendingSuggestion(sug: Omit<LocationSuggestion, 'id' | 'revie
   const newItem: LocationSuggestion = { ...sug, id: Date.now(), reviewed: false }
   list.unshift(newItem)
   save(LS_SUGGESTIONS, list)
+  notifyInbox()
   return newItem
 }
 
 export function removePendingSuggestion(id: number) {
   const list = getPendingSuggestions().filter(s => s.id !== id)
   save(LS_SUGGESTIONS, list)
+  notifyInbox()
 }
 
 export function markPendingSuggestionReviewed(id: number) {
@@ -203,6 +210,7 @@ export function addPendingCase(caseItem: Omit<CaseSubmission, 'id' | 'reviewed' 
   const newItem: CaseSubmission = { ...caseItem, id: Date.now(), reviewed: false }
   list.unshift(newItem)
   save(LS_CASES, list)
+  notifyInbox()
   return newItem
 }
 
@@ -219,6 +227,7 @@ export function approvePendingCase(id: number, publishAsPublishedStoryId?: numbe
 export function rejectPendingCase(id: number) {
   const list = getPendingCases().filter(c => c.id !== id)
   save(LS_CASES, list)
+  notifyInbox()
 }
 
 // Clear all demo data (useful for testing / user reset). Kept hidden.
