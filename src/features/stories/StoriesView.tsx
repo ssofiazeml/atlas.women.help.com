@@ -8,6 +8,7 @@ import {
 } from '../../lib/contentStore'
 import { PUBLISHED_STORIES } from './storiesSeed'
 import { pickLocalized } from '../../lib/translate'
+import { addPendingCase } from '../../lib/demoData'
 
 type Story = (typeof PUBLISHED_STORIES)[number]
 
@@ -18,6 +19,9 @@ export function StoriesView() {
   const [adminStories, setAdminStories] = useState<AdminStory[]>(() => getStories())
   const [selectedAdmin, setSelectedAdmin] = useState<AdminStory | null>(null)
   const [storyTick, setStoryTick] = useState(0)
+  const emptyStory = { title: '', situation: '', actions: '', outcome: '' }
+  const [storyForm, setStoryForm] = useState(emptyStory)
+  const [submitting, setSubmitting] = useState(false)
   useEffect(
     () =>
       subscribeContent(() => {
@@ -142,26 +146,46 @@ export function StoriesView() {
             <h3 className="font-medium mb-1 text-xl">{t('stories_page.share_title')}</h3>
             <p className="text-sm text-slate-600 mb-4">{t('stories_page.share_desc')}</p>
 
-            <form onSubmit={e => { e.preventDefault(); alert(t('stories_page.submitted')); setShowForm(false) }}>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault()
+                setSubmitting(true)
+                const all = (v: string) => ({ en: v, ru: v, fr: v, ar: v })
+                try {
+                  await addPendingCase({
+                    title: all(storyForm.title || t('stories_page.default_title')),
+                    situation: all(storyForm.situation),
+                    actions: all(storyForm.actions),
+                    outcome: all(storyForm.outcome),
+                  })
+                } catch {
+                  /* saved locally for moderation */
+                }
+                setSubmitting(false)
+                setStoryForm(emptyStory)
+                alert(t('stories_page.submitted'))
+                setShowForm(false)
+              }}
+            >
               <div className="mb-3">
                 <label className="text-xs font-medium block mb-1">{t('stories_page.f_title')}</label>
-                <input className="w-full border rounded px-3 py-2 text-sm" placeholder={t('stories_page.f_title_ph')} />
+                <input value={storyForm.title} onChange={(e) => setStoryForm({ ...storyForm, title: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" placeholder={t('stories_page.f_title_ph')} />
               </div>
               <div className="mb-3">
                 <label className="text-xs font-medium block mb-1">{t('stories_page.f_what')}</label>
-                <textarea required className="w-full border rounded px-3 py-2 text-sm h-20" placeholder={t('stories_page.f_what_ph')} />
+                <textarea required value={storyForm.situation} onChange={(e) => setStoryForm({ ...storyForm, situation: e.target.value })} className="w-full border rounded px-3 py-2 text-sm h-20" placeholder={t('stories_page.f_what_ph')} />
               </div>
               <div className="mb-3">
                 <label className="text-xs font-medium block mb-1">{t('stories_page.f_actions')}</label>
-                <textarea required className="w-full border rounded px-3 py-2 text-sm h-20" placeholder={t('stories_page.f_actions_ph')} />
+                <textarea required value={storyForm.actions} onChange={(e) => setStoryForm({ ...storyForm, actions: e.target.value })} className="w-full border rounded px-3 py-2 text-sm h-20" placeholder={t('stories_page.f_actions_ph')} />
               </div>
               <div className="mb-3">
                 <label className="text-xs font-medium block mb-1">{t('stories_page.f_now')}</label>
-                <textarea className="w-full border rounded px-3 py-2 text-sm h-16" placeholder={t('stories_page.f_now_ph')} />
+                <textarea value={storyForm.outcome} onChange={(e) => setStoryForm({ ...storyForm, outcome: e.target.value })} className="w-full border rounded px-3 py-2 text-sm h-16" placeholder={t('stories_page.f_now_ph')} />
               </div>
               <div className="flex justify-end gap-2 mt-4">
                 <button type="button" onClick={() => setShowForm(false)} className="text-sm px-4 py-1.5 border rounded">{t('stories_page.cancel')}</button>
-                <button type="submit" className="text-sm px-4 py-1.5 rounded bg-teal-800 text-white">{t('stories_page.submit')}</button>
+                <button type="submit" disabled={submitting} className="text-sm px-4 py-1.5 rounded bg-teal-800 text-white disabled:opacity-60">{t('stories_page.submit')}</button>
               </div>
             </form>
             <div className="text-[10px] text-center mt-4 text-slate-400">{t('stories_page.confidential')}</div>
