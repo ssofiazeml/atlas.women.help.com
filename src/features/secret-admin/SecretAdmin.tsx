@@ -1719,3 +1719,171 @@ function HomeCardsSection() {
     </SectionShell>
   )
 }
+
+// === ВХОДЯЩИЕ ЗАЯВКИ =======================================================
+// Всё, что присылают посетители сайта: предложенные центры помощи и истории.
+function InboxSection() {
+  const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([])
+  const [cases, setCases] = useState<CaseSubmission[]>([])
+  const [busy, setBusy] = useState<string | null>(null)
+
+  const reload = () => {
+    setSuggestions(getPendingSuggestions())
+    setCases(getPendingCases())
+  }
+  useEffect(() => {
+    reload()
+    const h = () => reload()
+    window.addEventListener('storage', h)
+    window.addEventListener('atlas:inbox:changed', h)
+    return () => {
+      window.removeEventListener('storage', h)
+      window.removeEventListener('atlas:inbox:changed', h)
+    }
+  }, [])
+
+  const lang = (rec: any) =>
+    !rec ? '' : typeof rec === 'string' ? rec : rec.ru || rec.en || Object.values(rec)[0] || ''
+
+  const publishCenter = async (s: LocationSuggestion) => {
+    setBusy(String(s.id))
+    const name = lang(s.proposedName)
+    const description = s.message || ''
+    let lat = s.lat
+    let lng = s.lng
+    if (lat == null || lng == null) {
+      const geo = await geocodeAddress([s.city, s.country].filter(Boolean).join(', '))
+      if (geo) {
+        lat = geo.lat
+        lng = geo.lng
+      }
+    }
+    const translations = description ? await translateFields({ description }, ['description']) : undefined
+    addCenter({
+      name,
+      city: s.city || '',
+      country: s.country || '',
+      description,
+      contact: s.contactPhone || '',
+      website: s.contactWeb || '',
+      lat,
+      lng,
+      categories: s.category || [],
+      category: (s.category && s.category[0]) || '',
+      translations,
+    })
+    removePendingSuggestion(s.id)
+    setBusy(null)
+    reload()
+  }
+
+  const publishStory = async (c: CaseSubmission) => {
+    setBusy(String(c.id))
+    const title = lang(c.title)
+    const text = [lang(c.situation), lang(c.actions), lang(c.outcome)].filter(Boolean).join('\n\n')
+    const translations = await translateFields({ title, text }, ['title', 'text'])
+    addStory({ name: 'Анонимно', title, text, translations })
+    rejectPendingCase(c.id)
+    setBusy(null)
+    reload()
+  }
+
+  return (
+    <SectionShell
+      title="Входящие заявки"
+      intro="Здесь появляются истории и центры помощи, которые присылают посетители сайта. Нажмите «Опубликовать», чтобы добавить их на сайт, или «Удалить», чтобы отклонить."
+    >
+      <div className="flex justify-end mb-3">
+        <button onClick={reload} className="text-xs text-safe-800 underline">
+          Обновить список
+        </button>
+      </div>
+
+      <h3 className="font-semibold mb-3">Предложенные центры помощи ({suggestions.length})</h3>
+      {suggestions.length === 0 ? (
+        <p className="text-sm text-slate-500 mb-8">Пока нет новых предложений.</p>
+      ) : (
+        <div className="grid gap-4 mb-8">
+          {suggestions.map((s) => (
+            <div key={s.id} className="safe-card bg-white">
+              <div className="font-semibold">{lang(s.proposedName)}</div>
+              <div className="text-xs text-slate-500">
+                {[s.city, s.country].filter(Boolean).join(', ')}
+                {s.category?.length ? ` · ${s.category.join(', ')}` : ''}
+              </div>
+              {s.message && <p className="text-sm mt-2 whitespace-pre-wrap">{s.message}</p>}
+              <div className="text-xs text-slate-500 mt-2 space-y-0.5">
+                {s.contactPhone && <div>Телефон: {s.contactPhone}</div>}
+                {s.contactWeb && <div>Сайт: {s.contactWeb}</div>}
+                <div>Получено: {new Date(s.id).toLocaleString('ru-RU')}</div>
+              </div>
+              <div className="flex gap-3 mt-3">
+                <button
+                  disabled={busy === String(s.id)}
+                  onClick={() => publishCenter(s)}
+                  className="text-xs bg-safe-800 text-white px-3 py-1.5 rounded disabled:opacity-60"
+                >
+                  {busy === String(s.id) ? 'Публикую…' : 'Опубликовать на карте'}
+                </button>
+                <DeleteBtn
+                  onClick={() => {
+                    if (confirm('Удалить заявку?')) {
+                      removePendingSuggestion(s.id)
+                      reload()
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <h3 className="font-semibold mb-3">Присланные истории ({cases.length})</h3>
+      {cases.length === 0 ? (
+        <p className="text-sm text-slate-500">Пока нет новых историй.</p>
+      ) : (
+        <div className="grid gap-4">
+          {cases.map((c) => (
+            <div key={c.id} className="safe-card bg-white">
+              <div className="font-semibold">{lang(c.title) || 'Без названия'}</div>
+              <div className="text-xs text-slate-500 mb-2">
+                Получено: {new Date(c.id).toLocaleString('ru-RU')}
+              </div>
+              <p className="text-sm whitespace-pre-wrap">{lang(c.situation)}</p>
+              {lang(c.actions) && (
+                <p className="text-sm mt-2 whitespace-pre-wrap">
+                  <span className="text-slate-500">Что сделала: </span>
+                  {lang(c.actions)}
+                </p>
+              )}
+              {lang(c.outcome) && (
+                <p className="text-sm mt-2 whitespace-pre-wrap">
+                  <span className="text-slate-500">Сейчас: </span>
+                  {lang(c.outcome)}
+                </p>
+              )}
+              <div className="flex gap-3 mt-3">
+                <button
+                  disabled={busy === String(c.id)}
+                  onClick={() => publishStory(c)}
+                  className="text-xs bg-safe-800 text-white px-3 py-1.5 rounded disabled:opacity-60"
+                >
+                  {busy === String(c.id) ? 'Публикую…' : 'Опубликовать в «Истории»'}
+                </button>
+                <DeleteBtn
+                  onClick={() => {
+                    if (confirm('Удалить историю?')) {
+                      rejectPendingCase(c.id)
+                      reload()
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </SectionShell>
+  )
+}
