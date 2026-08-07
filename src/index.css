@@ -104,3 +104,68 @@ a {
 @media (prefers-reduced-motion: reduce) {
   .atlas-card-flash { animation: none; border-color: #0d9488; }
 }
+
+/* ---------------------------------------------------------------------------
+   Dark mode — follows the phone / system appearance automatically.
+   The layout, spacing and typography stay exactly the same; only surfaces
+   and text colours are inverted so the site is readable at night.
+--------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --safe-bg: #0f172a;
+    --safe-text: #e2e8f0;
+    --safe-accent: #2dd4bf;
+    color-scheme: dark;
+  }
+
+  body { background-color: #0f172a; color: #e2e8f0; }
+  a { color: #2dd4bf; }
+
+  /* Surfaces */
+  .safe-card,
+  .bg-white { background-color: #1e293b !important; }
+  .bg-slate-50, .bg-slate-100, .bg-gray-50, .bg-gray-100 { background-color: #1b2536 !important; }
+  .bg-teal-50 { background-color: #10362f !important; }
+  .safe-card { border-color: #334155; }
+
+  /* Text */
+  .text-slate-900, .text-slate-800, .text-safe-800, .text-gray-900, .text-gray-800 { color: #f1f5f9 !important; }
+  .text-slate-700, .text-slate-600, .text-gray-700, .text-gray-600 { color: #cbd5e1 !important; }
+  .text-slate-500, .text-slate-400, .text-gray-500, .text-gray-400 { color: #94a3b8 !important; }
+  .text-teal-800 { color: #5eead4 !important; }
+
+  /* Borders */
+  .border, .border-t, .border-b, .border-l, .border-r,
+  .border-slate-200, .border-slate-300, .border-safe-200, .border-gray-200, .border-gray-300 {
+    border-color: #334155 !important;
+  }
+  .border-teal-200 { border-color: #115e59 !important; }
+  .divide-y > * + * { border-color: #334155 !important; }
+
+  /* Form controls */
+  input, textarea, select {
+    background-color: #16203a !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+  }
+  input::placeholder, textarea::placeholder { color: #7c8ba1 !important; }
+  .language-switch select { background: #16203a; border-color: #334155; color: #e2e8f0; }
+
+  /* Buttons that must stay high contrast */
+  .bg-safe-800, .bg-slate-900, .bg-teal-800 { color: #ffffff !important; }
+  .quick-exit-btn { background-color: #475569; }
+  .quick-exit-btn:hover { background-color: #64748b; }
+
+  /* Leaflet */
+  .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+    background: #1e293b;
+    color: #e2e8f0;
+  }
+  .leaflet-container { background: #0f172a; }
+  .leaflet-bar a, .leaflet-control-zoom a {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+    border-color: #334155 !important;
+  }
+  .leaflet-tile { filter: brightness(0.82) contrast(1.05); }
+}
