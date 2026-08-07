@@ -2,6 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { geocodeAddress, translateFields } from '../../lib/translate'
 import { supabase } from '../../integrations/supabase/client'
 import {
+  getPendingSuggestions,
+  removePendingSuggestion,
+  getPendingCases,
+  rejectPendingCase,
+  type LocationSuggestion,
+  type CaseSubmission,
+} from '../../lib/demoData'
+import {
   // home cards (already shipped)
   addHomeCard,
   deleteHomeCard,
@@ -87,6 +95,7 @@ const SESSION_KEY = 'atlas:secret-admin:authed'
 
 type TabKey =
   | 'home'
+  | 'inbox'
   | 'sections'
   | 'about'
   | 'centers'
@@ -99,6 +108,7 @@ type TabKey =
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'home', label: 'Главная — общие тексты' },
+  { key: 'inbox', label: 'Входящие заявки' },
   { key: 'sections', label: 'Разделы сайта (показать/скрыть)' },
   { key: 'about', label: 'О проекте' },
   { key: 'centers', label: 'Карта центров помощи' },
@@ -230,6 +240,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
 
         <section className="min-w-0">
           {tab === 'home' && <HomeTextsSection />}
+          {tab === 'inbox' && <InboxSection />}
           {tab === 'sections' && <SectionsVisibilitySection />}
           {tab === 'about' && <AboutSection />}
           {tab === 'centers' && <CentersSection />}
@@ -239,7 +250,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
           {tab === 'library' && <LibrarySection />}
           {tab === 'stories' && <StoriesSection />}
           {tab === 'cards' && <HomeCardsSection />}
-          {tab !== 'sections' && <SectionDangerZone tab={tab} />}
+          {tab !== 'sections' && tab !== 'inbox' && <SectionDangerZone tab={tab} />}
         </section>
       </div>
     </main>
