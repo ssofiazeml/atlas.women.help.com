@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { geocodeAddress, translateFields } from '../../lib/translate'
+import { supabase } from '../../integrations/supabase/client'
 import {
   // home cards (already shipped)
   addHomeCard,
@@ -82,9 +83,6 @@ import {
   type SeedHomeCard,
 } from '../../lib/seeds'
 
-// The admin password is never hardcoded in the repository — it comes from the
-// environment (.env, which is git-ignored, or the hosting provider's secrets).
-const ADMIN_PASSWORD = (import.meta.env.VITE_ADMIN_PASSWORD || '') as string
 const SESSION_KEY = 'atlas:secret-admin:authed'
 
 type TabKey =
@@ -142,14 +140,19 @@ export function SecretAdmin() {
 function LoginGate({ onSuccess }: { onSuccess: () => void }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!ADMIN_PASSWORD) {
-      setError('Пароль администратора не настроен. Добавьте VITE_ADMIN_PASSWORD в .env')
-      return
-    }
-    if (password.trim().toLowerCase() === ADMIN_PASSWORD.trim().toLowerCase()) {
+    setSubmitting(true)
+    setError('')
+
+    const { data, error: requestError } = await supabase.functions.invoke('verify-admin-password', {
+      body: { password },
+    })
+
+    setSubmitting(false)
+    if (!requestError && data?.valid === true) {
       setError('')
       onSuccess()
     } else {
@@ -176,9 +179,10 @@ function LoginGate({ onSuccess }: { onSuccess: () => void }) {
         {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
         <button
           type="submit"
+          disabled={submitting || !password}
           className="mt-4 w-full bg-safe-800 text-white rounded-md py-2 text-sm font-medium hover:opacity-90 transition"
         >
-          Войти
+          {submitting ? 'Проверка…' : 'Войти'}
         </button>
       </form>
     </main>
