@@ -11,7 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.1",
+    "@supabase/supabase-js": "^2.112.1",
     "@types/leaflet-routing-machine": "^3.2.9",
     "i18next": "^23.11.5",
     "i18next-browser-languagedetector": "^8.0.0",
