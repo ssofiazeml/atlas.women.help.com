@@ -127,12 +127,28 @@ a {
   .bg-slate-50, .bg-slate-100, .bg-gray-50, .bg-gray-100 { background-color: #1b2536 !important; }
   .bg-teal-50 { background-color: #10362f !important; }
   .safe-card { border-color: #334155; }
+  .bg-safe-50, .bg-safe-100, .bg-safe-200 { background-color: #223049 !important; }
+
+  /* Hover surfaces must never flash white in dark mode */
+  .hover\:bg-white:hover,
+  .hover\:bg-slate-50:hover,
+  .hover\:bg-slate-100:hover,
+  .hover\:bg-gray-50:hover,
+  .hover\:bg-gray-100:hover,
+  .hover\:bg-safe-50:hover,
+  .hover\:bg-safe-100:hover { background-color: #2b3a55 !important; color: #f1f5f9 !important; }
+  .hover\:bg-teal-50:hover { background-color: #10362f !important; }
+  .hover\:bg-safe-800:hover, .hover\:bg-slate-900:hover { background-color: #0d9488 !important; }
+  .hover\:bg-safe-800:hover *, .hover\:bg-slate-900:hover * { color: #ffffff !important; }
+  .hover\:text-white:hover { color: #ffffff !important; }
+  .hover\:border-safe-teal:hover { border-color: #2dd4bf !important; }
 
   /* Text */
   .text-slate-900, .text-slate-800, .text-safe-800, .text-gray-900, .text-gray-800 { color: #f1f5f9 !important; }
   .text-slate-700, .text-slate-600, .text-gray-700, .text-gray-600 { color: #cbd5e1 !important; }
   .text-slate-500, .text-slate-400, .text-gray-500, .text-gray-400 { color: #94a3b8 !important; }
   .text-teal-800 { color: #5eead4 !important; }
+  .text-safe-700 { color: #cbd5e1 !important; }
 
   /* Borders */
   .border, .border-t, .border-b, .border-l, .border-r,
@@ -140,6 +156,8 @@ a {
     border-color: #334155 !important;
   }
   .border-teal-200 { border-color: #115e59 !important; }
+  .border-safe-800, .border-slate-900 { border-color: #64748b !important; }
+  .border-safe-teal { border-color: #2dd4bf !important; }
   .divide-y > * + * { border-color: #334155 !important; }
 
   /* Form controls */
