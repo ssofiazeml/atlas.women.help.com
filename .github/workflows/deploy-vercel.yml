@@ -3,6 +3,7 @@ name: Deploy to Vercel
 on:
   push:
     branches:
+      - main
       - codex/vercel-deploy
   workflow_dispatch:
 
