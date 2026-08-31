@@ -9,6 +9,8 @@
 # production
 /dist
 /build
+.vercel
+tsconfig.tsbuildinfo
 
 # misc
 .DS_Store
