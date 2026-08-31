@@ -9,6 +9,8 @@
 # production
 /dist
 /build
+.vercel
+tsconfig.tsbuildinfo
 
 # misc
 .DS_Store
@@ -46,3 +48,4 @@ pnpm-debug.log*
 .env
 .env.local
 .env.*.local
+.vercel

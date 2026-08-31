@@ -52,10 +52,29 @@ Admin demo: go to `/admin` , enter the password `demo-admin-2024` (clearly print
 
 ## Production Deployment
 
-Deploy on Vercel:
-- `npm run build && vercel deploy --prod`
-- Configure real Supabase keys via environment variables (`VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY`).
+### Automatic Vercel deployment
+
+Pushes to `codex/vercel-deploy` are deployed by
+`.github/workflows/deploy-vercel.yml`. Configure these GitHub Actions repository
+secrets before running the workflow:
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_OWNER_EMAIL`
+
+The Supabase anon and publishable variables may contain the same public client
+key while both client integrations remain in the application. Never put a
+Supabase secret or service-role key in a `VITE_*` variable.
+
+For a manual deployment, run `vercel --prod` from the repository root.
+
 - Pre-create your one trusted admin user in Supabase dashboard and set your RLS policies.
+- Deploy `supabase/functions/verify-admin-password` separately and store
+  `ATLAS_ADMIN_PASSWORD` as a Supabase Edge Function secret.
 
 Starting data:
 - Map seeds are in code + moved into local/session storage on first load.
