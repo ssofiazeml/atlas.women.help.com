@@ -63,9 +63,10 @@ function acceptsWithoutDocs(c: AdminCenter): boolean {
 }
 
 const highlightIcon = new L.Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+
   iconSize: [30, 46],
   iconAnchor: [15, 46],
   className: 'atlas-marker-highlight',
