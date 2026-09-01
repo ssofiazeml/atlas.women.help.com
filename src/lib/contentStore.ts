@@ -386,6 +386,8 @@ export type SiteSectionKey =
 // admin turns it back on.
 const DEFAULT_SECTION_VISIBILITY: Record<SiteSectionKey, boolean> = {
   map: true,
+  hotlines: true,
+
   chat: false,
   checklists: true,
   stories: true,
