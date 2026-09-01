@@ -372,6 +372,7 @@ const K_SECTIONS = 'atlas:admin:sections:v1'
 
 export type SiteSectionKey =
   | 'map'
+  | 'hotlines'
   | 'chat'
   | 'checklists'
   | 'stories'
@@ -379,6 +380,7 @@ export type SiteSectionKey =
   | 'research'
   | 'diplomacy'
   | 'about'
+
 
 // Default visibility. The anonymous help section (chat) is hidden until an
 // admin turns it back on.
