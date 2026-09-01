@@ -14,14 +14,21 @@ import {
 import { geocodeAddress, pickLocalized } from '../../lib/translate'
 import { getSeedCenters } from '../../lib/seeds'
 
-// Fix default marker icons for Leaflet + Vite
+// Fix default marker icons for Leaflet + Vite.
+// The images are bundled from node_modules (instead of a CDN) so the pins
+// always render, even when external requests are blocked.
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+
 // @ts-ignore
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
 })
+
 
 const CATEGORY_KEYS = [
   'shelter', 'domestic', 'sexual', 'legal', 'psychological',
@@ -56,9 +63,10 @@ function acceptsWithoutDocs(c: AdminCenter): boolean {
 }
 
 const highlightIcon = new L.Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIcon2x,
+  shadowUrl: markerShadow,
+
   iconSize: [30, 46],
   iconAnchor: [15, 46],
   className: 'atlas-marker-highlight',
@@ -563,7 +571,29 @@ function CenterCard({
       <div className="text-xs text-slate-500 mt-0.5">
         {[city, country].filter(Boolean).join(', ')}
       </div>
-      {address && <div className="text-xs text-slate-600 mt-1">📍 {address}</div>}
+      {/* Full address of the help point */}
+      {(address || city || country) && (
+        <div className="mt-2 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-2">
+          <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-0.5">
+            {t('card.full_address', { defaultValue: 'Полный адрес' })}
+          </div>
+          <div className="text-xs text-slate-700 leading-relaxed">
+            {[address, city, country].filter(Boolean).join(', ')}
+          </div>
+          {!compact && typeof c.lat === 'number' && typeof c.lng === 'number' && (
+            <a
+              href={`https://www.openstreetmap.org/?mlat=${c.lat}&mlon=${c.lng}#map=17/${c.lat}/${c.lng}`}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-[11px] text-teal-700 hover:underline mt-1 inline-block"
+            >
+              {t('card.open_in_osm', { defaultValue: 'Открыть на карте OpenStreetMap' })}
+            </a>
+          )}
+        </div>
+      )}
+
 
       {cats.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">

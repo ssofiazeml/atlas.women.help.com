@@ -16,17 +16,31 @@ Deno.serve(async (request) => {
   }
 
   try {
-    const { password } = await request.json()
-    const adminPassword = Deno.env.get('ATLAS_ADMIN_PASSWORD')
+    const { email, password } = await request.json()
 
-    if (!adminPassword) {
+    const adminEmail = Deno.env.get('ATLAS_ADMIN_EMAIL')
+    // New login password. The legacy password stays valid so the owner is
+    // never locked out of the panel.
+    const loginPassword = Deno.env.get('ATLAS_ADMIN_LOGIN_PASSWORD')
+    const legacyPassword = Deno.env.get('ATLAS_ADMIN_PASSWORD')
+
+    if (!loginPassword && !legacyPassword) {
       return new Response(JSON.stringify({ error: 'Admin access is not configured' }), {
         status: 503,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    const valid = typeof password === 'string' && password === adminPassword
+    const emailOk =
+      !adminEmail ||
+      (typeof email === 'string' && email.trim().toLowerCase() === adminEmail.trim().toLowerCase())
+
+    const passwordOk =
+      typeof password === 'string' &&
+      ((!!loginPassword && password === loginPassword) ||
+        (!!legacyPassword && password === legacyPassword))
+
+    const valid = emailOk && passwordOk
     return new Response(JSON.stringify({ valid }), {
       status: valid ? 200 : 401,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
