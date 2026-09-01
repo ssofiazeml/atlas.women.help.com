@@ -303,6 +303,65 @@ const K_ABOUT = 'atlas:admin:about:v1'
 export const getAboutTexts = (): AboutTexts => readObject<AboutTexts>(K_ABOUT) || {}
 export const saveAboutTexts = (t: AboutTexts) => writeObject(K_ABOUT, t)
 
+// ---- 9. Hotlines (separate section, grouped by country) -------------------
+// `country` empty (or scope === 'international') means the number is shown
+// for every country as an international hotline.
+export type AdminHotline = {
+  id: string
+  title: string
+  country: string // '' for international
+  scope?: 'country' | 'international'
+  phone: string
+  hours?: string
+  languages?: string
+  note?: string
+  website?: string
+  createdAt: number
+  translations?: Translations
+}
+const K_HOTLINES = 'atlas:admin:hotlines:v1'
+export const getHotlines = () => readList<AdminHotline>(K_HOTLINES)
+export const addHotline = (h: Omit<AdminHotline, 'id' | 'createdAt'>) => {
+  const item: AdminHotline = { ...h, id: newId(), createdAt: Date.now() }
+  writeList(K_HOTLINES, [item, ...getHotlines()])
+  return item
+}
+export const updateHotline = (id: string, patch: Partial<AdminHotline>) =>
+  writeList(K_HOTLINES, getHotlines().map((h) => (h.id === id ? { ...h, ...patch } : h)))
+export const deleteHotline = (id: string) =>
+  writeList(K_HOTLINES, getHotlines().filter((h) => h.id !== id))
+
+// ---- 10. Hotline suggestions from visitors (moderation queue) --------------
+export type PendingHotline = {
+  id: number
+  title?: string
+  country: string // '' for international
+  scope: 'country' | 'international'
+  phone: string
+  comment?: string
+}
+const K_HOTLINE_QUEUE = 'atlas:hotline-suggestions:v1'
+export const getPendingHotlines = () => readList<PendingHotline>(K_HOTLINE_QUEUE)
+export function addPendingHotline(h: Omit<PendingHotline, 'id'>) {
+  const item: PendingHotline = { ...h, id: Date.now() }
+  writeList(K_HOTLINE_QUEUE, [item, ...getPendingHotlines()])
+  try {
+    window.dispatchEvent(new CustomEvent('atlas:inbox:changed'))
+  } catch {
+    /* noop */
+  }
+  return item
+}
+export function removePendingHotline(id: number) {
+  writeList(K_HOTLINE_QUEUE, getPendingHotlines().filter((h) => h.id !== id))
+  try {
+    window.dispatchEvent(new CustomEvent('atlas:inbox:changed'))
+  } catch {
+    /* noop */
+  }
+}
+
+
 // ---------------------------------------------------------------------------
 // 8. Site section visibility (admin controlled)
 // Each public section of the site can be hidden from visitors and brought
