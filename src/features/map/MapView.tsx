@@ -14,14 +14,21 @@ import {
 import { geocodeAddress, pickLocalized } from '../../lib/translate'
 import { getSeedCenters } from '../../lib/seeds'
 
-// Fix default marker icons for Leaflet + Vite
+// Fix default marker icons for Leaflet + Vite.
+// The images are bundled from node_modules (instead of a CDN) so the pins
+// always render, even when external requests are blocked.
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+
 // @ts-ignore
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
 })
+
 
 const CATEGORY_KEYS = [
   'shelter', 'domestic', 'sexual', 'legal', 'psychological',
