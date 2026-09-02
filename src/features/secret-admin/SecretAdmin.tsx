@@ -119,6 +119,7 @@ type TabKey =
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'home', label: 'Главная — общие тексты' },
   { key: 'inbox', label: 'Входящие заявки' },
+  { key: 'hotlines', label: 'Горячие линии' },
   { key: 'sections', label: 'Разделы сайта (показать/скрыть)' },
   { key: 'about', label: 'О проекте' },
   { key: 'centers', label: 'Карта центров помощи' },
