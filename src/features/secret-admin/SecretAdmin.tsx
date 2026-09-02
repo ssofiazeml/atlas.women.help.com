@@ -65,6 +65,15 @@ import {
   getSectionVisibility,
   setSectionVisible,
   type SiteSectionKey,
+  // hotlines
+  getHotlines,
+  addHotline,
+  updateHotline,
+  deleteHotline,
+  type AdminHotline,
+  getPendingHotlines,
+  removePendingHotline,
+  type PendingHotline,
 } from '../../lib/contentStore'
 import {
   setSeedOverride,
