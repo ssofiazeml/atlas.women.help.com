@@ -1900,3 +1900,270 @@ function InboxSection() {
     </SectionShell>
   )
 }
+
+// ============ Горячие линии ================================================
+
+function HotlinesSection() {
+  const [items, refresh] = useLive<AdminHotline[]>(getHotlines)
+  const empty = {
+    title: '',
+    country: '',
+    scope: 'country' as 'country' | 'international',
+    phone: '',
+    hours: '',
+    languages: '',
+    note: '',
+    website: '',
+  }
+  const [form, setForm] = useState(empty)
+  const [editing, setEditing] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setBusy(true)
+    const base = {
+      title: form.title,
+      country: form.scope === 'international' ? '' : form.country,
+      scope: form.scope,
+      phone: form.phone,
+      hours: form.hours,
+      languages: form.languages,
+      note: form.note,
+      website: form.website,
+    }
+    let translations
+    try {
+      translations = await translateFields(
+        { title: base.title, note: base.note || '' },
+        ['title', 'note']
+      )
+    } catch {
+      translations = undefined
+    }
+    if (editing) updateHotline(editing, { ...base, translations })
+    else addHotline({ ...base, translations })
+    setForm(empty)
+    setEditing(null)
+    setBusy(false)
+    refresh()
+  }
+
+  return (
+    <SectionShell
+      title="Горячие линии"
+      intro="Добавьте номера телефонов. Укажите страну — линия появится при выборе этой страны. Отметьте «Международная», чтобы линия показывалась всем."
+    >
+      <form onSubmit={submit} className="safe-card bg-white space-y-3 mb-6">
+        <Field label="Название линии">
+          <input
+            required
+            className={inputCls}
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+            placeholder="Например: Национальная линия помощи"
+          />
+        </Field>
+        <div className="grid md:grid-cols-2 gap-3">
+          <Field label="Охват">
+            <select
+              className={inputCls}
+              value={form.scope}
+              onChange={(e) =>
+                setForm({ ...form, scope: e.target.value as 'country' | 'international' })
+              }
+            >
+              <option value="country">Страна</option>
+              <option value="international">Международная</option>
+            </select>
+          </Field>
+          <Field label="Страна">
+            <input
+              className={inputCls}
+              disabled={form.scope === 'international'}
+              value={form.country}
+              onChange={(e) => setForm({ ...form, country: e.target.value })}
+              placeholder="Германия"
+            />
+          </Field>
+        </div>
+        <div className="grid md:grid-cols-2 gap-3">
+          <Field label="Телефон">
+            <input
+              required
+              className={inputCls}
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="+49 800 000 0000"
+            />
+          </Field>
+          <Field label="Часы работы">
+            <input
+              className={inputCls}
+              value={form.hours}
+              onChange={(e) => setForm({ ...form, hours: e.target.value })}
+              placeholder="24/7"
+            />
+          </Field>
+        </div>
+        <div className="grid md:grid-cols-2 gap-3">
+          <Field label="Языки">
+            <input
+              className={inputCls}
+              value={form.languages}
+              onChange={(e) => setForm({ ...form, languages: e.target.value })}
+              placeholder="Русский, English"
+            />
+          </Field>
+          <Field label="Сайт">
+            <input
+              className={inputCls}
+              value={form.website}
+              onChange={(e) => setForm({ ...form, website: e.target.value })}
+              placeholder="https://"
+            />
+          </Field>
+        </div>
+        <Field label="Примечание">
+          <textarea
+            rows={2}
+            className={inputCls}
+            value={form.note}
+            onChange={(e) => setForm({ ...form, note: e.target.value })}
+          />
+        </Field>
+        <div className="flex items-center gap-3">
+          <SaveBtn>{busy ? 'Сохраняю…' : editing ? 'Сохранить изменения' : 'Добавить линию'}</SaveBtn>
+          {editing && (
+            <button
+              type="button"
+              className="text-xs text-slate-600 underline"
+              onClick={() => {
+                setEditing(null)
+                setForm(empty)
+              }}
+            >
+              Отменить
+            </button>
+          )}
+        </div>
+      </form>
+
+      <h3 className="font-semibold mb-3">Добавленные линии ({items.length})</h3>
+      {items.length === 0 ? (
+        <p className="text-sm text-slate-500">Пока ничего не добавлено.</p>
+      ) : (
+        <div className="grid gap-3 md:grid-cols-2">
+          {items.map((h) => (
+            <div key={h.id} className="safe-card bg-white">
+              <div className="font-semibold">{h.title}</div>
+              <div className="text-xs text-slate-500">
+                {h.scope === 'international' || !h.country ? 'Международная' : h.country}
+              </div>
+              <div className="text-sm mt-1 font-medium">{h.phone}</div>
+              {h.hours && <div className="text-xs text-slate-600">{h.hours}</div>}
+              {h.note && <p className="text-sm mt-2">{h.note}</p>}
+              <div className="flex gap-3 mt-3">
+                <button
+                  type="button"
+                  className="text-xs text-safe-800 underline"
+                  onClick={() => {
+                    setEditing(h.id)
+                    setForm({
+                      title: h.title,
+                      country: h.country || '',
+                      scope: (h.scope || (h.country ? 'country' : 'international')) as
+                        | 'country'
+                        | 'international',
+                      phone: h.phone,
+                      hours: h.hours || '',
+                      languages: h.languages || '',
+                      note: h.note || '',
+                      website: h.website || '',
+                    })
+                  }}
+                >
+                  Редактировать
+                </button>
+                <DeleteBtn
+                  onClick={() => {
+                    if (confirm('Удалить линию?')) {
+                      deleteHotline(h.id)
+                      refresh()
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </SectionShell>
+  )
+}
+
+// Присланные посетителями номера горячих линий.
+function InboxHotlines() {
+  const [items, setItems] = useState<PendingHotline[]>([])
+  const reload = () => setItems(getPendingHotlines())
+  useEffect(() => {
+    reload()
+    const h = () => reload()
+    window.addEventListener('storage', h)
+    window.addEventListener('atlas:inbox:changed', h)
+    return () => {
+      window.removeEventListener('storage', h)
+      window.removeEventListener('atlas:inbox:changed', h)
+    }
+  }, [])
+
+  const publish = (p: PendingHotline) => {
+    addHotline({
+      title: p.title || p.phone,
+      country: p.scope === 'international' ? '' : p.country,
+      scope: p.scope,
+      phone: p.phone,
+      note: p.comment || '',
+    })
+    removePendingHotline(p.id)
+    reload()
+  }
+
+  return (
+    <>
+      <h3 className="font-semibold mb-3 mt-8">Предложенные горячие линии ({items.length})</h3>
+      {items.length === 0 ? (
+        <p className="text-sm text-slate-500">Пока нет новых номеров.</p>
+      ) : (
+        <div className="grid gap-4">
+          {items.map((p) => (
+            <div key={p.id} className="safe-card bg-white">
+              <div className="font-semibold">{p.title || p.phone}</div>
+              <div className="text-xs text-slate-500">
+                {p.scope === 'international' ? 'Международная' : p.country}
+              </div>
+              <div className="text-sm mt-1">{p.phone}</div>
+              {p.comment && <p className="text-sm mt-2 whitespace-pre-wrap">{p.comment}</p>}
+              <div className="flex gap-3 mt-3">
+                <button
+                  onClick={() => publish(p)}
+                  className="text-xs bg-safe-800 text-white px-3 py-1.5 rounded"
+                >
+                  Опубликовать в «Горячие линии»
+                </button>
+                <DeleteBtn
+                  onClick={() => {
+                    if (confirm('Удалить заявку?')) {
+                      removePendingHotline(p.id)
+                      reload()
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
