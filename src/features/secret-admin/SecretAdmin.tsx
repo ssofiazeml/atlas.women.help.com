@@ -252,6 +252,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
         <section className="min-w-0">
           {tab === 'home' && <HomeTextsSection />}
           {tab === 'inbox' && <InboxSection />}
+          {tab === 'hotlines' && <HotlinesSection />}
           {tab === 'sections' && <SectionsVisibilitySection />}
           {tab === 'about' && <AboutSection />}
           {tab === 'centers' && <CentersSection />}
