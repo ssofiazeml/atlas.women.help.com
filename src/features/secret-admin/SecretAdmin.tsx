@@ -273,6 +273,7 @@ function AdminShell({ onLogout }: { onLogout: () => void }) {
 
 const SITE_SECTIONS: { key: SiteSectionKey; label: string; hint: string }[] = [
   { key: 'map', label: 'Карта помощи', hint: '/map' },
+  { key: 'hotlines', label: 'Горячие линии', hint: '/hotlines' },
   { key: 'chat', label: 'Анонимная помощь и поддержка', hint: '/chat' },
   { key: 'checklists', label: 'Чек-листы', hint: '/checklists' },
   { key: 'stories', label: 'Реальные истории', hint: '/stories' },
