@@ -105,6 +105,7 @@ const SESSION_KEY = 'atlas:secret-admin:authed'
 type TabKey =
   | 'home'
   | 'inbox'
+  | 'hotlines'
   | 'sections'
   | 'about'
   | 'centers'
