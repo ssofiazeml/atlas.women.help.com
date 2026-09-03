@@ -205,12 +205,18 @@ export function MapView() {
   const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null)
   const [routeStatus, setRouteStatus] = useState<string>('')
 
-  const countries = useMemo(
-    () =>
-      Array.from(new Set(centers.map((c) => c.country).filter(Boolean)))
-        .sort((a, b) => a.localeCompare(b, lang)),
-    [centers, lang]
-  )
+  // Countries come from the data itself: every newly added center brings its
+  // country into the filter automatically (trimmed, case-insensitive unique).
+  const countries = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const c of centers) {
+      const raw = (c.country || '').trim()
+      if (!raw) continue
+      const key = raw.toLowerCase()
+      if (!map.has(key)) map.set(key, raw)
+    }
+    return Array.from(map.values()).sort((a, b) => a.localeCompare(b, lang))
+  }, [centers, lang])
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
