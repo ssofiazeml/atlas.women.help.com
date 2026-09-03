@@ -12,7 +12,8 @@
     "diplomacy": "Digital Diplomacy",
     "menu": "Menu",
     "home": "Home",
-    "about": "About"
+    "about": "About",
+    "hotlines": "Hotlines"
   },
   "quick_exit": "Quick Exit",
   "home": {
@@ -117,7 +118,15 @@
     "f_website_ph": "https:// (optional)",
     "f_desc": "Description",
     "f_desc_ph": "What services they provide, who can contact them, languages",
-    "center_note": "Your suggestion goes to the moderation queue. No personal data is stored."
+    "center_note": "Your suggestion goes to the moderation queue. No personal data is stored.",
+    "tab_hotline": "Hotline",
+    "submit_hotline": "Send number",
+    "thank_hotline": "Thank you! The number was sent for review.",
+    "hotline_intro": "Suggest a helpline number — after review it will appear in Hotlines.",
+    "f_hotline_name": "Hotline name",
+    "f_scope": "Coverage",
+    "scope_country": "Country",
+    "f_comment": "Comment"
   },
   "chatbot": {
     "start": {
@@ -654,5 +663,17 @@
     "moderation": "Stories are published only after careful moderation to protect everyone involved. You can submit your own experience above.",
     "default_title": "Story"
   },
-  "section_hidden": "This section is temporarily unavailable."
+  "section_hidden": "This section is temporarily unavailable.",
+  "hotlines": {
+    "title": "Hotlines",
+    "intro": "Choose a country to see local numbers and international helplines.",
+    "select_country": "Country",
+    "country_placeholder": "Select a country",
+    "local_title": "Numbers in country",
+    "intl_title": "International helplines",
+    "international": "International",
+    "local_empty": "No numbers added for this country yet.",
+    "intl_empty": "No international numbers yet.",
+    "no_countries": "No countries added yet."
+  }
 }

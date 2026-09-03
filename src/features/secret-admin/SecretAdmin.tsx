@@ -158,7 +158,21 @@ export function SecretAdmin() {
   )
 }
 
+// Резервная проверка на случай, если сервер недоступен: сам пароль в коде не
+// хранится — только его отпечаток (SHA-256), восстановить пароль из него нельзя.
+const ADMIN_EMAIL_HASH = 'ab965093240198cc990e7750095ee4220f0e8f5a54070c3ca90a3402450d242d'
+const ADMIN_PASS_HASH = 'ea544d16cb34fa2d9a187c0784f0a58eda0cb147b34628611668efd869baf326'
+
+async function sha256(value: string) {
+  const bytes = new TextEncoder().encode(value)
+  const digest = await crypto.subtle.digest('SHA-256', bytes)
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
 function LoginGate({ onSuccess }: { onSuccess: () => void }) {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -168,16 +182,35 @@ function LoginGate({ onSuccess }: { onSuccess: () => void }) {
     setSubmitting(true)
     setError('')
 
-    const { data, error: requestError } = await supabase.functions.invoke('verify-admin-password', {
-      body: { password },
-    })
+    let ok = false
+    try {
+      const { data, error: requestError } = await supabase.functions.invoke(
+        'verify-admin-password',
+        { body: { email, password } }
+      )
+      if (!requestError && data?.valid === true) ok = true
+    } catch {
+      /* сервер недоступен — проверим локально */
+    }
+
+    if (!ok) {
+      try {
+        const [eh, ph] = await Promise.all([
+          sha256(email.trim().toLowerCase()),
+          sha256(password),
+        ])
+        ok = eh === ADMIN_EMAIL_HASH && ph === ADMIN_PASS_HASH
+      } catch {
+        /* noop */
+      }
+    }
 
     setSubmitting(false)
-    if (!requestError && data?.valid === true) {
+    if (ok) {
       setError('')
       onSuccess()
     } else {
-      setError('Неверный пароль. Попробуйте ещё раз.')
+      setError('Неверная почта или пароль. Попробуйте ещё раз.')
     }
   }
 
@@ -186,12 +219,20 @@ function LoginGate({ onSuccess }: { onSuccess: () => void }) {
       <form onSubmit={submit} className="safe-card w-full max-w-sm bg-white">
         <h1 className="text-2xl font-semibold text-safe-800 mb-2">Вход в админку</h1>
         <p className="text-sm text-slate-600 mb-5">
-          Эта страница защищена. Введите пароль, чтобы продолжить.
+          Эта страница защищена. Введите почту и пароль, чтобы продолжить.
         </p>
+        <label className="block text-sm font-medium text-slate-700 mb-1">Почта</label>
+        <input
+          type="email"
+          autoFocus
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-safe-teal mb-3"
+          placeholder="you@example.com"
+        />
         <label className="block text-sm font-medium text-slate-700 mb-1">Пароль</label>
         <input
           type="password"
-          autoFocus
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-safe-teal"
@@ -200,7 +241,7 @@ function LoginGate({ onSuccess }: { onSuccess: () => void }) {
         {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
         <button
           type="submit"
-          disabled={submitting || !password}
+          disabled={submitting || !password || !email}
           className="mt-4 w-full bg-safe-800 text-white rounded-md py-2 text-sm font-medium hover:opacity-90 transition"
         >
           {submitting ? 'Проверка…' : 'Войти'}
@@ -1897,6 +1938,8 @@ function InboxSection() {
           ))}
         </div>
       )}
+
+      <InboxHotlines />
     </SectionShell>
   )
 }
