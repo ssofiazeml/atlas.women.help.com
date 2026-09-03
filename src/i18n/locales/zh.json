@@ -12,7 +12,8 @@
     "diplomacy": "数字外交",
     "menu": "菜单",
     "home": "首页",
-    "about": "关于项目"
+    "about": "关于项目",
+    "hotlines": "求助热线"
   },
   "quick_exit": "快速离开",
   "home": {
@@ -117,7 +118,15 @@
     "f_website_ph": "https://（可选）",
     "f_desc": "描述",
     "f_desc_ph": "提供哪些服务、谁可以联系、服务语言",
-    "center_note": "建议将进入审核队列。不会保存任何个人信息。"
+    "center_note": "建议将进入审核队列。不会保存任何个人信息。",
+    "tab_hotline": "热线",
+    "submit_hotline": "提交号码",
+    "thank_hotline": "谢谢！号码已提交审核。",
+    "hotline_intro": "推荐一个热线号码——审核通过后会显示在求助热线中。",
+    "f_hotline_name": "热线名称",
+    "f_scope": "范围",
+    "scope_country": "国家",
+    "f_comment": "备注"
   },
   "chatbot": {
     "start": {
@@ -522,5 +531,17 @@
     "moderation": "故事仅在经过仔细审核后发布，以保护所有相关人员。您可以在上方提交自己的经历。",
     "default_title": "故事"
   },
-  "section_hidden": "此栏目暂时不可用。"
+  "section_hidden": "此栏目暂时不可用。",
+  "hotlines": {
+    "title": "求助热线",
+    "intro": "选择国家即可查看当地号码和国际求助热线。",
+    "select_country": "国家",
+    "country_placeholder": "选择国家",
+    "local_title": "该国号码",
+    "intl_title": "国际热线",
+    "international": "国际",
+    "local_empty": "该国家暂无号码。",
+    "intl_empty": "暂无国际号码。",
+    "no_countries": "尚未添加任何国家。"
+  }
 }

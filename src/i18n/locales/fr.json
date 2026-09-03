@@ -12,7 +12,8 @@
     "diplomacy": "Diplomatie numérique",
     "menu": "Menu",
     "home": "Accueil",
-    "about": "À propos"
+    "about": "À propos",
+    "hotlines": "Lignes d’urgence"
   },
   "quick_exit": "Sortie rapide",
   "home": {
@@ -117,7 +118,15 @@
     "f_website_ph": "https:// (facultatif)",
     "f_desc": "Description",
     "f_desc_ph": "Services proposés, qui peut contacter, langues",
-    "center_note": "Votre proposition passe en modération. Aucune donnée personnelle n'est conservée."
+    "center_note": "Votre proposition passe en modération. Aucune donnée personnelle n'est conservée.",
+    "tab_hotline": "Ligne d’urgence",
+    "submit_hotline": "Envoyer le numéro",
+    "thank_hotline": "Merci ! Le numéro a été envoyé pour vérification.",
+    "hotline_intro": "Proposez un numéro d’assistance — après vérification il apparaîtra dans les lignes d’urgence.",
+    "f_hotline_name": "Nom de la ligne",
+    "f_scope": "Portée",
+    "scope_country": "Pays",
+    "f_comment": "Commentaire"
   },
   "research": {
     "title": "Bibliothèque de recherches",
@@ -330,5 +339,17 @@
     "moderation": "Les histoires sont publiées uniquement après une modération attentive afin de protéger toutes les personnes concernées.",
     "default_title": "Histoire"
   },
-  "section_hidden": "Cette section est temporairement indisponible."
+  "section_hidden": "Cette section est temporairement indisponible.",
+  "hotlines": {
+    "title": "Lignes d’urgence",
+    "intro": "Choisissez un pays pour voir les numéros locaux et les lignes internationales.",
+    "select_country": "Pays",
+    "country_placeholder": "Choisir un pays",
+    "local_title": "Numéros du pays",
+    "intl_title": "Lignes internationales",
+    "international": "Internationale",
+    "local_empty": "Aucun numéro pour ce pays pour le moment.",
+    "intl_empty": "Aucun numéro international pour le moment.",
+    "no_countries": "Aucun pays ajouté pour le moment."
+  }
 }

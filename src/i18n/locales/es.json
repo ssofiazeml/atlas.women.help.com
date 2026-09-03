@@ -12,7 +12,8 @@
     "diplomacy": "Diplomacia digital",
     "menu": "Menú",
     "home": "Inicio",
-    "about": "Sobre el proyecto"
+    "about": "Sobre el proyecto",
+    "hotlines": "Líneas de ayuda"
   },
   "quick_exit": "Salida rápida",
   "home": {
@@ -117,7 +118,15 @@
     "f_website_ph": "https:// (opcional)",
     "f_desc": "Descripción",
     "f_desc_ph": "Qué servicios ofrecen, quién puede contactar, idiomas",
-    "center_note": "La sugerencia pasa a la cola de moderación. No se guardan datos personales."
+    "center_note": "La sugerencia pasa a la cola de moderación. No se guardan datos personales.",
+    "tab_hotline": "Línea de ayuda",
+    "submit_hotline": "Enviar número",
+    "thank_hotline": "¡Gracias! El número se envió para revisión.",
+    "hotline_intro": "Sugiere un número de ayuda: tras la revisión aparecerá en Líneas de ayuda.",
+    "f_hotline_name": "Nombre de la línea",
+    "f_scope": "Alcance",
+    "scope_country": "País",
+    "f_comment": "Comentario"
   },
   "chatbot": {
     "start": {
@@ -522,5 +531,17 @@
     "moderation": "Las historias se publican solo tras una moderación cuidadosa para proteger a todas las personas implicadas.",
     "default_title": "Historia"
   },
-  "section_hidden": "Esta sección no está disponible temporalmente."
+  "section_hidden": "Esta sección no está disponible temporalmente.",
+  "hotlines": {
+    "title": "Líneas de ayuda",
+    "intro": "Elige un país para ver números locales y líneas internacionales.",
+    "select_country": "País",
+    "country_placeholder": "Selecciona un país",
+    "local_title": "Números del país",
+    "intl_title": "Líneas internacionales",
+    "international": "Internacional",
+    "local_empty": "Aún no hay números para este país.",
+    "intl_empty": "Aún no hay números internacionales.",
+    "no_countries": "Aún no se han añadido países."
+  }
 }
