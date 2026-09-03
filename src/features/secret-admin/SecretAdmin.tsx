@@ -160,7 +160,7 @@ export function SecretAdmin() {
 
 // Резервная проверка на случай, если сервер недоступен: сам пароль в коде не
 // хранится — только его отпечаток (SHA-256), восстановить пароль из него нельзя.
-const ADMIN_EMAIL_HASH = '5bfe8ea8ef7f79ff6f7cf2ad6bf7a63a53e3ce0d0b6e26b8e0aab21b12fcdfe9'
+const ADMIN_EMAIL_HASH = 'ab965093240198cc990e7750095ee4220f0e8f5a54070c3ca90a3402450d242d'
 const ADMIN_PASS_HASH = 'ea544d16cb34fa2d9a187c0784f0a58eda0cb147b34628611668efd869baf326'
 
 async function sha256(value: string) {
