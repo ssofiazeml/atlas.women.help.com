@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { addPendingSuggestion, addPendingCase } from '../../lib/demoData'
+import { addPendingHotline } from '../../lib/contentStore'
 
-type Tab = 'center' | 'story'
+type Tab = 'center' | 'story' | 'hotline'
 
 // Same category list as the interactive help map — no free text input.
 const CATEGORY_KEYS = [
@@ -21,6 +22,35 @@ export function SuggestPage() {
 
   const emptyStory = { title: '', situation: '', actions: '', outcome: '' }
   const [storyForm, setStoryForm] = useState(emptyStory)
+
+  const emptyHotline = {
+    title: '',
+    scope: 'country' as 'country' | 'international',
+    country: '',
+    phone: '',
+    comment: '',
+  }
+  const [hotlineForm, setHotlineForm] = useState(emptyHotline)
+
+  async function submitHotline(e: React.FormEvent) {
+    e.preventDefault()
+    setSubmitting(true)
+    try {
+      addPendingHotline({
+        title: hotlineForm.title || undefined,
+        scope: hotlineForm.scope,
+        country: hotlineForm.scope === 'international' ? '' : hotlineForm.country,
+        phone: hotlineForm.phone,
+        comment: hotlineForm.comment || undefined,
+      })
+    } catch {
+      /* stored locally for moderation */
+    }
+    setMessage(t('suggest.thank_hotline', { defaultValue: 'Спасибо! Номер отправлен на модерацию.' }))
+    setHotlineForm(emptyHotline)
+    setSubmitting(false)
+    setTimeout(() => setMessage(null), 4000)
+  }
 
   const catLabel = (k: string) => t(`categories.${k}`, { defaultValue: k })
 
@@ -81,6 +111,7 @@ export function SuggestPage() {
       <div className="mb-4 flex gap-px text-sm w-fit bg-slate-100 rounded">
         <button onClick={() => setActiveTab('center')} className={`px-4 py-1.5 rounded ${activeTab === 'center' ? 'bg-white shadow font-medium' : ''}`}>{t('suggest.tab_center')}</button>
         <button onClick={() => setActiveTab('story')} className={`px-4 py-1.5 rounded ${activeTab === 'story' ? 'bg-white shadow font-medium' : ''}`}>{t('suggest.tab_story')}</button>
+        <button onClick={() => setActiveTab('hotline')} className={`px-4 py-1.5 rounded ${activeTab === 'hotline' ? 'bg-white shadow font-medium' : ''}`}>{t('suggest.tab_hotline', { defaultValue: 'Горячая линия' })}</button>
       </div>
 
       {message && <div className="mb-4 text-sm bg-teal-50 border border-teal-200 px-4 py-2 rounded text-teal-800">{message}</div>}
@@ -227,6 +258,87 @@ export function SuggestPage() {
             <button disabled={submitting} type="submit" className="text-sm px-4 py-1.5 rounded bg-teal-800 text-white disabled:opacity-60">{t('stories_page.submit')}</button>
           </div>
           <div className="text-[10px] text-center mt-4 text-slate-400">{t('stories_page.confidential')}</div>
+        </form>
+      )}
+      {activeTab === 'hotline' && (
+        <form onSubmit={submitHotline} className="safe-card p-6 space-y-4">
+          <p className="text-sm text-slate-600">
+            {t('suggest.hotline_intro', {
+              defaultValue: 'Предложите номер горячей линии — после проверки он появится в разделе «Горячие линии».',
+            })}
+          </p>
+
+          <div>
+            <label className="text-xs font-medium block mb-1">
+              {t('suggest.f_hotline_name', { defaultValue: 'Название линии' })}
+            </label>
+            <input
+              value={hotlineForm.title}
+              onChange={(e) => setHotlineForm({ ...hotlineForm, title: e.target.value })}
+              className="w-full border rounded px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium block mb-1">
+                {t('suggest.f_scope', { defaultValue: 'Охват' })} *
+              </label>
+              <select
+                value={hotlineForm.scope}
+                onChange={(e) =>
+                  setHotlineForm({ ...hotlineForm, scope: e.target.value as 'country' | 'international' })
+                }
+                className="w-full border rounded px-3 py-2 text-sm bg-white"
+              >
+                <option value="country">{t('suggest.scope_country', { defaultValue: 'Страна' })}</option>
+                <option value="international">
+                  {t('hotlines.international', { defaultValue: 'Международная' })}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-medium block mb-1">{t('suggest.f_country')}</label>
+              <input
+                required={hotlineForm.scope === 'country'}
+                disabled={hotlineForm.scope === 'international'}
+                value={hotlineForm.country}
+                onChange={(e) => setHotlineForm({ ...hotlineForm, country: e.target.value })}
+                placeholder={t('suggest.f_country_ph')}
+                className="w-full border rounded px-3 py-2 text-sm"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-medium block mb-1">{t('suggest.f_phone')} *</label>
+            <input
+              required
+              value={hotlineForm.phone}
+              onChange={(e) => setHotlineForm({ ...hotlineForm, phone: e.target.value })}
+              placeholder={t('suggest.f_phone_ph')}
+              className="w-full border rounded px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium block mb-1">
+              {t('suggest.f_comment', { defaultValue: 'Комментарий' })}
+            </label>
+            <textarea
+              rows={3}
+              value={hotlineForm.comment}
+              onChange={(e) => setHotlineForm({ ...hotlineForm, comment: e.target.value })}
+              className="w-full border rounded px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-1">
+            <button type="button" onClick={() => setHotlineForm(emptyHotline)} className="text-sm px-4 py-1.5 border rounded">{t('stories_page.cancel')}</button>
+            <button disabled={submitting} type="submit" className="text-sm px-4 py-1.5 rounded bg-teal-800 text-white disabled:opacity-60">
+              {t('suggest.submit_hotline', { defaultValue: 'Отправить номер' })}
+            </button>
+          </div>
         </form>
       )}
     </div>
