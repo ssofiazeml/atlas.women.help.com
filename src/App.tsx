@@ -145,21 +145,44 @@ function Home() {
     link: string
   }>('home-cards', [
     { id: 'seed-card-map', title: t('home.map'), description: t('home.map_desc'), link: '/map' },
-    { id: 'seed-card-chat', title: t('home.chat'), description: t('home.chat_desc'), link: '/chat' },
+    {
+      id: 'seed-card-hotlines',
+      title: t('nav.hotlines', { defaultValue: 'Горячие линии' }),
+      description: t('hotlines.intro', {
+        defaultValue: 'Выберите страну — вы увидите местные номера и международные линии помощи.',
+      }),
+      link: '/hotlines',
+    },
     { id: 'seed-card-checklists', title: t('home.checklists'), description: t('home.checklists_desc'), link: '/checklists' },
     { id: 'seed-card-stories', title: t('home.stories'), description: t('home.stories_desc'), link: '/stories' },
     { id: 'seed-card-research', title: t('nav.research'), description: t('research.intro'), link: '/research' },
     { id: 'seed-card-diplomacy', title: t('nav.diplomacy'), description: t('diplomacy.intro'), link: '/diplomacy' },
+    {
+      id: 'seed-card-suggest',
+      title: t('suggest.title', { defaultValue: 'Предложить центр помощи' }),
+      description: t('suggest.desc', { defaultValue: '' }),
+      link: '/suggest',
+    },
+    {
+      id: 'seed-card-about',
+      title: t('nav.about', { defaultValue: 'О проекте' }),
+      description: t('about.intro', { defaultValue: '' }),
+      link: '/about',
+    },
+    { id: 'seed-card-chat', title: t('home.chat'), description: t('home.chat_desc'), link: '/chat' },
   ])
 
   // Drop cards whose section is hidden by the admin.
   const CARD_SECTION: Record<string, SiteSectionKey> = {
     'seed-card-map': 'map',
+    'seed-card-hotlines': 'hotlines',
     'seed-card-chat': 'chat',
     'seed-card-checklists': 'checklists',
     'seed-card-stories': 'stories',
     'seed-card-research': 'research',
     'seed-card-diplomacy': 'diplomacy',
+    'seed-card-suggest': 'suggest',
+    'seed-card-about': 'about',
   }
   const seedNavCards = seedNavCardsAll.filter((c) => {
     const key = CARD_SECTION[c.id]
