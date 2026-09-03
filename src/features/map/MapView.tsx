@@ -227,7 +227,9 @@ export function MapView() {
         [c.name, c.city, c.country, c.address, c.description]
           .filter(Boolean)
           .some((v) => String(v).toLowerCase().includes(q))
-      const matchesCountry = !filterCountry || c.country === filterCountry
+      const matchesCountry =
+        !filterCountry ||
+        (c.country || '').trim().toLowerCase() === filterCountry.trim().toLowerCase()
       const matchesCat = !filterCat || cats.includes(filterCat)
       const matches24 = !only24 || c.open24 || /24\/?7|круглосуточно|24 hours/i.test(c.hours || '')
       const matchesOpen = !onlyOpen || isOpenNow(c)
