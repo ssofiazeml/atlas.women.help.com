@@ -1897,6 +1897,8 @@ function InboxSection() {
           ))}
         </div>
       )}
+
+      <InboxHotlines />
     </SectionShell>
   )
 }
