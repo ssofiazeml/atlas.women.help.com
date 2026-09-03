@@ -54,6 +54,7 @@ function Header() {
   const navLinks = (
     [
       { key: 'map', to: '/map', label: t('nav.map') },
+      { key: 'hotlines', to: '/hotlines', label: t('nav.hotlines', { defaultValue: 'Горячие линии' }) },
       { key: 'chat', to: '/chat', label: t('nav.chat') },
       { key: 'checklists', to: '/checklists', label: t('nav.checklists') },
       { key: 'stories', to: '/stories', label: t('nav.stories') },
