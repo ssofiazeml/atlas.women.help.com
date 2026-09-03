@@ -290,6 +290,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/map" element={gate('map', <MapView />)} />
+          <Route path="/hotlines" element={gate('hotlines', <Hotlines />)} />
           <Route path="/chat" element={gate('chat', <Chatbot />)} />
           <Route path="/checklists" element={gate('checklists', <Checklists />)} />
           <Route path="/stories" element={gate('stories', <StoriesView />)} />
