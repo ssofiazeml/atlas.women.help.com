@@ -20,6 +20,8 @@ import { getSeedCenters } from '../../lib/seeds'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+import { CATEGORY_KEYS } from '../../lib/categories'
+import { localizeSchedule, localizeLanguages } from '../../lib/humanize'
 
 // @ts-ignore
 delete L.Icon.Default.prototype._getIconUrl
@@ -30,10 +32,7 @@ L.Icon.Default.mergeOptions({
 })
 
 
-const CATEGORY_KEYS = [
-  'shelter', 'domestic', 'sexual', 'legal', 'psychological',
-  'migrant', 'children', 'emergency', 'medical', 'hotline', 'crisis',
-] as const
+
 
 // Best-effort "open now": true for anything explicitly 24/7, otherwise
 // look for at least one HH:MM-HH:MM range in the hours string and check
@@ -551,7 +550,10 @@ function CenterCard({
       : c.cost === 'partial' ? t('card.cost_partial')
         : c.cost === 'paid' ? t('card.cost_paid')
           : ''
-  const hoursLabel = c.open24 ? t('card.open_24_7') : c.hours
+  const hoursLabel = c.open24
+    ? t('sched.round_clock', { defaultValue: t('card.open_24_7') })
+    : localizeSchedule(pickLocalized(c, 'hours', lang) || c.hours, t)
+  const languagesLabel = localizeLanguages(pickLocalized(c, 'languages', lang) || c.languages, t)
 
   const canRoute = typeof c.lat === 'number' && typeof c.lng === 'number'
 
@@ -614,8 +616,8 @@ function CenterCard({
       )}
 
       <dl className="mt-3 grid grid-cols-1 gap-1 text-xs text-slate-700">
-        {c.languages && (
-          <div><dt className="inline text-slate-500">{t('card.languages')}: </dt><dd className="inline">{c.languages}</dd></div>
+        {languagesLabel && (
+          <div><dt className="inline text-slate-500">{t('card.languages')}: </dt><dd className="inline">{languagesLabel}</dd></div>
         )}
         {hoursLabel && (
           <div><dt className="inline text-slate-500">{t('card.hours')}: </dt><dd className="inline">{hoursLabel}</dd></div>
