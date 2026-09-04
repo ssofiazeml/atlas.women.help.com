@@ -126,7 +126,8 @@
     "f_hotline_name": "Nombre de la línea",
     "f_scope": "Alcance",
     "scope_country": "País",
-    "f_comment": "Comentario"
+    "f_comment": "Comentario",
+    "scope_russia": "Funciona en todo el territorio de la Federación de Rusia"
   },
   "chatbot": {
     "start": {
@@ -542,6 +543,47 @@
     "international": "Internacional",
     "local_empty": "Aún no hay números para este país.",
     "intl_empty": "Aún no hay números internacionales.",
-    "no_countries": "Aún no se han añadido países."
+    "no_countries": "Aún no se han añadido países.",
+    "russia": "Funciona en todo el territorio de la Federación de Rusia"
+  },
+  "sched": {
+    "mon": "Lunes",
+    "tue": "Martes",
+    "wed": "Miércoles",
+    "thu": "Jueves",
+    "fri": "Viernes",
+    "sat": "Sábado",
+    "sun": "Domingo",
+    "daily": "todos los días",
+    "weekdays": "días laborables",
+    "weekend": "fin de semana",
+    "round_clock": "24 horas (24/7)",
+    "by_appointment": "con cita previa",
+    "closed": "cerrado",
+    "hour_short": "horas"
+  },
+  "langs": {
+    "ru": "Ruso",
+    "en": "Inglés",
+    "es": "Español",
+    "fr": "Francés",
+    "ar": "Árabe",
+    "zh": "Chino",
+    "de": "Alemán",
+    "uk": "Ucraniano",
+    "tr": "Turco",
+    "fa": "Persa (farsi)",
+    "pl": "Polaco",
+    "pt": "Portugués",
+    "hi": "Hindi",
+    "ur": "Urdu",
+    "ky": "Kirguís",
+    "uz": "Uzbeko",
+    "tg": "Tayiko",
+    "hy": "Armenio",
+    "ka": "Georgiano",
+    "az": "Azerbaiyano",
+    "kk": "Kazajo",
+    "sign": "lengua de signos"
   }
 }

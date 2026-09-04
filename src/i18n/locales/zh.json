@@ -126,7 +126,8 @@
     "f_hotline_name": "热线名称",
     "f_scope": "范围",
     "scope_country": "国家",
-    "f_comment": "备注"
+    "f_comment": "备注",
+    "scope_russia": "在俄罗斯联邦全境提供服务"
   },
   "chatbot": {
     "start": {
@@ -542,6 +543,47 @@
     "international": "国际",
     "local_empty": "该国家暂无号码。",
     "intl_empty": "暂无国际号码。",
-    "no_countries": "尚未添加任何国家。"
+    "no_countries": "尚未添加任何国家。",
+    "russia": "在俄罗斯联邦全境提供服务"
+  },
+  "sched": {
+    "mon": "星期一",
+    "tue": "星期二",
+    "wed": "星期三",
+    "thu": "星期四",
+    "fri": "星期五",
+    "sat": "星期六",
+    "sun": "星期日",
+    "daily": "每天",
+    "weekdays": "工作日",
+    "weekend": "周末",
+    "round_clock": "全天候（24/7）",
+    "by_appointment": "需预约",
+    "closed": "关闭",
+    "hour_short": "小时"
+  },
+  "langs": {
+    "ru": "俄语",
+    "en": "英语",
+    "es": "西班牙语",
+    "fr": "法语",
+    "ar": "阿拉伯语",
+    "zh": "中文",
+    "de": "德语",
+    "uk": "乌克兰语",
+    "tr": "土耳其语",
+    "fa": "波斯语（法尔西语）",
+    "pl": "波兰语",
+    "pt": "葡萄牙语",
+    "hi": "印地语",
+    "ur": "乌尔都语",
+    "ky": "吉尔吉斯语",
+    "uz": "乌兹别克语",
+    "tg": "塔吉克语",
+    "hy": "亚美尼亚语",
+    "ka": "格鲁吉亚语",
+    "az": "阿塞拜疆语",
+    "kk": "哈萨克语",
+    "sign": "手语"
   }
 }

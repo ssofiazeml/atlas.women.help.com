@@ -126,7 +126,8 @@
     "f_hotline_name": "Nom de la ligne",
     "f_scope": "Portée",
     "scope_country": "Pays",
-    "f_comment": "Commentaire"
+    "f_comment": "Commentaire",
+    "scope_russia": "Fonctionne sur tout le territoire de la Fédération de Russie"
   },
   "research": {
     "title": "Bibliothèque de recherches",
@@ -350,6 +351,47 @@
     "international": "Internationale",
     "local_empty": "Aucun numéro pour ce pays pour le moment.",
     "intl_empty": "Aucun numéro international pour le moment.",
-    "no_countries": "Aucun pays ajouté pour le moment."
+    "no_countries": "Aucun pays ajouté pour le moment.",
+    "russia": "Fonctionne sur tout le territoire de la Fédération de Russie"
+  },
+  "sched": {
+    "mon": "Lundi",
+    "tue": "Mardi",
+    "wed": "Mercredi",
+    "thu": "Jeudi",
+    "fri": "Vendredi",
+    "sat": "Samedi",
+    "sun": "Dimanche",
+    "daily": "tous les jours",
+    "weekdays": "jours ouvrables",
+    "weekend": "week-end",
+    "round_clock": "24 heures sur 24 (24/7)",
+    "by_appointment": "sur rendez-vous",
+    "closed": "fermé",
+    "hour_short": "heures"
+  },
+  "langs": {
+    "ru": "Russe",
+    "en": "Anglais",
+    "es": "Espagnol",
+    "fr": "Français",
+    "ar": "Arabe",
+    "zh": "Chinois",
+    "de": "Allemand",
+    "uk": "Ukrainien",
+    "tr": "Turc",
+    "fa": "Persan (farsi)",
+    "pl": "Polonais",
+    "pt": "Portugais",
+    "hi": "Hindi",
+    "ur": "Ourdou",
+    "ky": "Kirghize",
+    "uz": "Ouzbek",
+    "tg": "Tadjik",
+    "hy": "Arménien",
+    "ka": "Géorgien",
+    "az": "Azerbaïdjanais",
+    "kk": "Kazakh",
+    "sign": "langue des signes"
   }
 }
