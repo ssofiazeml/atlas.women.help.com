@@ -310,7 +310,7 @@ export type AdminHotline = {
   id: string
   title: string
   country: string // '' for international
-  scope?: 'country' | 'international'
+  scope?: 'country' | 'international' | 'russia'
   phone: string
   hours?: string
   languages?: string
@@ -336,7 +336,7 @@ export type PendingHotline = {
   id: number
   title?: string
   country: string // '' for international
-  scope: 'country' | 'international'
+  scope: 'country' | 'international' | 'russia'
   phone: string
   comment?: string
 }

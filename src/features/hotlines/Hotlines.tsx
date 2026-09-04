@@ -7,9 +7,10 @@ import {
   type AdminHotline,
 } from '../../lib/contentStore'
 import { pickLocalized } from '../../lib/translate'
+import { localizeSchedule, localizeLanguages } from '../../lib/humanize'
 
 const isInternational = (h: AdminHotline) =>
-  h.scope === 'international' || !h.country || !h.country.trim()
+  h.scope === 'international' || (h.scope !== 'russia' && (!h.country || !h.country.trim()))
 
 export function Hotlines() {
   const { t, i18n } = useTranslation()
@@ -125,13 +126,17 @@ function HotlineCard({ h, lang }: { h: AdminHotline; lang: string }) {
   const { t } = useTranslation()
   const title = pickLocalized(h, 'title', lang) || h.title
   const note = pickLocalized(h, 'note', lang) || h.note
+  const hours = localizeSchedule(pickLocalized(h, 'hours', lang) || h.hours, t)
+  const languages = localizeLanguages(pickLocalized(h, 'languages', lang) || h.languages, t)
   return (
     <div className="safe-card bg-white">
       <h3 className="font-semibold text-safe-800 leading-snug">{title}</h3>
       <div className="text-xs text-slate-500 mt-0.5">
         {isInternational(h)
           ? t('hotlines.international', { defaultValue: 'Международная' })
-          : h.country}
+          : h.scope === 'russia'
+            ? t('hotlines.russia', { defaultValue: 'Работает на территории РФ' })
+            : h.country}
       </div>
       <a
         href={`tel:${h.phone.replace(/\s/g, '')}`}
@@ -140,15 +145,15 @@ function HotlineCard({ h, lang }: { h: AdminHotline; lang: string }) {
         <Phone size={16} /> {h.phone}
       </a>
       <dl className="mt-2 text-xs text-slate-700 space-y-0.5">
-        {h.hours && (
+        {hours && (
           <div className="flex items-center gap-1.5">
-            <Clock size={13} className="text-slate-500" /> {h.hours}
+            <Clock size={13} className="text-slate-500" /> {hours}
           </div>
         )}
-        {h.languages && (
+        {languages && (
           <div>
             <dt className="inline text-slate-500">{t('card.languages', { defaultValue: 'Языки' })}: </dt>
-            <dd className="inline">{h.languages}</dd>
+            <dd className="inline">{languages}</dd>
           </div>
         )}
       </dl>

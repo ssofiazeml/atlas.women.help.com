@@ -126,7 +126,8 @@
     "f_hotline_name": "Hotline name",
     "f_scope": "Coverage",
     "scope_country": "Country",
-    "f_comment": "Comment"
+    "f_comment": "Comment",
+    "scope_russia": "Works across the Russian Federation"
   },
   "chatbot": {
     "start": {
@@ -674,6 +675,47 @@
     "international": "International",
     "local_empty": "No numbers added for this country yet.",
     "intl_empty": "No international numbers yet.",
-    "no_countries": "No countries added yet."
+    "no_countries": "No countries added yet.",
+    "russia": "Works across the Russian Federation"
+  },
+  "sched": {
+    "mon": "Monday",
+    "tue": "Tuesday",
+    "wed": "Wednesday",
+    "thu": "Thursday",
+    "fri": "Friday",
+    "sat": "Saturday",
+    "sun": "Sunday",
+    "daily": "daily",
+    "weekdays": "weekdays",
+    "weekend": "weekend",
+    "round_clock": "around the clock (24/7)",
+    "by_appointment": "by appointment",
+    "closed": "closed",
+    "hour_short": "hours"
+  },
+  "langs": {
+    "ru": "Russian",
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French",
+    "ar": "Arabic",
+    "zh": "Chinese",
+    "de": "German",
+    "uk": "Ukrainian",
+    "tr": "Turkish",
+    "fa": "Persian (Farsi)",
+    "pl": "Polish",
+    "pt": "Portuguese",
+    "hi": "Hindi",
+    "ur": "Urdu",
+    "ky": "Kyrgyz",
+    "uz": "Uzbek",
+    "tg": "Tajik",
+    "hy": "Armenian",
+    "ka": "Georgian",
+    "az": "Azerbaijani",
+    "kk": "Kazakh",
+    "sign": "sign language"
   }
 }
