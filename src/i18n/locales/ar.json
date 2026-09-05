@@ -295,7 +295,9 @@
     "no_docs_needed": "يقبلون بدون وثائق",
     "btn_route": "المسار",
     "btn_call": "اتصال",
-    "btn_website": "الموقع الرسمي"
+    "btn_website": "الموقع الرسمي",
+    "full_address": "العنوان الكامل",
+    "open_in_osm": "افتح في OpenStreetMap"
   },
   "about": {
     "eyebrow": "حول المشروع",

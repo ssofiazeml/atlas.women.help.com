@@ -626,7 +626,9 @@
     "no_docs_needed": "Accepts without documents",
     "btn_route": "Get directions",
     "btn_call": "Call",
-    "btn_website": "Website"
+    "btn_website": "Website",
+    "full_address": "Full address",
+    "open_in_osm": "Open in OpenStreetMap"
   },
   "about": {
     "eyebrow": "About",

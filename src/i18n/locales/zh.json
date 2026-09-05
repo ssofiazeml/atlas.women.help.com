@@ -494,7 +494,9 @@
     "no_docs_needed": "无证件也可接待",
     "btn_route": "路线",
     "btn_call": "拨打",
-    "btn_website": "官方网站"
+    "btn_website": "官方网站",
+    "full_address": "完整地址",
+    "open_in_osm": "在 OpenStreetMap 中打开"
   },
   "about": {
     "eyebrow": "关于项目",

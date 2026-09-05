@@ -626,7 +626,9 @@
     "no_docs_needed": "Принимают без документов",
     "btn_route": "Построить маршрут",
     "btn_call": "Позвонить",
-    "btn_website": "Официальный сайт"
+    "btn_website": "Официальный сайт",
+    "full_address": "Полный адрес",
+    "open_in_osm": "Открыть на карте OpenStreetMap"
   },
   "about": {
     "eyebrow": "О проекте",
