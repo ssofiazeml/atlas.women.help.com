@@ -494,7 +494,9 @@
     "no_docs_needed": "Atienden sin documentos",
     "btn_route": "Cómo llegar",
     "btn_call": "Llamar",
-    "btn_website": "Sitio oficial"
+    "btn_website": "Sitio oficial",
+    "full_address": "Dirección completa",
+    "open_in_osm": "Abrir en OpenStreetMap"
   },
   "about": {
     "eyebrow": "Sobre el proyecto",

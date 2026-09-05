@@ -145,3 +145,44 @@ export async function geocodeAddress(query: string): Promise<Geocoded | null> {
   }
   return null
 }
+// ---------------------------------------------------------------------------
+// Runtime auto-translation with a localStorage cache.
+// Built-in (seed) content ships in one language only. When a visitor reads
+// the site in another language we translate that text once, on demand, and
+// remember the result so it is instant next time.
+// ---------------------------------------------------------------------------
+
+const AUTO_KEY = 'atlas:auto-translate:v1'
+
+function readCache(): Record<string, string> {
+  try {
+    return JSON.parse(window.localStorage.getItem(AUTO_KEY) || '{}') || {}
+  } catch {
+    return {}
+  }
+}
+
+function writeCache(cache: Record<string, string>) {
+  try {
+    window.localStorage.setItem(AUTO_KEY, JSON.stringify(cache))
+  } catch {
+    /* storage full — ignore */
+  }
+}
+
+export async function autoTranslateCached(text: string, lang: string): Promise<string> {
+  const trimmed = (text || '').trim()
+  const target = (lang || 'en').split('-')[0] as Lang
+  if (!trimmed || !SUPPORTED_LANGS.includes(target)) return trimmed
+  const source = detectLang(trimmed)
+  if (source === target) return trimmed
+  const key = `${source}>${target}:${trimmed}`
+  const cache = readCache()
+  if (cache[key]) return cache[key]
+  const out = await translateOne(trimmed, source, target)
+  if (out && out !== trimmed) {
+    cache[key] = out
+    writeCache(cache)
+  }
+  return out
+}

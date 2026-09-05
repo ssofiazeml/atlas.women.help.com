@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { geocodeAddress, translateFields } from '../../lib/translate'
+import { CATEGORY_KEYS, CATEGORY_LABELS_RU } from '../../lib/categories'
 import { supabase } from '../../integrations/supabase/client'
 import {
   getPendingSuggestions,
@@ -835,6 +836,11 @@ function CentersSection() {
     website: '',
     description: '',
     category: 'shelter',
+    categories: ['shelter'],
+    email: '',
+    hours: '',
+    languages: '',
+    cost: '',
   })
 
   const reset = () => {
@@ -849,6 +855,11 @@ function CentersSection() {
       website: '',
       description: '',
       category: 'shelter',
+      categories: ['shelter'],
+      email: '',
+      hours: '',
+      languages: '',
+      cost: '',
     })
   }
 
@@ -906,8 +917,10 @@ function CentersSection() {
         city: finalDraft.city || '',
         country: finalDraft.country || '',
         address: finalDraft.address || '',
+        hours: finalDraft.hours || '',
+        languages: finalDraft.languages || '',
       },
-      ['description', 'city', 'country', 'address']
+      ['description', 'city', 'country', 'address', 'hours', 'languages']
     )
     finalDraft = { ...finalDraft, translations }
 
@@ -931,7 +944,12 @@ function CentersSection() {
       contact: c.contact || '',
       website: c.website || '',
       description: c.description || '',
-      category: c.category || 'shelter',
+      category: (c.categories && c.categories[0]) || c.category || 'shelter',
+      categories: c.categories?.length ? c.categories : c.category ? [c.category] : [],
+      email: c.email || '',
+      hours: c.hours || '',
+      languages: c.languages || '',
+      cost: c.cost || '',
     })
   }
 
@@ -965,15 +983,28 @@ function CentersSection() {
         <Field label="Название центра">
           <input required value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} className={inputCls} />
         </Field>
-        <Field label="Категория">
-          <select value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value })} className={inputCls}>
-            <option value="shelter">Убежище</option>
-            <option value="legal">Юридическая помощь</option>
-            <option value="psychological">Психологическая помощь</option>
-            <option value="crisis">Кризисный центр</option>
-            <option value="medical">Медицинская помощь</option>
-            <option value="hotline">Горячая линия</option>
-          </select>
+        <Field label="Виды помощи (можно выбрать сколько угодно)">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 border border-slate-200 rounded-md p-2.5 bg-white">
+            {CATEGORY_KEYS.map((k) => {
+              const checked = (draft.categories || []).includes(k)
+              return (
+                <label key={k} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={(e) => {
+                      const cur = new Set<string>(draft.categories || [])
+                      if (e.target.checked) cur.add(k)
+                      else cur.delete(k)
+                      const arr = CATEGORY_KEYS.filter((x) => cur.has(x)) as string[]
+                      setDraft({ ...draft, categories: arr, category: arr[0] || '' })
+                    }}
+                  />
+                  <span>{CATEGORY_LABELS_RU[k]}</span>
+                </label>
+              )
+            })}
+          </div>
         </Field>
         <Field label="Город">
           <input value={draft.city} onChange={(e) => setDraft({ ...draft, city: e.target.value })} className={inputCls} />
@@ -990,6 +1021,27 @@ function CentersSection() {
         <Field label="Сайт / ссылка">
           <input value={draft.website} onChange={(e) => setDraft({ ...draft, website: e.target.value })} className={inputCls} placeholder="https://" />
         </Field>
+        <Field label="Email">
+          <input value={draft.email || ''} onChange={(e) => setDraft({ ...draft, email: e.target.value })} className={inputCls} placeholder="info@example.org" />
+        </Field>
+        <Field label="Часы работы (можно сокращённо: пн-пт 9:00-18:00)">
+          <input value={draft.hours || ''} onChange={(e) => setDraft({ ...draft, hours: e.target.value })} className={inputCls} placeholder="пн-пт 9:00-18:00" />
+        </Field>
+        <Field label="Языки приёма (рус, англ, ar…)">
+          <input value={draft.languages || ''} onChange={(e) => setDraft({ ...draft, languages: e.target.value })} className={inputCls} placeholder="рус, англ" />
+        </Field>
+        <Field label="Стоимость">
+          <select value={draft.cost || ''} onChange={(e) => setDraft({ ...draft, cost: e.target.value as any })} className={inputCls}>
+            <option value="">Не указано</option>
+            <option value="free">Бесплатно</option>
+            <option value="partial">Частично бесплатно</option>
+            <option value="paid">Платно</option>
+          </select>
+        </Field>
+        <label className="flex items-center gap-2 text-sm mt-1">
+          <input type="checkbox" checked={!!draft.open24} onChange={(e) => setDraft({ ...draft, open24: e.target.checked })} />
+          <span>Круглосуточно (24/7)</span>
+        </label>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Широта (lat, опционально)">
             <input type="number" step="0.0001" value={draft.lat ?? ''} onChange={(e) => setDraft({ ...draft, lat: e.target.value ? Number(e.target.value) : undefined })} className={inputCls} />
@@ -1051,7 +1103,13 @@ function CentersSection() {
                     {c.country ? `, ${c.country}` : ''}
                   </div>
                 </div>
-                <span className="text-[10px] px-1.5 py-0.5 border rounded">{c.category}</span>
+                <div className="flex flex-wrap gap-1 justify-end">
+                  {(c.categories?.length ? c.categories : c.category ? [c.category] : []).map((k) => (
+                    <span key={k} className="text-[10px] px-1.5 py-0.5 border rounded">
+                      {CATEGORY_LABELS_RU[k as keyof typeof CATEGORY_LABELS_RU] || k}
+                    </span>
+                  ))}
+                </div>
               </div>
               {c.description && <p className="text-sm text-slate-700 mt-2">{c.description}</p>}
               {c.address && <p className="text-xs text-slate-500 mt-1">📍 {c.address}</p>}
@@ -1951,7 +2009,7 @@ function HotlinesSection() {
   const empty = {
     title: '',
     country: '',
-    scope: 'country' as 'country' | 'international',
+    scope: 'country' as 'country' | 'international' | 'russia',
     phone: '',
     hours: '',
     languages: '',
@@ -1967,7 +2025,8 @@ function HotlinesSection() {
     setBusy(true)
     const base = {
       title: form.title,
-      country: form.scope === 'international' ? '' : form.country,
+      country:
+        form.scope === 'international' ? '' : form.scope === 'russia' ? 'Россия' : form.country,
       scope: form.scope,
       phone: form.phone,
       hours: form.hours,
@@ -1978,8 +2037,13 @@ function HotlinesSection() {
     let translations
     try {
       translations = await translateFields(
-        { title: base.title, note: base.note || '' },
-        ['title', 'note']
+        {
+          title: base.title,
+          note: base.note || '',
+          hours: base.hours || '',
+          languages: base.languages || '',
+        },
+        ['title', 'note', 'hours', 'languages']
       )
     } catch {
       translations = undefined
@@ -2013,17 +2077,21 @@ function HotlinesSection() {
               className={inputCls}
               value={form.scope}
               onChange={(e) =>
-                setForm({ ...form, scope: e.target.value as 'country' | 'international' })
+                setForm({
+                  ...form,
+                  scope: e.target.value as 'country' | 'international' | 'russia',
+                })
               }
             >
               <option value="country">Страна</option>
               <option value="international">Международная</option>
+              <option value="russia">Работает на территории РФ</option>
             </select>
           </Field>
           <Field label="Страна">
             <input
               className={inputCls}
-              disabled={form.scope === 'international'}
+              disabled={form.scope !== 'country'}
               value={form.country}
               onChange={(e) => setForm({ ...form, country: e.target.value })}
               placeholder="Германия"
@@ -2101,7 +2169,11 @@ function HotlinesSection() {
             <div key={h.id} className="safe-card bg-white">
               <div className="font-semibold">{h.title}</div>
               <div className="text-xs text-slate-500">
-                {h.scope === 'international' || !h.country ? 'Международная' : h.country}
+                {h.scope === 'russia'
+                  ? 'Работает на территории РФ'
+                  : h.scope === 'international' || !h.country
+                    ? 'Международная'
+                    : h.country}
               </div>
               <div className="text-sm mt-1 font-medium">{h.phone}</div>
               {h.hours && <div className="text-xs text-slate-600">{h.hours}</div>}
@@ -2117,7 +2189,8 @@ function HotlinesSection() {
                       country: h.country || '',
                       scope: (h.scope || (h.country ? 'country' : 'international')) as
                         | 'country'
-                        | 'international',
+                        | 'international'
+                        | 'russia',
                       phone: h.phone,
                       hours: h.hours || '',
                       languages: h.languages || '',
@@ -2163,7 +2236,7 @@ function InboxHotlines() {
   const publish = (p: PendingHotline) => {
     addHotline({
       title: p.title || p.phone,
-      country: p.scope === 'international' ? '' : p.country,
+      country: p.scope === 'international' ? '' : p.scope === 'russia' ? 'Россия' : p.country,
       scope: p.scope,
       phone: p.phone,
       note: p.comment || '',
@@ -2183,7 +2256,11 @@ function InboxHotlines() {
             <div key={p.id} className="safe-card bg-white">
               <div className="font-semibold">{p.title || p.phone}</div>
               <div className="text-xs text-slate-500">
-                {p.scope === 'international' ? 'Международная' : p.country}
+                {p.scope === 'russia'
+                  ? 'Работает на территории РФ'
+                  : p.scope === 'international'
+                    ? 'Международная'
+                    : p.country}
               </div>
               <div className="text-sm mt-1">{p.phone}</div>
               {p.comment && <p className="text-sm mt-2 whitespace-pre-wrap">{p.comment}</p>}

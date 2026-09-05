@@ -295,7 +295,9 @@
     "no_docs_needed": "Accueille sans papiers",
     "btn_route": "Itinéraire",
     "btn_call": "Appeler",
-    "btn_website": "Site officiel"
+    "btn_website": "Site officiel",
+    "full_address": "Adresse complète",
+    "open_in_osm": "Ouvrir dans OpenStreetMap"
   },
   "about": {
     "eyebrow": "À propos",
