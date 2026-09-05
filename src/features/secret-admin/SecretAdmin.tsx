@@ -1951,7 +1951,7 @@ function HotlinesSection() {
   const empty = {
     title: '',
     country: '',
-    scope: 'country' as 'country' | 'international',
+    scope: 'country' as 'country' | 'international' | 'russia',
     phone: '',
     hours: '',
     languages: '',
@@ -1967,7 +1967,8 @@ function HotlinesSection() {
     setBusy(true)
     const base = {
       title: form.title,
-      country: form.scope === 'international' ? '' : form.country,
+      country:
+        form.scope === 'international' ? '' : form.scope === 'russia' ? 'Россия' : form.country,
       scope: form.scope,
       phone: form.phone,
       hours: form.hours,
@@ -1978,8 +1979,13 @@ function HotlinesSection() {
     let translations
     try {
       translations = await translateFields(
-        { title: base.title, note: base.note || '' },
-        ['title', 'note']
+        {
+          title: base.title,
+          note: base.note || '',
+          hours: base.hours || '',
+          languages: base.languages || '',
+        },
+        ['title', 'note', 'hours', 'languages']
       )
     } catch {
       translations = undefined
@@ -2013,17 +2019,21 @@ function HotlinesSection() {
               className={inputCls}
               value={form.scope}
               onChange={(e) =>
-                setForm({ ...form, scope: e.target.value as 'country' | 'international' })
+                setForm({
+                  ...form,
+                  scope: e.target.value as 'country' | 'international' | 'russia',
+                })
               }
             >
               <option value="country">Страна</option>
               <option value="international">Международная</option>
+              <option value="russia">Работает на территории РФ</option>
             </select>
           </Field>
           <Field label="Страна">
             <input
               className={inputCls}
-              disabled={form.scope === 'international'}
+              disabled={form.scope !== 'country'}
               value={form.country}
               onChange={(e) => setForm({ ...form, country: e.target.value })}
               placeholder="Германия"
@@ -2101,7 +2111,11 @@ function HotlinesSection() {
             <div key={h.id} className="safe-card bg-white">
               <div className="font-semibold">{h.title}</div>
               <div className="text-xs text-slate-500">
-                {h.scope === 'international' || !h.country ? 'Международная' : h.country}
+                {h.scope === 'russia'
+                  ? 'Работает на территории РФ'
+                  : h.scope === 'international' || !h.country
+                    ? 'Международная'
+                    : h.country}
               </div>
               <div className="text-sm mt-1 font-medium">{h.phone}</div>
               {h.hours && <div className="text-xs text-slate-600">{h.hours}</div>}
@@ -2117,7 +2131,8 @@ function HotlinesSection() {
                       country: h.country || '',
                       scope: (h.scope || (h.country ? 'country' : 'international')) as
                         | 'country'
-                        | 'international',
+                        | 'international'
+                        | 'russia',
                       phone: h.phone,
                       hours: h.hours || '',
                       languages: h.languages || '',
@@ -2163,7 +2178,7 @@ function InboxHotlines() {
   const publish = (p: PendingHotline) => {
     addHotline({
       title: p.title || p.phone,
-      country: p.scope === 'international' ? '' : p.country,
+      country: p.scope === 'international' ? '' : p.scope === 'russia' ? 'Россия' : p.country,
       scope: p.scope,
       phone: p.phone,
       note: p.comment || '',
@@ -2183,7 +2198,11 @@ function InboxHotlines() {
             <div key={p.id} className="safe-card bg-white">
               <div className="font-semibold">{p.title || p.phone}</div>
               <div className="text-xs text-slate-500">
-                {p.scope === 'international' ? 'Международная' : p.country}
+                {p.scope === 'russia'
+                  ? 'Работает на территории РФ'
+                  : p.scope === 'international'
+                    ? 'Международная'
+                    : p.country}
               </div>
               <div className="text-sm mt-1">{p.phone}</div>
               {p.comment && <p className="text-sm mt-2 whitespace-pre-wrap">{p.comment}</p>}
