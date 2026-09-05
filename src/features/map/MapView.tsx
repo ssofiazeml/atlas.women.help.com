@@ -21,6 +21,7 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import { CATEGORY_KEYS } from '../../lib/categories'
+import { autoTranslateCached } from '../../lib/translate'
 import { localizeSchedule, localizeLanguages } from '../../lib/humanize'
 
 // @ts-ignore
@@ -540,7 +541,21 @@ function CenterCard({
   cardRef: (el: HTMLDivElement | null) => void
 }) {
   const { t } = useTranslation()
-  const description = pickLocalized(c, 'description', lang) || c.description
+  const rawDescription = pickLocalized(c, 'description', lang) || c.description || ''
+  // Built-in (seed) texts have no stored translation — translate them once on
+  // demand and cache the result, so every card reads in the chosen language.
+  const [description, setDescription] = useState(rawDescription)
+  useEffect(() => {
+    let alive = true
+    setDescription(rawDescription)
+    if (!rawDescription) return
+    autoTranslateCached(rawDescription, lang).then((tx) => {
+      if (alive && tx) setDescription(tx)
+    })
+    return () => {
+      alive = false
+    }
+  }, [rawDescription, lang])
   const address = pickLocalized(c, 'address', lang) || c.address
   const city = pickLocalized(c, 'city', lang) || c.city
   const country = pickLocalized(c, 'country', lang) || c.country
