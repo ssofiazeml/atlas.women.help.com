@@ -10,7 +10,7 @@ import { pickLocalized } from '../../lib/translate'
 import { localizeSchedule, localizeLanguages } from '../../lib/humanize'
 
 const isInternational = (h: AdminHotline) =>
-  h.scope === 'international' || (h.scope !== 'russia' && (!h.country || !h.country.trim()))
+  h.scope === 'international' || (h.scope !== 'eu' && (!h.country || !h.country.trim()))
 
 export function Hotlines() {
   const { t, i18n } = useTranslation()
@@ -134,8 +134,8 @@ function HotlineCard({ h, lang }: { h: AdminHotline; lang: string }) {
       <div className="text-xs text-slate-500 mt-0.5">
         {isInternational(h)
           ? t('hotlines.international', { defaultValue: 'Международная' })
-          : h.scope === 'russia'
-            ? t('hotlines.russia', { defaultValue: 'Работает на территории РФ' })
+          : h.scope === 'eu'
+            ? t('hotlines.eu', { defaultValue: 'Работает на территории ЕС' })
             : h.country}
       </div>
       <a
