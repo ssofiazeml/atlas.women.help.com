@@ -1,6 +1,8 @@
-// Simple localStorage-backed content store for user-added home page cards.
-// Data is persisted in the browser. Add/remove items from the secret admin
-// panel and they will appear on the home page automatically.
+import { supabase } from '../integrations/supabase/client'
+
+// Synchronous local cache backed by the shared cloud content table. Existing
+// components can keep reading immediately while cloud hydration and live
+// updates happen in the background.
 
 export type HomeCard = {
   id: string
@@ -14,6 +16,7 @@ export type HomeCard = {
 
 const STORAGE_KEY = 'atlas:home-cards:v1'
 const EVENT_NAME = 'atlas:home-cards:changed'
+export const ADMIN_TOKEN_KEY = 'atlas:secret-admin:token'
 
 export function getHomeCards(): HomeCard[] {
   if (typeof window === 'undefined') return []
@@ -31,6 +34,7 @@ export function getHomeCards(): HomeCard[] {
 function save(cards: HomeCard[]) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cards))
   window.dispatchEvent(new CustomEvent(EVENT_NAME))
+  persistCloud(STORAGE_KEY, cards)
 }
 
 export function addHomeCard(card: Omit<HomeCard, 'id' | 'createdAt'>): HomeCard {
@@ -75,6 +79,100 @@ export function readFileAsDataUrl(file: File): Promise<string> {
 
 const CHANGE_EVENT = 'atlas:content:changed'
 
+const CONTENT_KEYS = [
+  STORAGE_KEY,
+  'atlas:admin:centers:v1',
+  'atlas:admin:ratings:v1',
+  'atlas:admin:checklists:v1',
+  'atlas:admin:country-index:v1',
+  'atlas:admin:library:v1',
+  'atlas:admin:stories:v1',
+  'atlas:admin:home-texts:v1',
+  'atlas:admin:about:v1',
+  'atlas:admin:hotlines:v1',
+  'atlas:hotline-suggestions:v1',
+  'atlas:admin:sections:v1',
+  'atlas:admin:overrides:v1',
+  'atlas:admin:hidden:v1',
+] as const
+
+function emitChange(key: string) {
+  window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: { key } }))
+  if (key === STORAGE_KEY) window.dispatchEvent(new CustomEvent(EVENT_NAME))
+  if (key === 'atlas:hotline-suggestions:v1') {
+    window.dispatchEvent(new CustomEvent('atlas:inbox:changed'))
+  }
+}
+
+function cacheCloudValue(key: string, value: unknown) {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(key, JSON.stringify(value))
+  emitChange(key)
+}
+
+async function persistCloud(key: string, value: unknown) {
+  if (typeof window === 'undefined') return
+  const adminToken = window.sessionStorage.getItem(ADMIN_TOKEN_KEY)
+  if (!adminToken) return
+  const { error } = await supabase.functions.invoke('site-content', {
+    body: { action: 'save', key, value, adminToken },
+  })
+  if (error) console.error('[Atlas] Не удалось сохранить изменение в облаке', error)
+}
+
+async function refreshCloudContent() {
+  const { data, error } = await supabase.from('site_content').select('key,value')
+  if (error || !data) return
+  for (const row of data) cacheCloudValue(row.key, row.value)
+}
+
+let cloudStarted = false
+export function startCloudContentSync() {
+  if (cloudStarted || typeof window === 'undefined') return
+  cloudStarted = true
+  void refreshCloudContent()
+
+  const channel = supabase
+    .channel('atlas-site-content-live')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'site_content' },
+      (payload) => {
+        const row = payload.new as { key?: string; value?: unknown }
+        if (row?.key) cacheCloudValue(row.key, row.value)
+      },
+    )
+    .subscribe()
+
+  window.addEventListener('focus', refreshCloudContent)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') void refreshCloudContent()
+  })
+  window.addEventListener('beforeunload', () => void supabase.removeChannel(channel), { once: true })
+}
+
+export async function migrateLocalContentToCloud(adminToken: string) {
+  const entries = CONTENT_KEYS.flatMap((key) => {
+    const raw = window.localStorage.getItem(key)
+    if (!raw) return []
+    try {
+      return [{ key, value: JSON.parse(raw) }]
+    } catch {
+      return []
+    }
+  })
+  const { data, error } = await supabase.functions.invoke('site-content', {
+    body: { action: 'bootstrap', entries, adminToken },
+  })
+  if (error) throw error
+  const cloudEntries = Array.isArray(data?.entries) ? data.entries : []
+  for (const entry of cloudEntries) {
+    if (typeof entry?.key === 'string') cacheCloudValue(entry.key, entry.value)
+  }
+}
+
+startCloudContentSync()
+
 function readList<T>(key: string): T[] {
   if (typeof window === 'undefined') return []
   try {
@@ -89,7 +187,8 @@ function readList<T>(key: string): T[] {
 
 function writeList<T>(key: string, list: T[]) {
   window.localStorage.setItem(key, JSON.stringify(list))
-  window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: { key } }))
+  emitChange(key)
+  persistCloud(key, list)
 }
 
 function readObject<T>(key: string): T | null {
@@ -104,7 +203,8 @@ function readObject<T>(key: string): T | null {
 
 function writeObject<T>(key: string, value: T) {
   window.localStorage.setItem(key, JSON.stringify(value))
-  window.dispatchEvent(new CustomEvent(CHANGE_EVENT, { detail: { key } }))
+  emitChange(key)
+  persistCloud(key, value)
 }
 
 function newId() {
@@ -310,7 +410,7 @@ export type AdminHotline = {
   id: string
   title: string
   country: string // '' for international
-  scope?: 'country' | 'international' | 'russia'
+  scope?: 'country' | 'international' | 'eu'
   phone: string
   hours?: string
   languages?: string
@@ -320,7 +420,10 @@ export type AdminHotline = {
   translations?: Translations
 }
 const K_HOTLINES = 'atlas:admin:hotlines:v1'
-export const getHotlines = () => readList<AdminHotline>(K_HOTLINES)
+export const getHotlines = () =>
+  readList<AdminHotline & { scope?: AdminHotline['scope'] | 'russia' }>(K_HOTLINES).map((item) =>
+    item.scope === 'russia' ? { ...item, scope: 'eu' as const, country: 'ЕС' } : item
+  )
 export const addHotline = (h: Omit<AdminHotline, 'id' | 'createdAt'>) => {
   const item: AdminHotline = { ...h, id: newId(), createdAt: Date.now() }
   writeList(K_HOTLINES, [item, ...getHotlines()])
@@ -336,12 +439,15 @@ export type PendingHotline = {
   id: number
   title?: string
   country: string // '' for international
-  scope: 'country' | 'international' | 'russia'
+  scope: 'country' | 'international' | 'eu'
   phone: string
   comment?: string
 }
 const K_HOTLINE_QUEUE = 'atlas:hotline-suggestions:v1'
-export const getPendingHotlines = () => readList<PendingHotline>(K_HOTLINE_QUEUE)
+export const getPendingHotlines = () =>
+  readList<PendingHotline & { scope: PendingHotline['scope'] | 'russia' }>(K_HOTLINE_QUEUE).map((item) =>
+    item.scope === 'russia' ? { ...item, scope: 'eu' as const, country: 'ЕС' } : item
+  )
 export function addPendingHotline(h: Omit<PendingHotline, 'id'>) {
   const item: PendingHotline = { ...h, id: Date.now() }
   writeList(K_HOTLINE_QUEUE, [item, ...getPendingHotlines()])

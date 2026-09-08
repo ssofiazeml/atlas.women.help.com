@@ -75,6 +75,8 @@ import {
   getPendingHotlines,
   removePendingHotline,
   type PendingHotline,
+  ADMIN_TOKEN_KEY,
+  migrateLocalContentToCloud,
 } from '../../lib/contentStore'
 import {
   setSeedOverride,
@@ -135,15 +137,20 @@ const TABS: { key: TabKey; label: string }[] = [
 export function SecretAdmin() {
   const [authed, setAuthed] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false
-    return window.sessionStorage.getItem(SESSION_KEY) === '1'
+    return Boolean(
+      window.sessionStorage.getItem(SESSION_KEY) === '1' &&
+      window.sessionStorage.getItem(ADMIN_TOKEN_KEY)
+    )
   })
 
   if (!authed) {
     return (
       <LoginGate
-        onSuccess={() => {
+        onSuccess={(adminToken) => {
           window.sessionStorage.setItem(SESSION_KEY, '1')
+          window.sessionStorage.setItem(ADMIN_TOKEN_KEY, adminToken)
           setAuthed(true)
+          void migrateLocalContentToCloud(adminToken)
         }}
       />
     )
@@ -153,26 +160,14 @@ export function SecretAdmin() {
     <AdminShell
       onLogout={() => {
         window.sessionStorage.removeItem(SESSION_KEY)
+        window.sessionStorage.removeItem(ADMIN_TOKEN_KEY)
         setAuthed(false)
       }}
     />
   )
 }
 
-// Резервная проверка на случай, если сервер недоступен: сам пароль в коде не
-// хранится — только его отпечаток (SHA-256), восстановить пароль из него нельзя.
-const ADMIN_EMAIL_HASH = 'ab965093240198cc990e7750095ee4220f0e8f5a54070c3ca90a3402450d242d'
-const ADMIN_PASS_HASH = 'ea544d16cb34fa2d9a187c0784f0a58eda0cb147b34628611668efd869baf326'
-
-async function sha256(value: string) {
-  const bytes = new TextEncoder().encode(value)
-  const digest = await crypto.subtle.digest('SHA-256', bytes)
-  return Array.from(new Uint8Array(digest))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
-function LoginGate({ onSuccess }: { onSuccess: () => void }) {
+function LoginGate({ onSuccess }: { onSuccess: (adminToken: string) => void }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -183,36 +178,23 @@ function LoginGate({ onSuccess }: { onSuccess: () => void }) {
     setSubmitting(true)
     setError('')
 
-    let ok = false
     try {
       const { data, error: requestError } = await supabase.functions.invoke(
         'verify-admin-password',
         { body: { email, password } }
       )
-      if (!requestError && data?.valid === true) ok = true
-    } catch {
-      /* сервер недоступен — проверим локально */
-    }
-
-    if (!ok) {
-      try {
-        const [eh, ph] = await Promise.all([
-          sha256(email.trim().toLowerCase()),
-          sha256(password),
-        ])
-        ok = eh === ADMIN_EMAIL_HASH && ph === ADMIN_PASS_HASH
-      } catch {
-        /* noop */
+      if (!requestError && data?.valid === true && typeof data.adminToken === 'string') {
+        setSubmitting(false)
+        setError('')
+        onSuccess(data.adminToken)
+        return
       }
+    } catch {
+      /* handled below */
     }
 
     setSubmitting(false)
-    if (ok) {
-      setError('')
-      onSuccess()
-    } else {
-      setError('Неверная почта или пароль. Попробуйте ещё раз.')
-    }
+    setError('Не удалось войти. Проверьте почту, пароль и подключение к интернету.')
   }
 
   return (
@@ -2009,7 +1991,7 @@ function HotlinesSection() {
   const empty = {
     title: '',
     country: '',
-    scope: 'country' as 'country' | 'international' | 'russia',
+    scope: 'country' as 'country' | 'international' | 'eu',
     phone: '',
     hours: '',
     languages: '',
@@ -2026,7 +2008,7 @@ function HotlinesSection() {
     const base = {
       title: form.title,
       country:
-        form.scope === 'international' ? '' : form.scope === 'russia' ? 'Россия' : form.country,
+        form.scope === 'international' ? '' : form.scope === 'eu' ? 'ЕС' : form.country,
       scope: form.scope,
       phone: form.phone,
       hours: form.hours,
@@ -2079,13 +2061,13 @@ function HotlinesSection() {
               onChange={(e) =>
                 setForm({
                   ...form,
-                  scope: e.target.value as 'country' | 'international' | 'russia',
+                  scope: e.target.value as 'country' | 'international' | 'eu',
                 })
               }
             >
               <option value="country">Страна</option>
               <option value="international">Международная</option>
-              <option value="russia">Работает на территории РФ</option>
+              <option value="eu">Работает на территории ЕС</option>
             </select>
           </Field>
           <Field label="Страна">
@@ -2169,8 +2151,8 @@ function HotlinesSection() {
             <div key={h.id} className="safe-card bg-white">
               <div className="font-semibold">{h.title}</div>
               <div className="text-xs text-slate-500">
-                {h.scope === 'russia'
-                  ? 'Работает на территории РФ'
+                {h.scope === 'eu'
+                  ? 'Работает на территории ЕС'
                   : h.scope === 'international' || !h.country
                     ? 'Международная'
                     : h.country}
@@ -2190,7 +2172,7 @@ function HotlinesSection() {
                       scope: (h.scope || (h.country ? 'country' : 'international')) as
                         | 'country'
                         | 'international'
-                        | 'russia',
+                        | 'eu',
                       phone: h.phone,
                       hours: h.hours || '',
                       languages: h.languages || '',
@@ -2236,7 +2218,7 @@ function InboxHotlines() {
   const publish = (p: PendingHotline) => {
     addHotline({
       title: p.title || p.phone,
-      country: p.scope === 'international' ? '' : p.scope === 'russia' ? 'Россия' : p.country,
+      country: p.scope === 'international' ? '' : p.scope === 'eu' ? 'ЕС' : p.country,
       scope: p.scope,
       phone: p.phone,
       note: p.comment || '',
@@ -2256,8 +2238,8 @@ function InboxHotlines() {
             <div key={p.id} className="safe-card bg-white">
               <div className="font-semibold">{p.title || p.phone}</div>
               <div className="text-xs text-slate-500">
-                {p.scope === 'russia'
-                  ? 'Работает на территории РФ'
+                {p.scope === 'eu'
+                  ? 'Работает на территории ЕС'
                   : p.scope === 'international'
                     ? 'Международная'
                     : p.country}

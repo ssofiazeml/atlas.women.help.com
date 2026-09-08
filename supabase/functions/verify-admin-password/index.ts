@@ -3,6 +3,28 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const encoder = new TextEncoder()
+
+function toHex(bytes: ArrayBuffer) {
+  return Array.from(new Uint8Array(bytes))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+async function createAdminToken(secret: string) {
+  const expiresAt = Date.now() + 12 * 60 * 60 * 1000
+  const payload = `atlas-admin:${expiresAt}`
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  )
+  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(payload))
+  return `${payload}.${toHex(signature)}`
+}
+
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -41,7 +63,10 @@ Deno.serve(async (request) => {
         (!!legacyPassword && password === legacyPassword))
 
     const valid = emailOk && passwordOk
-    return new Response(JSON.stringify({ valid }), {
+    const adminToken = valid
+      ? await createAdminToken(loginPassword || legacyPassword || '')
+      : undefined
+    return new Response(JSON.stringify({ valid, adminToken }), {
       status: valid ? 200 : 401,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })

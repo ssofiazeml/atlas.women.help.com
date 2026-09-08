@@ -25,7 +25,7 @@ export function SuggestPage() {
 
   const emptyHotline = {
     title: '',
-    scope: 'country' as 'country' | 'international',
+    scope: 'country' as 'country' | 'international' | 'eu',
     country: '',
     phone: '',
     comment: '',
@@ -39,7 +39,7 @@ export function SuggestPage() {
       addPendingHotline({
         title: hotlineForm.title || undefined,
         scope: hotlineForm.scope,
-        country: hotlineForm.scope === 'international' ? '' : hotlineForm.country,
+        country: hotlineForm.scope === 'international' ? '' : hotlineForm.scope === 'eu' ? 'ЕС' : hotlineForm.country,
         phone: hotlineForm.phone,
         comment: hotlineForm.comment || undefined,
       })
@@ -287,7 +287,7 @@ export function SuggestPage() {
               <select
                 value={hotlineForm.scope}
                 onChange={(e) =>
-                  setHotlineForm({ ...hotlineForm, scope: e.target.value as 'country' | 'international' })
+                  setHotlineForm({ ...hotlineForm, scope: e.target.value as 'country' | 'international' | 'eu' })
                 }
                 className="w-full border rounded px-3 py-2 text-sm bg-white"
               >
@@ -295,13 +295,16 @@ export function SuggestPage() {
                 <option value="international">
                   {t('hotlines.international', { defaultValue: 'Международная' })}
                 </option>
+                <option value="eu">
+                  {t('suggest.scope_eu', { defaultValue: 'Работает на территории ЕС' })}
+                </option>
               </select>
             </div>
             <div>
               <label className="text-xs font-medium block mb-1">{t('suggest.f_country')}</label>
               <input
                 required={hotlineForm.scope === 'country'}
-                disabled={hotlineForm.scope === 'international'}
+                disabled={hotlineForm.scope !== 'country'}
                 value={hotlineForm.country}
                 onChange={(e) => setHotlineForm({ ...hotlineForm, country: e.target.value })}
                 placeholder={t('suggest.f_country_ph')}
